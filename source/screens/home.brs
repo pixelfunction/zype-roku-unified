@@ -8,6 +8,7 @@ Function home_screen()
   screen.SetDisplayMode(m.config.scale_mode)
 
   row_titles = CreateObject("roArray", 1, true)
+  categories = CreateObject("roArray", 1, true)
 
   'get all featured info
   featured = get_featured_playlist()
@@ -49,6 +50,7 @@ Function home_screen()
     print "row"
     print i
     screen.SetContentList(i, category.episodes)
+    categories.push({name: category.name, episodes: category.episodes})
     i = i + 1
   end for
 
@@ -64,7 +66,9 @@ Function home_screen()
         else if(msg.GetIndex() = row_titles.count()-1)
           toolbar.tools[msg.GetData()].function_name()
         else
-          detail_screen(categories[msg.GetIndex()-1].episodes[msg.GetData()], "Home", categories[msg.GetIndex()-1].episodes[msg.GetData()].title)
+        selected_episode = categories[msg.GetIndex()-1].episodes[msg.GetData()]
+        selected_title = selected_episode.title
+        detail_screen(selected_episode, "Home", selected_title)
         endif
       endif
     endif
