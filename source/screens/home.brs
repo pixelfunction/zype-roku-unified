@@ -2,7 +2,6 @@ Function home_screen()
   screen = CreateObject("roGridScreen")
   port = CreateObject("roMessagePort")
   screen.SetMessagePort(port)
-  screen.show()
 
   screen.SetBreadcrumbText(m.config.home_name, "")
   screen.setGridStyle(m.config.grid_layout)
@@ -23,9 +22,6 @@ Function home_screen()
   category_titles = category_info.values
 
   category_value_size = category_titles.count()
-  print "CATEGORY VALUE SIZE"
-  print category_value_size
-  print "****"
 
   for each title in category_titles
     row_titles.push(title)
@@ -42,6 +38,9 @@ Function home_screen()
   'set up the first row for featured playlists
   screen.SetContentList(0, featured.episodes)
   screen.SetFocusedListItem(0,0)
+
+  'show screen once featured playlist is ready
+  screen.show()
 
   'iterate through each category title and display after api call
   i = 1
