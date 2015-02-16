@@ -67,33 +67,6 @@ Function get_category_playlist(category_name as string, category_value as string
   return playlist
 End Function
 
-Function get_category_playlists_old() as object
-  categories = CreateObject("roArray", 1, true)
-  validation = valid_category()
-
-  if validation = "true"
-    category_info = get_category_info(m.config.category_id)
-
-    for each value in category_info.values
-      url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&category%5B" + HttpEncode(category_info.name) + "%5D=" + HttpEncode(value) + "&type=zype&per_page=" + m.config.per_page
-      episodes = get_video_feed(url, false)
-      if(episodes.count() > 0)
-        if(m.config.prepend_category_name = true)
-          categories.push({name: category_info.name + " " + value, episodes: episodes})
-        else
-          categories.push({name: value, episodes: episodes})
-        endif
-      endif
-    end for
-  else
-    url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&per_page=" + m.config.per_page + "&type=zype&sort=title&order=asc"
-    episodes = get_video_feed(url, false)
-    categories.push({name: "All Videos", episodes: episodes})
-  endif
-
-  return categories
-End Function
-
 Function get_category_info(category_id As String) as Object
   request = CreateObject("roUrlTransfer")
   port = CreateObject("roMessagePort")
