@@ -18,7 +18,9 @@ Function home_screen()
 
   'get category titles
   category_titles = CreateObject("roArray", 1, true)
-  category_titles = get_category_info(m.config.category_id).values
+  category_info = get_category_info(m.config.category_id)
+  category_name = category_info.name
+  category_titles = category_info.values
 
   category_value_size = category_titles.count()
   print "CATEGORY VALUE SIZE"
@@ -41,16 +43,14 @@ Function home_screen()
   screen.SetContentList(0, featured.episodes)
   screen.SetFocusedListItem(0,0)
 
-  'iteration with category_title
-  categories = get_category_playlists()
-
+  'iterate through each category title and display after api call
   i = 1
-  for each category in categories
+  for each title in category_titles
+    category = get_category_playlist(category_name ,title, m.config.category_id)
     print "row"
     print i
-    row_titles.push(category.name)
     screen.SetContentList(i, category.episodes)
-    i = i+1
+    i = i + 1
   end for
 
   toolbar = grid_toolbar()

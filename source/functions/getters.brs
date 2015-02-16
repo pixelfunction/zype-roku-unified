@@ -53,7 +53,21 @@ Function get_stream_url(id As String) as Object
   return stream_url
 End Function
 
-Function get_category_playlists() as object
+Function get_category_playlist(category_name as string, category_value as string, category_id as string) as object
+  url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&category%5B" + HttpEncode(category_name) + "%5D=" + HttpEncode(category_value) + "&type=zype&per_page=" + m.config.per_page
+  print url
+  episodes = get_video_feed(url, false)
+  if(episodes.count() > 0)
+    if(m.config.prepend_category_name = true)
+      playlist = {name: category_name + " " + category_value, episodes: episodes}
+    else
+      playlist = {name: category_value, episodes: episodes}
+    endif
+  endif
+  return playlist
+End Function
+
+Function get_category_playlists_old() as object
   categories = CreateObject("roArray", 1, true)
   validation = valid_category()
 
