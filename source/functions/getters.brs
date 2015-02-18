@@ -53,7 +53,7 @@ Function get_stream_url(id As String) as Object
   return stream_url
 End Function
 
-Function get_category_playlist(category_name as string, category_value as string, category_id as string) as object
+Function get_category_playlist(category_name as string, category_value as string, category_id as string) as Object
   url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&category%5B" + HttpEncode(category_name) + "%5D=" + HttpEncode(category_value) + "&type=zype&per_page=" + m.config.per_page
   print url
   episodes = get_video_feed(url, false)
@@ -63,6 +63,17 @@ Function get_category_playlist(category_name as string, category_value as string
     else
       playlist = {name: category_value, episodes: episodes}
     endif
+  endif
+  return playlist
+End Function
+
+Function get_all_videos_playlist() as Object
+  url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&type=zype&per_page=" + m.config.per_page
+  print url
+
+  episodes = get_video_feed(url, false)
+  if(episodes.count() > 0)
+    playlist = {name: "All Videos", episodes: episodes}
   endif
   return playlist
 End Function

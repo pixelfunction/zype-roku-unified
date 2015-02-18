@@ -9,24 +9,27 @@ Function home_screen()
 
   row_titles = CreateObject("roArray", 1, true)
   categories = CreateObject("roArray", 1, true)
-
   'get all featured info
   featured = get_featured_playlist()
 
   'add featured playlist
   row_titles.push(featured.name)
-
-  'get category titles
   category_titles = CreateObject("roArray", 1, true)
-  category_info = get_category_info(m.config.category_id)
-  category_name = category_info.name
-  category_titles = category_info.values
 
-  category_value_size = category_titles.count()
+  if valid_category() = "true"
+    'get category titles
+    category_info = get_category_info(m.config.category_id)
+    category_name = category_info.name
+    category_titles = category_info.values
+    category_value_size = category_titles.count()
 
-  for each title in category_titles
-    row_titles.push(title)
-  endfor
+    for each title in category_titles
+      row_titles.push(title)
+    endfor
+  else
+    category_name = "All Videos"
+    row_titles.push(category_name)
+  endif
 
   'get toolbar info
   toolbar = grid_toolbar()
@@ -43,19 +46,30 @@ Function home_screen()
   'show screen once featured playlist is ready
   screen.show()
 
-  'iterate through each category title and display after api call
-  i = 1
-  for each title in category_titles
-    category = get_category_playlist(category_name ,title, m.config.category_id)
+  if valid_category() = "true"
+    'iterate through each category title and display after api call
+    i = 1
+    for each title in category_titles
+      category = get_category_playlist(category_name ,title, m.config.category_id)
+      print "row"
+      print i
+      screen.SetContentList(i, category.episodes)
+      categories.push({name: category.name, episodes: category.episodes})
+      i = i + 1
+    end for
+  else
+    i = 1
     print "row"
     print i
-    screen.SetContentList(i, category.episodes)
-    categories.push({name: category.name, episodes: category.episodes})
+    all_videos = get_all_videos_playlist()
+    screen.SetContentList(i, all_videos.episodes)
+    categories.push({name: all_videos.name, episodes: all_videos.episodes})
     i = i + 1
-  end for
+  endif
 
   toolbar = grid_toolbar()
   screen.SetContentList(i, toolbar.tools)
+
 
   while(true)
     msg = wait(0, port)
