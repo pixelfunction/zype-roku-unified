@@ -14,18 +14,11 @@ Function parse_thumbnail(input As Object) as string
 End Function
 
 Function parse_rating(input As Object) as string
-  rating = "NR"
-  if(input.DoesExist("categories"))
-    for each category in input.categories
-      if(category.DoesExist("title"))
-        if(category.title = "rating")
-          rating = UCase(category.value[0])
-          return rating
-        endif
-      endif
-    end for
-  endif
-  return rating
+  if input.mature_content
+    return "TV-MA"
+  else
+    return "NR"
+  end if
 End Function
 
 Function parse_zobjects(input As Object, ztype as String) as Object
