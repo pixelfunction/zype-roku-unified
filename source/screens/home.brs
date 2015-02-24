@@ -24,7 +24,11 @@ Function home_screen()
     category_value_size = category_titles.count()
 
     for each title in category_titles
-      row_titles.push(title)
+      if (m.config.prepend_category_name = true)
+        row_titles.push(category_name + " " + title)
+      else
+        row_titles.push(title)
+      endif
     endfor
   else
     category_name = "All Videos"
@@ -53,8 +57,10 @@ Function home_screen()
       category = get_category_playlist(category_name ,title, m.config.category_id)
       print "row"
       print i
-      screen.SetContentList(i, category.episodes)
-      categories.push({name: category.name, episodes: category.episodes})
+      if (category.episodes.count() > 0)
+        screen.SetContentList(i, category.episodes)
+        categories.push({name: category.name, episodes: category.episodes})
+      endif
       i = i + 1
     end for
   else
