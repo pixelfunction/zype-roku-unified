@@ -63,6 +63,13 @@ Function get_category_playlist(category_name as string, category_value as string
     else
       playlist = {name: category_value, episodes: episodes}
     endif
+  else
+    url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=6&type=zype"
+    if(m.config.prepend_category_name = true)
+      playlist = {name: category_name + " " + category_value, episodes: get_video_feed(url, false)}
+    else
+      playlist = {name: category_value, episodes: get_video_feed(url, false)}
+    endif
   endif
   return playlist
 End Function
