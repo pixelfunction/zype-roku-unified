@@ -5,7 +5,7 @@ Function init() as void
   set_api()
   get_dynamic_config()
   init_theme()
-  m.device_id = CreateObject("roDeviceInfo").GetDeviceUniqueId() + "testing2"
+  m.device_id = CreateObject("roDeviceInfo").GetDeviceUniqueId() + "testing3"
   print m.device_id
   m.linked = false 'as linked is false, once authenticated linked = true
 
@@ -28,10 +28,19 @@ Function get_dynamic_config() as void
         ]
     }
 
-  'hardcoding the authentication variables for now, will be dynamic
+  'hardcoding the authentication variables for now, will be dynamic from the Zype API
+  m.config.use_authentication = true 'whether or not to use authentication
+  m.config.activate_button_x = 400
+  m.config.activate_button_y = 600
+  m.config.browse_button_x = 800
+  m.config.browse_button_y = 600
+  m.config.target_rect_x_visitor_screen = 325
+  m.config.target_rect_y_visitor_screen = 100
+  m.config.visitor_background_color = "#2b2b2b"
+  m.config.device_link_url = "demo.zype.com/link"
+  m.config.subscription_button = "Subscription Required"
+  'end hardcoding of authentication variables
 
-  m.use_authentication = true 'whether or not to use authentication
-  
   cache_images(m.config.app_images)
 End Function
 

@@ -13,7 +13,7 @@ Function visitor_screen() as object
   background.Push({
     url: "pkg:/images/sample-visitor-screen.png",
     CompositionMode: "Source"
-    TargetRect: {x: 335, y: 110}
+    TargetRect: {x: m.config.target_rect_x_visitor_screen, y: m.config.target_rect_y_visitor_screen}
   })
 
   items.Push({
@@ -31,7 +31,7 @@ Function visitor_screen() as object
       TargetRect: {x: posArray[selectedIndex].x, y: posArray[selectedIndex].y}
   }
 
-  canvas.SetLayer(0, {Color:"#2b2b2b", CompositionMode:"Source"})
+  canvas.SetLayer(0, {Color: m.config.visitor_background_color, CompositionMode:"Source"})
   canvas.SetLayer(1, background)
   canvas.SetLayer(2, items)
   canvas.SetLayer(3, ring)
@@ -69,7 +69,7 @@ End Function
 'position of the two images
 Function GetPositions() as object
   posArray = []
-  posArray.Push({x: 400, y: 600}) 'position of first button
-  posArray.Push({x: 800, y: 600}) 'position of second button
+  posArray.Push({x: m.config.activate_button_x, y: m.config.activate_button_y}) 'position of first button
+  posArray.Push({x: m.config.browse_button_x, y: m.config.browse_button_y}) 'position of second button
   return posArray
 End Function

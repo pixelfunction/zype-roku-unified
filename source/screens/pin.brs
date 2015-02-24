@@ -9,7 +9,7 @@ Function pin_screen(pin as String) as object
   screen.SetBreadcrumbText("Activate", "")
 
   screen.AddHeaderText("Link your Roku Player")
-  screen.AddParagraph("1. From your computer, go to demo.zype.com/link")
+  screen.AddParagraph("1. From your computer, go to " + m.config.device_link_url)
   screen.AddParagraph("2. Enter Pin:")
   screen.AddFocalText(" ", "spacing-dense")
   screen.SetRegistrationCode(pin)

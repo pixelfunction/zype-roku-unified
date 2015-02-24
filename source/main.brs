@@ -4,7 +4,7 @@ Function Main() as void
   init()
 
   'do authentication if Channel requires authentication
-  if m.use_authentication
+  if m.config.use_authentication
     authenticate()
   else
     m.linked = true 'anyone can access subscription content

@@ -16,7 +16,7 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
     screen.AddButton(1, m.config.play_button_text)
   else
     if episode.SubscriptionRequired
-      screen.AddButton(2, "Subscription Required")
+      screen.AddButton(2, m.config.subscription_button)
     else
       screen.AddButton(1, m.config.play_button_text)
     endif
