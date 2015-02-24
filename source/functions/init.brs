@@ -5,6 +5,10 @@ Function init() as void
   set_api()
   get_dynamic_config()
   init_theme()
+  m.device_id = CreateObject("roDeviceInfo").GetDeviceUniqueId() + "testing2"
+  print m.device_id
+  m.linked = false 'as linked is false, once authenticated linked = true
+
 End Function
 
 'pull and setup configuration from api
@@ -23,6 +27,11 @@ Function get_dynamic_config() as void
             "http://www.zype.com"
         ]
     }
+
+  'hardcoding the authentication variables for now, will be dynamic
+
+  m.use_authentication = true 'whether or not to use authentication
+  
   cache_images(m.config.app_images)
 End Function
 

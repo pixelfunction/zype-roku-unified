@@ -130,7 +130,8 @@ Function get_video_feed(url As String, short As Boolean) as object
       'ReleaseDate: ,
       Rating: rating,
       Description: item.description,
-      SwitchingStrategy: m.config.switching_strategy
+      SwitchingStrategy: m.config.switching_strategy,
+      SubscriptionRequired: item.subscription_required
     }
 
     top_validation = valid_top_zobject()

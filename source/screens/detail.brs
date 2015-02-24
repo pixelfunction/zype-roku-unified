@@ -10,7 +10,18 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
   screen.SetPosterStyle(m.config.springboard_poster_style)
 
   screen.SetContent(episode)
-  screen.AddButton(1, m.config.play_button_text)
+
+  'show different button depending on if user is linked and if subscription is required
+  if m.linked
+    screen.AddButton(1, m.config.play_button_text)
+  else
+    if episode.SubscriptionRequired
+      screen.AddButton(2, "Subscription Required")
+    else
+      screen.AddButton(1, m.config.play_button_text)
+    endif
+  endif
+
   screen.show()
 
   print episode
@@ -21,9 +32,13 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
       if (msg.isScreenClosed())
         return -1
       else if (msg.isButtonPressed())
-        episode.stream = get_stream_url(episode.id)
-        print episode.stream
-        play_episode(episode)
+        if msg.GetIndex() = 1
+          episode.stream = get_stream_url(episode.id)
+          print episode.stream
+          play_episode(episode)
+        else if msg.GetIndex() = 2
+          show_link_modal(episode.title)
+        endif
       endif
     endif
   end while
