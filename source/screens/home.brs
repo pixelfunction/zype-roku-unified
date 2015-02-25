@@ -91,6 +91,9 @@ Function home_screen()
         detail_screen(selected_episode, "Home", selected_title)
         endif
       endif
+      if (msg.isScreenClosed())
+        return -1
+      endif
     endif
   end while
 

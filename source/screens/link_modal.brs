@@ -15,6 +15,7 @@ Function show_link_modal(title as String) As Void
         if dlgMsg.isButtonPressed()
           if dlgMsg.GetIndex() = 1
             refresh_pin_screen()
+            exit while
           end if
           if dlgMsg.GetIndex() = 2
             exit while

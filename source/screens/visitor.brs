@@ -39,7 +39,7 @@ Function visitor_screen() as object
 
   while true
       event = wait(0, port)
-      if (event<> invalid)
+      if (event <> invalid)
         if (event.isRemoteKeyPressed())
           index = event.GetIndex()
           print index

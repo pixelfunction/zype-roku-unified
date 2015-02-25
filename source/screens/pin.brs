@@ -22,14 +22,9 @@ Function pin_screen(pin as String) as object
     msg = wait(5000, port)
     if type(msg) = "roCodeRegistrationScreenEvent"
       'exit if user wants it
-      if msg.isScreenClosed()
+      if msg.isScreenClosed() OR msg.GetIndex() = 1
         print "Screen closed"
         return -1
-      elseif msg.isButtonPressed()
-        print "Button pressed: "; msg.GetIndex(); " " msg.GetData()
-        if msg.GetIndex() = 1
-          return -1
-        end if
       endif
     endif
     'check if linked
