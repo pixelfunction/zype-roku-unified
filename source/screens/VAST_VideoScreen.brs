@@ -48,18 +48,14 @@ Function ShowVideoScreen(episode as object) as object
     endif
 
     if msg.isPlaybackPosition()
-    print msg.GetIndex()
-    'hardcoding the second ad at fifteen for now
-      if msg.GetIndex() = 15
-        ad = get_ad(episode, 15)
-        if (ad.played = false)
+      ad = get_ad(episode, msg.GetIndex())
+      if (ad.played = false)
         print "going to an ad"
-          screen.Close()
-          play_episode(episode, ad)
-        end if
-      endif
-
+        screen.Close()
+        play_episode(episode, ad)
+      end if
     endif
+
   end while
 end Function
 
@@ -73,7 +69,7 @@ function ShowPreRoll(canvas, ad)
   player.SetPositionNotificationPeriod(1)
 
   ' set up some messaging to display while the pre-roll buffers
-  canvas.SetLayer(2, {text: "Your program will begin after this message"})
+  canvas.SetLayer(2, {text: "Loading Ad ..."})
   canvas.Show()
 
 	player.AddContent(ad)
@@ -162,4 +158,8 @@ function get_ad(video, seconds)
       return ad
     end if
   end for
+
+  'there is no ad to be played for this second so return true
+  ad = { played: true }
+  return ad
 end function

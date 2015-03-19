@@ -41,11 +41,19 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
         }
 
         episode.ads.push(second_ad)
+
+        third_ad = {
+          offset: 20,
+          url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
+          played: false
+        }
+
+        episode.ads.push(third_ad)
         'end ad parsing
 
         print episode.stream
         ad = get_ad(episode, 0)
-        
+
         play_episode(episode, ad)
       endif
     endif
