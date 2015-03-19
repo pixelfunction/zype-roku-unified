@@ -1,6 +1,14 @@
-sub play_episode(video)
+sub play_episode(video as object, ad as object)
   vast = NWM_VAST()
-  video.preroll = vast.GetPrerollFromURL("http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2")
+
+  video.preroll = vast.GetPrerollFromURL(ad.url)
+
+  'set the ad being played to true
+  ad.played = true
+
+  'tell the video when to start playing from after the ad
+  video.playStart = ad.offset
+
 	canvas = CreateObject("roImageCanvas")
 	canvas.SetMessagePort(CreateObject("roMessagePort"))
 	canvas.SetLayer(1, {color: "#000000"})
@@ -21,7 +29,7 @@ sub play_episode(video)
 	canvas.Close()
 end sub
 
-Function ShowVideoScreen(episode) as object
+Function ShowVideoScreen(episode as object) as object
   port = CreateObject("roMessagePort")
 
   screen = CreateObject("roVideoScreen")
@@ -31,9 +39,6 @@ Function ShowVideoScreen(episode) as object
   screen.SetContent(episode)
   screen.SetPositionNotificationPeriod(1)
   screen.SetMessagePort(Port)
-
-  screen.show()
-  screen.seek(50000)
   screen.show()
 
   while(true)
@@ -43,9 +48,15 @@ Function ShowVideoScreen(episode) as object
     endif
 
     if msg.isPlaybackPosition()
-      if msg.GetIndex() = 3
-        screen.Close()
-        play_episode(episode)
+    print msg.GetIndex()
+    'hardcoding the second ad at fifteen for now
+      if msg.GetIndex() = 15
+        ad = get_ad(episode, 15)
+        if (ad.played = false)
+        print "going to an ad"
+          screen.Close()
+          play_episode(episode, ad)
+        end if
       endif
 
     endif
@@ -143,4 +154,12 @@ function FireTrackingEvent(trackingEvent)
   end if
 
   return result
+end function
+
+function get_ad(video, seconds)
+  for each ad in video.ads
+    if ad.offset = seconds
+      return ad
+    end if
+  end for
 end function

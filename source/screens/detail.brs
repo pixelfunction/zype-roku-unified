@@ -22,8 +22,31 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
         return -1
       else if (msg.isButtonPressed())
         episode.stream = get_stream_url(episode.id)
+
+        'move the ad parsing to a different place!
+        episode.ads = []
+
+        preroll_ad = {
+            offset: 0,
+            url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
+            played: false
+        }
+
+        episode.ads.push(preroll_ad)
+
+        second_ad = {
+          offset: 15,
+          url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
+          played: false
+        }
+
+        episode.ads.push(second_ad)
+        'end ad parsing
+
         print episode.stream
-        play_episode(episode)
+        ad = get_ad(episode, 0)
+        
+        play_episode(episode, ad)
       endif
     endif
   end while
