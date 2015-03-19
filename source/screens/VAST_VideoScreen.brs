@@ -22,7 +22,6 @@ sub play_episode(video)
 end sub
 
 Function ShowVideoScreen(episode) as object
-print "STARTING THE VIDEO"
   port = CreateObject("roMessagePort")
 
   screen = CreateObject("roVideoScreen")
@@ -32,12 +31,23 @@ print "STARTING THE VIDEO"
   screen.SetContent(episode)
   screen.SetPositionNotificationPeriod(1)
   screen.SetMessagePort(Port)
+
+  screen.show()
+  screen.seek(50000)
   screen.show()
 
   while(true)
     msg = wait(0, port)
     if msg.isScreenClosed()
       return -1
+    endif
+
+    if msg.isPlaybackPosition()
+      if msg.GetIndex() = 3
+        screen.Close()
+        play_episode(episode)
+      endif
+
     endif
   end while
 end Function
