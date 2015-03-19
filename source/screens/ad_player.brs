@@ -1,4 +1,4 @@
-sub play_episode(video as object, ad as object)
+sub play_episode_with_ad(video as object, ad as object)
   vast = NWM_VAST()
 
   video.preroll = vast.GetPrerollFromURL(ad.url)
@@ -52,7 +52,7 @@ Function ShowVideoScreen(episode as object) as object
       if (ad.played = false)
         print "going to an ad"
         screen.Close()
-        play_episode(episode, ad)
+        play_episode_with_ad(episode, ad)
       end if
     endif
 

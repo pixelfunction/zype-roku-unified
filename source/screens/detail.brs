@@ -21,40 +21,48 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
       if (msg.isScreenClosed())
         return -1
       else if (msg.isButtonPressed())
+
+        'get the stream
         episode.stream = get_stream_url(episode.id)
+        print episode.stream
 
-        'move the ad parsing to a different place!
-        episode.ads = []
 
-        preroll_ad = {
-            offset: 0,
+        if m.config.play_ads = true
+          'move the ad parsing to a different place!
+          episode.ads = []
+
+          preroll_ad = {
+              offset: 0,
+              url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
+              played: false
+          }
+
+          episode.ads.push(preroll_ad)
+
+          second_ad = {
+            offset: 15,
             url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
             played: false
-        }
+          }
 
-        episode.ads.push(preroll_ad)
+          episode.ads.push(second_ad)
 
-        second_ad = {
-          offset: 15,
-          url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
-          played: false
-        }
+          third_ad = {
+            offset: 20,
+            url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
+            played: false
+          }
 
-        episode.ads.push(second_ad)
+          episode.ads.push(third_ad)
+          'end ad parsing
 
-        third_ad = {
-          offset: 20,
-          url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
-          played: false
-        }
+          'grab the preroll ad
+          ad = get_ad(episode, 0)
 
-        episode.ads.push(third_ad)
-        'end ad parsing
-
-        print episode.stream
-        ad = get_ad(episode, 0)
-
-        play_episode(episode, ad)
+          play_episode_with_ad(episode, ad)
+        else
+          play_episode(episode)
+        end if
       endif
     endif
   end while
