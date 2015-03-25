@@ -21,7 +21,11 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
       if (msg.isScreenClosed())
         return -1
       else if (msg.isButtonPressed())
-        episode.stream = get_stream_url(episode.id)
+        stream_info = get_stream_info(episode.id)
+        print stream_info
+        episode.stream = stream_info.url
+        episode.StreamFormat = stream_info.format
+        print episode.StreamFormat
         print episode.stream
         play_episode(episode)
       endif

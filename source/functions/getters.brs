@@ -1,7 +1,7 @@
 'getters query the api directly
 
 Function get_search_results(query As String) as object
-  url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=" + m.config.per_page + "&q=" + HttpEncode(query) + "&type=zype"
+  url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=" + m.config.per_page + "&q=" + HttpEncode(query) + "&dpt=true"
   search_results = get_video_feed(url, true)
   return search_results
 End Function
@@ -15,11 +15,11 @@ Function get_featured_playlist() as object
     if(episodes.count() > 0)
       featured = {name: get_playlist_name(m.config.featured_playlist_id), episodes: episodes}
     else
-      url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=10&type=zype"
+      url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=10&dpt=true"
       featured = {name: "New Releases", episodes: get_video_feed(url, false)}
     end if
   else
-    url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=10&type=zype"
+    url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=10&dpt=true"
     featured = {name: "New Releases", episodes: get_video_feed(url, false)}
   endif
 
@@ -53,8 +53,34 @@ Function get_stream_url(id As String) as Object
   return stream_url
 End Function
 
+Function get_stream_info(id As String) as Object
+  stream_info = {}
+  url = m.api.player_endpoint + "/embed/" + id + "/?api_key=" + m.api.key
+  res = call_api(url)
+  if(res.DoesExist("body"))
+    if(res.body.DoesExist("outputs"))
+      for each output in res.body.outputs
+        if(output.name = "hls")
+        print "STOPS HERE"
+          stream_url = output.url
+          stream_info.url = {url: stream_url}
+          stream_info.format = output.name
+          return stream_info
+        end if
+        if(output.name = "mp4")
+          stream_url = output.url
+          stream_info.url = {url: stream_url}
+          stream_info.format = output.name
+          return stream_info
+        endif
+      end for
+    endif
+  endif
+  return stream_info
+end Function
+
 Function get_category_playlist(category_name as string, category_value as string, category_id as string) as Object
-  url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&category%5B" + HttpEncode(category_name) + "%5D=" + HttpEncode(category_value) + "&type=zype&per_page=" + m.config.per_page + "&sort=episode&order=asc"
+  url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&category%5B" + HttpEncode(category_name) + "%5D=" + HttpEncode(category_value) + "&dpt=true&per_page=" + m.config.per_page + "&sort=episode&order=asc"
   print url
   episodes = get_video_feed(url, false)
   if(episodes.count() > 0)
@@ -64,7 +90,7 @@ Function get_category_playlist(category_name as string, category_value as string
       playlist = {name: category_value, episodes: episodes}
     endif
   else
-    url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=6&type=zype"
+    url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=6&dpt=true"
     if(m.config.prepend_category_name = true)
       playlist = {name: category_name + " " + category_value, episodes: get_video_feed(url, false)}
     else
@@ -75,7 +101,7 @@ Function get_category_playlist(category_name as string, category_value as string
 End Function
 
 Function get_all_videos_playlist() as Object
-  url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&type=zype&per_page=" + m.config.per_page
+  url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&dpt=true&per_page=" + m.config.per_page
   print url
 
   episodes = get_video_feed(url, false)
@@ -129,7 +155,6 @@ Function get_video_feed(url As String, short As Boolean) as object
     episode = {
       ID: item._id,
       ContentType: "episode",
-      StreamFormat: "hls",
       Title: item.title,
       SDPosterUrl: thumbnail,
       HDPosterUrl: thumbnail,

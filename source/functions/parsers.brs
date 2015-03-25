@@ -3,14 +3,36 @@
 Function parse_thumbnail(input As Object) as string
   thumbnail_url = ""
   for each  thumbnail in input.thumbnails
-    if(thumbnail.DoesExist("height"))
-      if(thumbnail.height >= 250)
-        thumbnail_url = thumbnail.url
+    if(thumbnail.DoesExist("width"))
+      if(thumbnail.width >= 250)
+        thumbnail_url = cache_thumbnail(thumbnail.url, input._id)
+        print thumbnail_url
         return thumbnail_url
       endif
     endif
   end for
   return thumbnail_url
+End Function
+
+Function cache_thumbnail(thumbnail_url As string, name As string) as string
+  r = CreateObject("roRegex", ".jpg", "i")
+
+  if r.isMatch(thumbnail_url)
+    file_name = "tmp:/" + name + ".jpg"
+    ut = CreateObject("roUrlTransfer")
+    ut.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    ut.AddHeader("X-Roku-Reserved-Dev-Id", "")
+    ut.InitClientCertificates()
+
+    ut.SetUrl(thumbnail_url)
+    responseCode = ut.GetToFile(file_name)
+    if responseCode = 200
+      return file_name
+      print "success"
+    end if
+  else
+    return thumbnail_url
+  end if
 End Function
 
 Function parse_rating(input As Object) as string
