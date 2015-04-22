@@ -11,6 +11,12 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
 
   screen.SetContent(episode)
   screen.AddButton(1, m.config.play_button_text)
+
+  'if there is something is the registry reader for last play position
+  if RegRead(episode.id) <> invalid
+    screen.AddButton(2, "Resume Playing")
+  endif
+
   screen.show()
 
   print episode
@@ -27,7 +33,13 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
         episode.StreamFormat = stream_info.format
         print episode.StreamFormat
         print episode.stream
-        play_episode(episode)
+        'test playing 30 seconds out
+        if msg.GetIndex() = 1
+          play_episode(episode, 0)
+        else if msg.GetIndex() = 2
+          offset = RegRead(episode.id).toInt()
+          play_episode(episode, offset)
+        endif
       endif
     endif
   end while
