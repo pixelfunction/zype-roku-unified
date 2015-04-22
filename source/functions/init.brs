@@ -5,6 +5,9 @@ Function init() as void
   set_api()
   get_dynamic_config()
   init_theme()
+
+  m.loading_offset = 2 'how many categories to load at start
+  m.loading_group = 3 'how many categories to grab at a time when scrolling
 End Function
 
 'pull and setup configuration from api
