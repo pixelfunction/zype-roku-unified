@@ -47,20 +47,12 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
           episode.ads.push(preroll_ad)
 
           second_ad = {
-            offset: 15,
+            offset: 45,
             url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
             played: false
           }
 
           episode.ads.push(second_ad)
-
-          third_ad = {
-            offset: 20,
-            url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
-            played: false
-          }
-
-          episode.ads.push(third_ad)
         'end creating fake ads
 
         if msg.GetIndex() = 1
@@ -77,6 +69,10 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
           if m.config.play_ads = true
             'episode.ads = player_info.ads
             offset = RegRead(episode.id).toInt()
+            print "******!"
+            print offset
+            print "******!"
+
             ad = get_ad(episode, offset)
             play_episode_with_ad(episode, ad)
           else

@@ -440,12 +440,13 @@ end function
 
 ' for backward compatibility with older versions of the library
 function NWM_VAST_GetPrerollFromURL(url)
-  print "VAST URL"
-  print url
-  xfer = CreateObject("roURLTransfer")
-  xfer.SetURL(url)
-  raw = xfer.GetToString()
-  m.Parse(raw)
+  'only do if url is not invalid
+  if url <> invalid
+    xfer = CreateObject("roURLTransfer")
+    xfer.SetURL(url)
+    raw = xfer.GetToString()
+    m.Parse(raw)
 
-  return m.video
+    return m.video
+  endif
 end function

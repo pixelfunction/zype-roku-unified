@@ -7,7 +7,17 @@ sub play_episode_with_ad(video as object, ad as object)
   ad.played = true
 
   'tell the video when to start playing from after the ad
-  video.playStart = ad.offset
+  if ad.offset <> invalid
+    video.playStart = ad.offset
+  else if RegRead(video.id).toInt() <> invalid
+    video.playStart = RegRead(video.id).toInt()
+  else
+    video.playStart = 0
+  end if
+
+  print "******"
+  print video.playStart
+  print "******"
 
 	canvas = CreateObject("roImageCanvas")
 	canvas.SetMessagePort(CreateObject("roMessagePort"))
@@ -30,7 +40,10 @@ sub play_episode_with_ad(video as object, ad as object)
 end sub
 
 Function ShowVideoScreen(episode as object) as object
-  print "HOW ABOUT HERE?"
+  print "LEAVING AD, ENTERING PLAYER"
+  print episode.playStart
+  print "***"
+
   port = CreateObject("roMessagePort")
 
   screen = CreateObject("roVideoScreen")
@@ -49,9 +62,12 @@ Function ShowVideoScreen(episode as object) as object
     endif
 
     if msg.isPlaybackPosition()
-    print "DO I GET HERE"
-      ad = get_ad(episode, msg.GetIndex())
-      'will have to add the bookmarking logic here
+      nowpos = msg.GetIndex()
+      print "PLAYBACK POSITION"
+      print nowpos
+      RegWrite(episode.id, nowpos.toStr())
+      ad = get_ad(episode, nowpos)
+
       if (ad.played = false)
         print "going to an ad"
         screen.Close()
@@ -162,7 +178,7 @@ function get_ad(video, seconds)
     end if
   end for
 
-  'there is no ad to be played for this second so return true
+  'there is no ad to be played for this second so return true so player continues playing
   ad = { played: true }
   return ad
 end function
