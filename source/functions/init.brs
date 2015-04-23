@@ -15,6 +15,10 @@ Function get_dynamic_config() as void
   url = m.api.endpoint + "/app/?api_key=" + m.api.key + "&app_key=" + m.api.app
   res = call_api(url)
   m.config = res
+
+  ' TODO: set config for whether or not to use ads (make this dynamic!)
+  m.config.play_ads = true
+
   m.config.per_page = Str(m.config.per_page).Trim()
   m.config.info = {
         header: "About Zype Media"

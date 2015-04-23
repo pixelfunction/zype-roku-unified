@@ -61,7 +61,6 @@ Function get_stream_info(id As String) as Object
     if(res.body.DoesExist("outputs"))
       for each output in res.body.outputs
         if(output.name = "hls")
-        print "STOPS HERE"
           stream_url = output.url
           stream_info.url = {url: stream_url}
           stream_info.format = output.name
@@ -78,6 +77,41 @@ Function get_stream_info(id As String) as Object
   endif
   return stream_info
 end Function
+
+Function get_player_info(id As String) as Object
+  player_info = {}
+  scheduled_ads = []
+  url = m.api.player_endpoint + "/embed/" + id + "/?api_key=" + m.api.key
+  res = call_api(url)
+  if(res.DoesExist("body"))
+    if(res.body.DoesExist("outputs"))
+      for each output in res.body.outputs
+        if(output.name = "hls")
+          stream_url = output.url
+          player_info.stream =  {url: stream_url}
+          player_info.format = output.name
+        end if
+        if(output.name = "mp4")
+          stream_url = output.url
+          player_info.stream =  {url: stream_url}
+          player_info.format = output.name
+        end if
+      end for
+      for each advertising in res.body.advertising
+        if (advertising = "schedule")
+          for each ad in res.body.advertising.schedule
+            print "DYNAMIC VAST URL"
+            print ad.tag
+            scheduled_ads.push({offset: ad.offset / 1000, url: ad.tag, played: false})
+          end for
+        end if
+      end for
+    endif
+  endif
+  player_info.ads = scheduled_ads
+  return player_info
+End Function
+
 
 Function get_category_playlist(category_name as string, category_value as string, category_id as string) as Object
   url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&category%5B" + HttpEncode(category_name) + "%5D=" + HttpEncode(category_value) + "&dpt=true&per_page=" + m.config.per_page + "&sort=episode&order=asc"
