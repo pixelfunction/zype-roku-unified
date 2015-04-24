@@ -10,10 +10,11 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
   screen.SetPosterStyle(m.config.springboard_poster_style)
 
   screen.SetContent(episode)
+  screen.ClearButtons()
   screen.AddButton(1, m.config.play_button_text)
 
   'if there is something is the registry reader for last play position
-  if RegRead(episode.id) <> invalid
+  if regread(episode.id) <> invalid and regread(episode.id).toint() >=30 then
     screen.AddButton(2, "Resume Playing")
   endif
 
@@ -34,31 +35,10 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
         print episode.StreamFormat
         print episode.stream
 
-        'create fake ads for now
-
-        episode.ads = []
-
-          preroll_ad = {
-              offset: 0,
-              url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
-              played: false
-          }
-
-          episode.ads.push(preroll_ad)
-
-          second_ad = {
-            offset: 45,
-            url: "http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
-            played: false
-          }
-
-          episode.ads.push(second_ad)
-        'end creating fake ads
-
         if msg.GetIndex() = 1
           if m.config.play_ads = true
             'play episode with the ad offset
-            'episode.ads = player_info.ads
+            episode.ads = player_info.ads
             ad = get_ad(episode, 0)
             play_episode_with_ad(episode, ad)
           else
@@ -67,7 +47,7 @@ Function detail_screen(episode As Object, c1 As String, c2 As String) as object
           endif
         else if msg.GetIndex() = 2
           if m.config.play_ads = true
-            'episode.ads = player_info.ads
+            episode.ads = player_info.ads
             offset = RegRead(episode.id).toInt()
             print "******!"
             print offset

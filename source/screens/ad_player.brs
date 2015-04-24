@@ -9,6 +9,8 @@ sub play_episode_with_ad(video as object, ad as object)
   'tell the video when to start playing from after the ad
   if ad.offset <> invalid
     video.playStart = ad.offset
+  else if RegRead(video.id) <> invalid
+    video.playStart = 0
   else if RegRead(video.id).toInt() <> invalid
     video.playStart = RegRead(video.id).toInt()
   else
@@ -60,8 +62,11 @@ Function ShowVideoScreen(episode as object) as object
     if msg.isScreenClosed()
       return -1
     endif
-
-    if msg.isPlaybackPosition()
+    if msg.isfullresult()
+      print "Video Completed Playback Normally"
+      RegDelete(episode.id)
+      print "deleted bookmark for playback position"
+    else if msg.isPlaybackPosition()
       nowpos = msg.GetIndex()
       print "PLAYBACK POSITION"
       print nowpos
