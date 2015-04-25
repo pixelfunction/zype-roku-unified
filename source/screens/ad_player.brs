@@ -7,9 +7,11 @@ sub play_episode_with_ad(video as object, ad as object)
   ad.played = true
 
   'tell the video when to start playing from after the ad
+  print "STARTING FROM ..."
+  print ad.offset
   if ad.offset <> invalid
     video.playStart = ad.offset
-  else if RegRead(video.id) <> invalid
+  else if RegRead(video.id) = invalid
     video.playStart = 0
   else if RegRead(video.id).toInt() <> invalid
     video.playStart = RegRead(video.id).toInt()

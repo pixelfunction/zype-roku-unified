@@ -69,18 +69,19 @@ Function home_screen()
     if type(msg) = "roGridScreenEvent"
       if (msg.isListItemSelected())
         if(msg.GetIndex() = 0)
-          detail_screen(featured.episodes[msg.GetData()], "Home", featured.episodes[msg.GetData()].title)
+          displayShowDetailScreen(featured, msg.GetData())
+          'detail_screen(featured.episodes[msg.GetData()], "Home", featured.episodes[msg.GetData()].title)
         else if(msg.GetIndex() = row_titles.count()-1)
           toolbar.tools[msg.GetData()].function_name()
         else
           row = msg.GetIndex()
           if row > m.loading_offset
-            selected_episode = m.categories[msg.GetIndex()].episodes[msg.GetData()]
+            category = m.categories[msg.GetIndex()]
           else
-            selected_episode = m.categories[msg.GetIndex()-1].episodes[msg.GetData()]
+            category = m.categories[msg.GetIndex()-1]
           endif
-          selected_title = selected_episode.title
-          detail_screen(selected_episode, "Home", selected_title)
+          displayShowDetailScreen(category, msg.GetData())
+          'detail_screen(selected_episode, "Home", selected_title)
         endif
       endif
       if (msg.isScreenClosed())
