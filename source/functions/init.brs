@@ -16,8 +16,7 @@ Function get_dynamic_config() as void
   res = call_api(url)
   m.config = res
 
-  ' TODO: set config for whether or not to use ads (make this dynamic!)
-  ' INSTEAD: test that movie trailers does not blow up if I set a ad tag as none
+  'true for avod and non-linked svod
   m.config.play_ads = true
 
   m.config.per_page = Str(m.config.per_page).Trim()

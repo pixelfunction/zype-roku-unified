@@ -1,3 +1,4 @@
+' ad free player (for svod)
 Function play_episode(episode As Object, position as integer)
 
     if type(episode) <> "roAssociativeArray" then

@@ -70,7 +70,6 @@ Function home_screen()
       if (msg.isListItemSelected())
         if(msg.GetIndex() = 0)
           displayShowDetailScreen(featured, msg.GetData())
-          'detail_screen(featured.episodes[msg.GetData()], "Home", featured.episodes[msg.GetData()].title)
         else if(msg.GetIndex() = row_titles.count()-1)
           toolbar.tools[msg.GetData()].function_name()
         else
@@ -81,7 +80,6 @@ Function home_screen()
             category = m.categories[msg.GetIndex()-1]
           endif
           displayShowDetailScreen(category, msg.GetData())
-          'detail_screen(selected_episode, "Home", selected_title)
         endif
       endif
       if (msg.isScreenClosed())

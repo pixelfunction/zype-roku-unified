@@ -1,3 +1,4 @@
+' ad player (for avod)
 sub play_episode_with_ad(video as object, ad as object)
   vast = NWM_VAST()
 
@@ -6,15 +7,9 @@ sub play_episode_with_ad(video as object, ad as object)
   'set the ad being played to true
   ad.played = true
 
-  'tell the video when to start playing from after the ad
-  print "STARTING FROM ..."
-  print ad.offset
+  'tell the video when to start playing from after the ad (graceful fall back to the beginning)
   if ad.offset <> invalid
     video.playStart = ad.offset
-  else if RegRead(video.id) = invalid
-    video.playStart = 0
-  else if RegRead(video.id).toInt() <> invalid
-    video.playStart = RegRead(video.id).toInt()
   else
     video.playStart = 0
   end if
@@ -186,6 +181,7 @@ function get_ad(video, seconds)
   end for
 
   'there is no ad to be played for this second so return true so player continues playing
-  ad = { played: true }
+  ad = { offset: seconds, played: true }
+
   return ad
 end function

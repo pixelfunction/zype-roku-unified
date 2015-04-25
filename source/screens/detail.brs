@@ -54,9 +54,6 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
                     '1st button pressed
                     if m.config.play_ads = true
                       offset = RegRead(episode.id).toInt()
-                      print "!******!"
-                      print offset
-                      print "!******!"
 
                       ad = get_ad(episode, offset)
                       play_episode_with_ad(episode, ad)
@@ -67,7 +64,6 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
                     refreshShowDetail(screen,showList,showIndex, categoryName)
                 endif
                 if msg.GetIndex() = 2
-                  print "PRESS BUTTON 2"
                     '2nd button pressed (play video from start)
                     if m.config.play_ads = true
                       'play episode with the ad offset
