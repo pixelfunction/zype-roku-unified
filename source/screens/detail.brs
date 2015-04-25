@@ -1,23 +1,25 @@
+' logic to show/refresh detail page based on category selected
+
 Function displayShowDetailScreen(category as Object, showIndex as Integer) As Integer
 
     if validateParam(category, "roAssociativeArray", "displayShowDetailScreen") = false return -1
 
     shows = category.episodes
 
-    screen = preShowDetailScreen("Home", shows[showIndex].Title)
+    screen = preShowDetailScreen(category.name, shows[showIndex].Title)
 
 
-    showIndex = showDetailScreen(screen, shows, showIndex)
+    showIndex = showDetailScreen(screen, shows, showIndex, category.name)
 
     return showIndex
 End Function
 
-Function showDetailScreen(screen As Object, showList As Object, showIndex as Integer) As Integer
+Function showDetailScreen(screen As Object, showList As Object, showIndex as Integer, categoryName as String) As Integer
 
     if validateParam(screen, "roSpringboardScreen", "showDetailScreen") = false return -1
     if validateParam(showList, "roArray", "showDetailScreen") = false return -1
 
-    refreshShowDetail(screen, showList, showIndex)
+    refreshShowDetail(screen, showList, showIndex, categoryName)
 
     'remote key id's for left/right navigation
     remoteKeyLeft  = 4
@@ -35,12 +37,12 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
                 if msg.GetIndex() = remoteKeyLeft then
                         showIndex = getPrevShow(showList, showIndex)
                         if showIndex <> -1
-                            refreshShowDetail(screen, showList, showIndex)
+                            refreshShowDetail(screen, showList, showIndex, categoryName)
                         end if
                 else if msg.GetIndex() = remoteKeyRight
                     showIndex = getNextShow(showList, showIndex)
                         if showIndex <> -1
-                           refreshShowDetail(screen, showList, showIndex)
+                           refreshShowDetail(screen, showList, showIndex, categoryName)
                         end if
                 endif
             else if msg.isButtonPressed()
@@ -62,7 +64,7 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
                       offset = RegRead(episode.id).toInt()
                       play_episode(episode, offset)
                     endif
-                    refreshShowDetail(screen,showList,showIndex)
+                    refreshShowDetail(screen,showList,showIndex, categoryName)
                 endif
                 if msg.GetIndex() = 2
                   print "PRESS BUTTON 2"
@@ -89,8 +91,8 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
 
 End Function
 
-Function refreshShowDetail(screen As Object, showList As Object, showIndex as Integer) As Integer
-    screen.SetBreadcrumbText("Home", showList[showIndex].title)
+Function refreshShowDetail(screen As Object, showList As Object, showIndex as Integer, categoryName as String) As Integer
+    screen.SetBreadcrumbText(categoryName, showList[showIndex].title)
     if validateParam(screen, "roSpringboardScreen", "refreshShowDetail") = false return -1
     if validateParam(showList, "roArray", "refreshShowDetail") = false return -1
 

@@ -18,7 +18,6 @@ Function play_episode(episode As Object, position as integer)
     screen.SetContent(episode)
     screen.Show()
 
-    'Uncomment his line to dump the contents of the episode to be played
     PrintAA(episode)
 
     while true

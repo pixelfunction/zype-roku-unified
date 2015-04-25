@@ -4,9 +4,9 @@ Function get_search_results(query As String) as object
   url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=" + m.config.per_page + "&q=" + HttpEncode(query) + "&dpt=true"
   episodes = get_video_feed(url, true)
   if (episodes.count() > 0)
-    search_results = {name: query, episodes: episodes}
+    search_results = {name: "Search: " + query, episodes: episodes}
   else
-    search_results = {name: query, episodes: []}
+    search_results = {name: "Search: " + query, episodes: []}
   endif
   return search_results
 End Function
