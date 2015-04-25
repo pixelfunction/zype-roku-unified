@@ -6,6 +6,7 @@ Function displayShowDetailScreen(category as Object, showIndex as Integer) As In
 
     screen = preShowDetailScreen("Home", shows[showIndex].Title)
 
+
     showIndex = showDetailScreen(screen, shows, showIndex)
 
     return showIndex
@@ -89,7 +90,7 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
 End Function
 
 Function refreshShowDetail(screen As Object, showList As Object, showIndex as Integer) As Integer
-
+    screen.SetBreadcrumbText("Home", showList[showIndex].title)
     if validateParam(screen, "roSpringboardScreen", "refreshShowDetail") = false return -1
     if validateParam(showList, "roArray", "refreshShowDetail") = false return -1
 

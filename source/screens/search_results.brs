@@ -6,7 +6,8 @@ Function search_results_screen(query As String) as object
   screen.SetBreadcrumbText(m.config.search_title, query)
   screen.SetListStyle(m.config.search_layout)
 
-  results = get_search_results(query)
+  search_info = get_search_results(query)
+  results = search_info.episodes
   screen.SetContentList(results)
 
   screen.show()
@@ -24,7 +25,7 @@ Function search_results_screen(query As String) as object
         if(results.Count() <= 0)
           return -1
         else
-          detail_screen(results[msg.GetIndex()], "Search", results[msg.GetIndex()].title)
+          displayShowDetailScreen(search_info, msg.GetIndex())
         endif
       endif
     endif
