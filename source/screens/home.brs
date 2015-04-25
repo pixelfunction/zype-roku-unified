@@ -23,9 +23,14 @@ Function home_screen()
   category_titles = category_info.values
 
   category_value_size = category_titles.count()
+  
   for each title in category_titles
-    row_titles.push(title)
-  endfor
+  if m.config.prepend_category_name = true
+    row_titles.push(category_name + " " + title)
+  else
+    row_tiles.push(title)
+  endif
+endfor
 
   'get toolbar info
   toolbar = grid_toolbar()

@@ -123,18 +123,10 @@ Function get_category_playlist(category_name as string, category_value as string
   print url
   episodes = get_video_feed(url, false)
   if(episodes.count() > 0)
-    if(m.config.prepend_category_name = true)
-      playlist = {name: category_name + " " + category_value, episodes: episodes}
-    else
-      playlist = {name: category_value, episodes: episodes}
-    endif
+    playlist = {name: category_value, episodes: episodes}
   else
     url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=6&dpt=true"
-    if(m.config.prepend_category_name = true)
-      playlist = {name: category_name + " " + category_value, episodes: get_video_feed(url, false)}
-    else
-      playlist = {name: category_value, episodes: get_video_feed(url, false)}
-    endif
+    playlist = {name: category_value, episodes: get_video_feed(url, false)}
   endif
   return playlist
 End Function
