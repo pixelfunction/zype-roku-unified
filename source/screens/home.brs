@@ -18,7 +18,15 @@ Function home_screen()
 
   'get category titles
   category_titles = CreateObject("roArray", 1, true)
-  category_info = get_category_info(m.config.category_id)
+  'get category titles (this is broken if no category id)
+  category_titles = CreateObject("roArray", 1, true)
+  if m.config.category_id <> invalid
+    category_info = get_category_info(m.config.category_id)
+  else
+    'there is no category_id so create a fake category
+    category_info = {name: "", values: ["All Videos"]}
+  endif
+
   category_name = category_info.name
   category_titles = category_info.values
 
@@ -100,7 +108,11 @@ Function load_category_row(row as Object, position as Integer, category_name as 
   if row[position] <> invalid
     if row.count() <> position
       title = row[position]
-      category = get_category_playlist(category_name, title, m.config.category_id)
+      if m.config.category_id <> invalid
+        category = get_category_playlist(category_name, title, m.config.category_id)
+      else
+        category = get_category_playlist(category_name, title, "*")
+      endif
       m.categories.push({name: category.name, episodes: category.episodes})
       screen.SetContentList(position, category.episodes)
     endif
