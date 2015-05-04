@@ -77,6 +77,8 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
                 if msg.GetIndex() = 3
                 endif
                 print "Button pressed: "; msg.GetIndex(); " " msg.GetData()
+                'refresh the detail screen for latest bookmark position
+                refreshShowDetail(screen,showList,showIndex, categoryName)
             end if
         else
             print "Unexpected message class: "; type(msg)
