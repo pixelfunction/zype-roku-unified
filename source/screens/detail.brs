@@ -30,6 +30,10 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
 
         if type(msg) = "roSpringboardScreenEvent" then
             if msg.isScreenClosed()
+                'set the m.home_y to the showIndex
+                print "SETTING HOME Y"
+                m.home_y = showIndex
+
                 print "Screen closed"
                 exit while
             else if msg.isRemoteKeyPressed()

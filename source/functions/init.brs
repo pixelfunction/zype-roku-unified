@@ -7,7 +7,13 @@ Function init() as void
   init_theme()
 
   m.loading_offset = 1 'how many categories to load at start
-  m.loading_group = 2 'how many categories to grab at a time when scrollin
+  m.loading_group = 2 'how many categories to grab at a time when scrolling
+
+  'stores where the x,y position are in the home screen for every time you go back it maintains position
+  m.home_x = 0
+  m.home_y = 0
+  m.previous_home_x = 0
+  m.previous_home_y = 0
 End Function
 
 'pull and setup configuration from api
