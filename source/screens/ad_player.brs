@@ -32,14 +32,15 @@ sub play_episode_with_ad(video as object, ad as object)
 
   if adCompleted
     ' if the ad completed without the user pressing UP, play the content
-    ShowVideoScreen(video)
+    ShowVideoScreen(video, ad.offset)
   end if
 
 	canvas.Close()
 end sub
 
-Function ShowVideoScreen(episode as object) as object
+Function ShowVideoScreen(episode as object, time as Integer) as object
   print "LEAVING AD, ENTERING PLAYER"
+  episode.playStart = time
   print episode.playStart
   print "***"
 
