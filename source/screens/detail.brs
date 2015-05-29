@@ -105,8 +105,9 @@ Function refreshShowDetail(screen As Object, showList As Object, showIndex as In
     show.StreamFormat = player_info.format
     show.ads = player_info.ads
 
-    if player_info.subtitles[0] <> invalid
-      show.SubtitleConfig = { TrackName: player_info.subtitles[0].file }
+    if player_info.subtitles <> invalid
+      'right now hardcoding multiple subtitles
+      show.SubtitleTracks = player_info.subtitles
     endif
 
     'Uncomment this statement to dump the details for each show

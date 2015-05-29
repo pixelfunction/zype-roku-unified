@@ -89,7 +89,7 @@ Function get_player_info(id As String) as Object
   subtitles = []
   url = m.api.player_endpoint + "/embed/" + id + "/?api_key=" + m.api.key
   res = call_api(url)
-  
+
   if(res.DoesExist("body"))
     if(res.body.DoesExist("outputs"))
       for each output in res.body.outputs
@@ -119,7 +119,7 @@ Function get_player_info(id As String) as Object
 
       if(res.body.DoesExist("subtitles"))
         for each subtitle in res.body.subtitles
-          subtitles.push({file: subtitle.file, label: subtitle.label})
+          subtitles.push({TrackName: subtitle.file, Language: subtitle.label})
         end for
       endif
     endif
