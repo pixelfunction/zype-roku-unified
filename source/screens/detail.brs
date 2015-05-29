@@ -33,7 +33,6 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
                 'set the m.home_y to the showIndex
                 print "SETTING HOME Y"
                 m.home_y = showIndex
-
                 print "Screen closed"
                 exit while
             else if msg.isRemoteKeyPressed()
@@ -105,9 +104,10 @@ Function refreshShowDetail(screen As Object, showList As Object, showIndex as In
     print show.stream
     show.StreamFormat = player_info.format
     show.ads = player_info.ads
-    print show.StreamFormat
-    print show.stream
-    print "REFRESHING STREAM URL"
+
+    if player_info.subtitles[0] <> invalid
+      show.SubtitleConfig = { TrackName: player_info.subtitles[0].file }
+    endif
 
     'Uncomment this statement to dump the details for each show
     'PrintAA(show)

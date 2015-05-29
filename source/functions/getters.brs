@@ -86,8 +86,10 @@ end Function
 Function get_player_info(id As String) as Object
   player_info = {}
   scheduled_ads = []
+  subtitles = []
   url = m.api.player_endpoint + "/embed/" + id + "/?api_key=" + m.api.key
   res = call_api(url)
+  
   if(res.DoesExist("body"))
     if(res.body.DoesExist("outputs"))
       for each output in res.body.outputs
@@ -102,18 +104,30 @@ Function get_player_info(id As String) as Object
           player_info.format = output.name
         end if
       end for
-      for each advertising in res.body.advertising
-        if (advertising = "schedule")
-          for each ad in res.body.advertising.schedule
-            print "DYNAMIC VAST URL"
-            print ad.tag
-            scheduled_ads.push({offset: ad.offset / 1000, url: ad.tag, played: false})
-          end for
-        end if
-      end for
+
+      if(res.body.DoesExist("advertising"))
+        for each advertising in res.body.advertising
+          if (advertising = "schedule")
+            for each ad in res.body.advertising.schedule
+              print "DYNAMIC VAST URL"
+              print ad.tag
+              scheduled_ads.push({offset: ad.offset / 1000, url: ad.tag, played: false})
+            end for
+          end if
+        end for
+      endif
+
+      if(res.body.DoesExist("subtitles"))
+        for each subtitle in res.body.subtitles
+          subtitles.push({file: subtitle.file, label: subtitle.label})
+        end for
+      endif
     endif
   endif
+
   player_info.ads = scheduled_ads
+  player_info.subtitles = subtitles
+
   return player_info
 End Function
 

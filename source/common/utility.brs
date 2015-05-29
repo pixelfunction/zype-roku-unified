@@ -772,3 +772,19 @@ Function wrap(num As Integer, size As Dynamic) As Integer
     end if
     return remainder
 End Function
+
+Function EnableCaptions(player as object) as void
+        di = CreateObject("roDeviceInfo")
+        captionsMode = di.GetCaptionsMode()
+
+        if (captionsMode = "On")
+            player.ShowSubtitle(true)
+            player.ShowSubtitleOnReplay(false)
+        else if (captionsMode = "Off")
+            player.ShowSubtitle(false)
+            player.ShowSubtitleOnReplay(false)
+        else if (captionsMode = "Instant Replay")
+            player.ShowSubtitle(false)
+            player.ShowSubtitleOnReplay(true)
+        endif
+End Function
