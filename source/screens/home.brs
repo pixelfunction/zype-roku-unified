@@ -18,8 +18,8 @@ Function home_screen()
 
   'get category titles
   category_titles = CreateObject("roArray", 1, true)
-  'get category titles (this is broken if no category id)
-  category_titles = CreateObject("roArray", 1, true)
+  raw_category_titles = CreateObject("roArray", 1, true)
+
   if m.config.category_id <> invalid
     category_info = get_category_info(m.config.category_id)
   else
@@ -35,6 +35,7 @@ Function home_screen()
   for each title in category_titles
   if m.config.prepend_category_name = true
     row_titles.push(category_name + " " + title)
+
   else
     row_titles.push(title)
   endif
@@ -54,7 +55,7 @@ endfor
   screen.SetContentList(0, featured.episodes)
 
   for preset=1 to m.loading_offset step 1
-    load_category_row(row_titles, preset, category_name, screen)
+    load_category_row(row_titles, category_titles, preset, category_name, screen)
   endfor
 
   screen.SetContentList(total_rows-1, toolbar.tools)
@@ -88,7 +89,7 @@ endfor
         print m.categories[i]
           'only load category if row data does not yet exist
           if m.categories[i] = invalid AND i < (total_rows - 1)
-            load_category_row(row_titles, i, category_name, screen)
+            load_category_row(row_titles, category_titles, i, category_name, screen)
           endif
         end for
       endif
@@ -96,7 +97,7 @@ endfor
       if (msg.isListItemSelected())
         row = msg.GetIndex()
         m.home_x = row
-        
+
         if(row = 0)
           displayShowDetailScreen(featured, msg.GetData())
         else if(row = row_titles.count()-1)
@@ -118,11 +119,10 @@ endfor
 
 End Function
 
-Function load_category_row(row as Object, position as Integer, category_name as String, screen as Object) as Object
-  'add logic for the catch all category
+Function load_category_row(row as Object, titles as Object, position as Integer, category_name as String, screen as Object) as Object
   if row[position] <> invalid
     if row.count() <> position
-      title = row[position]
+      title = titles[position - 1]
       if m.config.category_id <> invalid
         category = get_category_playlist(category_name, title, m.config.category_id)
       else
