@@ -20,7 +20,9 @@ Function search_screen() as object
         return -1
       else if msg.isButtonPressed()
         if msg.GetIndex() = 1
-          search_results_screen(screen.GetText())
+          if screen.GetText() <> " "
+            search_results_screen(screen.GetText())
+          endif
         endif
       endif
     endif
