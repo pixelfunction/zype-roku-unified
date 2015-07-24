@@ -1,8 +1,6 @@
 ' ad player (for avod)
 sub play_episode_with_ad(episodes as object, index as integer, offset as integer)
   m.home_y = index
-  print "MOST UP TO DATE m.home_y"
-  print m.home_y
   episode = episodes[index]
 
   player_info = get_player_info(episode.id)

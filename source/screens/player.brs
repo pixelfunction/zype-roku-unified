@@ -1,7 +1,5 @@
 ' ad free player (for svod)
 Function play_episode_ad_free(episodes as object, index as integer, offset as integer)
-    print "MOST UP TO DATE m.home_y"
-    print m.home_y
     m.home_y = index
     episode = episodes[index]
     print "REFRESHING STREAM URL"
