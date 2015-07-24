@@ -1,12 +1,24 @@
 ' ad free player (for svod)
-Function play_episode(episode As Object, position as integer)
-
+Function play_episode_ad_free(episodes as object, index as integer, offset as integer)
+    print "MOST UP TO DATE m.home_y"
+    print m.home_y
+    m.home_y = index
+    episode = episodes[index]
+    print "REFRESHING STREAM URL"
     if type(episode) <> "roAssociativeArray" then
         print "invalid data passed to showVideoScreen"
         return -1
     endif
 
-    episode.playStart = position
+  'get the stream information right before I play it
+    player_info = get_player_info(episode.id)
+    episode.stream = player_info.stream
+    episode.StreamFormat = player_info.format
+    episode.ads = player_info.ads
+    print episode.StreamFormat
+    print episode.stream
+
+    episode.playStart = offset
 
     port = CreateObject("roMessagePort")
     screen = CreateObject("roVideoScreen")
@@ -29,6 +41,11 @@ Function play_episode(episode As Object, position as integer)
             if msg.isfullresult()
             	print "Video Completed Playback Normally"
             	RegDelete(episode.id)
+              if m.config.autoplay
+                if index < episodes.count()
+                  play_episode_with_ad(episodes, index + 1, 0)
+                endif
+              endif
             	print "deleted bookmark for playback position"
             else if msg.isScreenClosed()
                 print "Screen closed"
