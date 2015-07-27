@@ -25,6 +25,7 @@ Function search_results_screen(query As String) as object
         if(results.Count() <= 0)
           return -1
         else
+          m.home_y = msg.GetIndex()
           displayShowDetailScreen(search_info, msg.GetIndex())
         endif
       endif
