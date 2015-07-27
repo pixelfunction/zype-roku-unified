@@ -40,7 +40,7 @@ Function play_episode_ad_free(episodes as object, index as integer, offset as in
             	print "Video Completed Playback Normally"
             	RegDelete(episode.id)
               if m.config.autoplay
-                if index < episodes.count()
+                if (index + 1) < episodes.count()
                   play_episode_with_ad(episodes, index + 1, 0)
                 endif
               endif

@@ -65,15 +65,8 @@ endfor
 
   while(true)
     msg = wait(0, port)
-      print "THIS IS THE CURRENT m.home_y"
-      print m.home_y
-      print "*******"
       'change the focused list item if m.home_x, or m.home_y position has changed via user interactions
       if m.previous_home_x <> m.home_x OR m.previous_home_y <> m.home_y
-        print "changing focused list to"
-        print m.home_x
-        print m.home_y
-        print "!!!!!"
         screen.SetFocusedListItem(m.home_x, m.home_y)
 
         'set the m.previous_home_x and m.previous_home_y to current status

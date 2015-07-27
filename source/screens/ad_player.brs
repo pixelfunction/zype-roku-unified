@@ -73,7 +73,7 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       RegDelete(episode.id)
       print "deleted bookmark for playback position"
       if m.config.autoplay
-        if index < episodes.count()
+        if (index + 1) < episodes.count()
           play_episode_with_ad(episodes, index + 1, 0)
         endif
       endif
