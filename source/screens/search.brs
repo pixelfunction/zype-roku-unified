@@ -9,6 +9,7 @@ Function search_screen() as object
   screen.SetTitle(m.config.search_title)
   screen.SetDisplayText(m.config.search_help_text)
   screen.AddButton(1, m.config.search_button_text)
+  screen.AddButton(2, "Back")
 
   screen.show()
 
@@ -23,6 +24,9 @@ Function search_screen() as object
           if screen.GetText() <> " "
             search_results_screen(screen.GetText())
           endif
+        endif
+        if msg.GetIndex() = 2
+          return -1
         endif
       endif
     endif
