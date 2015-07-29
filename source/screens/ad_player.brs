@@ -6,7 +6,11 @@ sub play_episode_with_ad(episodes as object, index as integer, offset as integer
   player_info = get_player_info(episode.id)
   episode.stream = player_info.stream
   episode.StreamFormat = player_info.format
-  episode.ads = player_info.ads
+
+  if episode.ads = invalid
+    episode.ads = player_info.ads
+  endif
+
   ad = get_ad(episode, offset)
 
   vast = NWM_VAST()
@@ -15,11 +19,7 @@ sub play_episode_with_ad(episodes as object, index as integer, offset as integer
   ad.played = true
 
   'tell the episode when to start playing from after the ad (graceful fall back to the beginning)
-  if ad.offset <> invalid
-    episode.playStart = ad.offset
-  else
-    episode.playStart = 0
-  end if
+  episode.playStart = offset
 
   print "******"
   print episode.playStart
@@ -87,7 +87,7 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       if (ad.played = false)
         print "going to an ad"
         screen.Close()
-        play_episode_with_ad(episodes, index, offset)
+        play_episode_with_ad(episodes, index, nowpos)
       end if
     endif
 
