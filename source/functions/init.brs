@@ -16,7 +16,7 @@ Function init() as void
   m.previous_home_y = 0
 
   'determine autoplay
-  m.config.autoplay = true
+  m.config.autoplay = false
 End Function
 
 'pull and setup configuration from api
