@@ -107,7 +107,11 @@ End Function
 Function getNextShow(episodes As Object, index As Integer) As Integer
     if validateParam(episodes, "roArray", "getNextShow") = false return -1
 
-    nextIndex = index + 1
+    if m.home_y = invalid
+      m.home_y = index
+    endif
+
+    nextIndex = m.home_y + 1
     if nextIndex >= episodes.Count() or nextIndex < 0 then
        nextIndex = 0
     end if
@@ -123,7 +127,11 @@ End Function
 Function getPrevShow(episodes As Object, index As Integer) As Integer
     if validateParam(episodes, "roArray", "getPrevShow") = false return -1
 
-    prevIndex = index - 1
+    if m.home_y = invalid
+      m.home_y = index
+    endif
+
+    prevIndex = m.home_y - 1
     if prevIndex < 0 or prevIndex >= episodes.Count() then
         if episodes.Count() > 0 then
             prevIndex = episodes.Count() - 1
