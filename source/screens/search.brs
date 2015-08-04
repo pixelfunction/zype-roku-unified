@@ -21,8 +21,9 @@ Function search_screen() as object
         return -1
       else if msg.isButtonPressed()
         if msg.GetIndex() = 1
-          if screen.GetText() <> " "
-            search_results_screen(screen.GetText())
+          trimmed_search_text = strTrim(screen.GetText())
+          if Len(trimmed_search_text) > 0
+            search_results_screen(trimmed_search_text)
           endif
         endif
         if msg.GetIndex() = 2
