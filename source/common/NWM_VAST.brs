@@ -145,6 +145,7 @@ function NWM_VAST_Parse(raw, returnUnsupportedVideo = false, normalizeURLs = fal
           url = timestampRX.Replace(url, timestamp)
 
           if url.InStr(0, "https") = 0
+            ut = CreateObject("roURLTransfer")
             ut.SetCertificatesFile("common:/certs/ca-bundle.crt")
             ut.InitClientCertificates()
           end if
