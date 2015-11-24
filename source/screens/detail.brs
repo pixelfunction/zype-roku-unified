@@ -89,10 +89,13 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
                          play_episode(episode, 0)
                     end if
                 endif
+                if msg.GetIndex() = 0
+                    ShowFullDescription(episode)
+                end if 
                 if msg.GetIndex() = 3
                     '  '3rd button pressed (modal for pinning)
                     '  show_link_modal(episode.title)
-                endif
+                end if
                 print "Button pressed: "; msg.GetIndex(); " " msg.GetData()
                 'refresh the detail screen for latest bookmark position
                 refreshShowDetail(screen,showList,showIndex, categoryName)
@@ -103,8 +106,29 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
     end while
 
     return showIndex
-
 End Function
+
+
+
+Function ShowFullDescription(episode as Object) As Void
+    port = CreateObject("roMessagePort")
+    screen = CreateObject("roParagraphScreen")
+    screen.SetMessagePort(port)
+    screen.SetTitle("Full Description")
+    screen.AddHeaderText(episode.title)
+    screen.AddParagraph(episode.description)
+    screen.Show()
+    while true
+        dlgMsg = wait(0, screen.GetMessagePort())
+        If type(dlgMsg) = "roParagraphScreenEvent"
+            if dlgMsg.isScreenClosed()
+                exit while
+            end if
+        endif
+    end while
+End Function
+
+
 
 Function refreshShowDetail(screen As Object, showList As Object, showIndex as Integer, categoryName as String) As Integer
     screen.SetBreadcrumbText(categoryName, showList[showIndex].title)
@@ -126,6 +150,8 @@ Function refreshShowDetail(screen As Object, showList As Object, showIndex as In
     'PrintAA(show)
 
     screen.ClearButtons()
+    
+    screen.AddButton(0, "View Full Description")
     
     'show different button depending on if user is linked and if subscription is required
     if m.linked
