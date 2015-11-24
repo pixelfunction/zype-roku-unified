@@ -33,7 +33,7 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
                 'set the m.home_y to the showIndex
                 print "SETTING HOME Y"
                 m.home_y = showIndex
-
+                
                 print "Screen closed"
                 exit while
             else if msg.isRemoteKeyPressed()
@@ -51,34 +51,47 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
                 endif
             else if msg.isButtonPressed()
                 print "ButtonPressed"
-                print "ButtonPressed"
                 episode = showList[showIndex]
                 if msg.GetIndex() = 1
                   print "PRESS BUTTON 1"
                     '1st button pressed
-                    if m.config.play_ads = true
-                      offset = RegRead(episode.id).toInt()
+                    if m.linked = false
+                        if m.config.play_ads = true
+                            offset = RegRead(episode.id).toInt()
 
-                      ad = get_ad(episode, offset)
-                      play_episode_with_ad(episode, ad)
+                            ad = get_ad(episode, offset)
+                            play_episode_with_ad(episode, ad)
+                        else
+                            offset = RegRead(episode.id).toInt()
+                            play_episode(episode, offset)
+                        end if
                     else
-                      offset = RegRead(episode.id).toInt()
-                      play_episode(episode, offset)
+                        print "THERE WILL NOT BE ADS"
+                        offset = RegRead(episode.id).toInt()
+                        play_episode(episode, offset)
                     endif
                     refreshShowDetail(screen,showList,showIndex, categoryName)
                 endif
                 if msg.GetIndex() = 2
                     '2nd button pressed (play video from start)
-                    if m.config.play_ads = true
-                      'play episode with the ad offset
-                      ad = get_ad(episode, 0)
-                      play_episode_with_ad(episode, ad)
+                    if m.linked = false
+                        if m.config.play_ads = true
+                            'play episode with the ad offset
+                            ad = get_ad(episode, 0)
+                            play_episode_with_ad(episode, ad)
+                        else
+                            'play episode at 0
+                            play_episode(episode, 0)
+                        endif
                     else
-                      'play episode at 0
-                      play_episode(episode, 0)
-                    endif
+                        print "THERE WILL NOT BE ADS"
+                        'play episode at 0
+                         play_episode(episode, 0)
+                    end if
                 endif
                 if msg.GetIndex() = 3
+                    '  '3rd button pressed (modal for pinning)
+                    '  show_link_modal(episode.title)
                 endif
                 print "Button pressed: "; msg.GetIndex(); " " msg.GetData()
                 'refresh the detail screen for latest bookmark position
@@ -113,12 +126,28 @@ Function refreshShowDetail(screen As Object, showList As Object, showIndex as In
     'PrintAA(show)
 
     screen.ClearButtons()
-    if regread(show.id) <> invalid and regread(show.id).toint() >=30 then
-      screen.AddButton(1, "Resume playing")
-      screen.AddButton(2, "Play from beginning")
+    
+    'show different button depending on if user is linked and if subscription is required
+    if m.linked
+      if regread(show.id) <> invalid and regread(show.id).toint() >=30 then
+        screen.AddButton(1, "Resume playing")
+        screen.AddButton(2, "Play from beginning")
+      else
+        screen.addbutton(2, m.config.play_button_text)
+      end if
     else
-      screen.addbutton(2, m.config.play_button_text)
-    end if
+      if show.SubscriptionRequired
+        screen.AddButton(3, m.config.subscription_button)
+      else
+        if regread(show.id) <> invalid and regread(show.id).toint() >=30 then
+          screen.AddButton(1, "Resume playing")
+          screen.AddButton(2, "Play from beginning")
+        else
+          screen.addbutton(2, m.config.play_button_text)
+        end if
+      endif
+    endif
+    
     screen.SetContent(show)
     screen.Show()
 

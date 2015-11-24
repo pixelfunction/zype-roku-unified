@@ -36,10 +36,18 @@ Function cache_thumbnail(thumbnail_url As string, name As string) as string
 End Function
 
 Function parse_rating(input As Object) as string
-  if input.mature_content
-    return "TV-MA"
+  if input.subscription_required
+    if input.mature_content
+      return "Subscription / TV-MA"
+    else
+      return "Subscription / NR"
+    end if
   else
-    return "NR"
+    if input.mature_content
+      return "TV-MA"
+    else
+      return "NR"
+    end if
   end if
 End Function
 

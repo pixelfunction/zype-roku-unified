@@ -6,6 +6,37 @@ Function init() as void
   get_dynamic_config()
   init_theme()
 
+  if app_type = "SVOD" then
+    'SVOD'
+    'read channel registry to see if there is a unique device id, if not set it to be unique with device id and time set
+    'uncomment out the RegDelete if want to wipe out the token in dev
+    'RegDelete("RegToken", "Authentication555ef22569702d048c9d0e00")
+    print "checking registry token"
+    if RegRead("RegToken", "Authentication555ef22569702d048c9d0e00") <> invalid
+      print "REGISTRY TOKEN IS ALREADY WRITTEN"
+      m.device_id = RegRead("RegToken", "Authentication555ef22569702d048c9d0e00")
+    else
+      'first time channel is loaded (or deleted and reloaded), so need to create the unique id
+      print "WRITING A NEW REGISTRY TOKEN"
+      date = CreateObject("roDateTime")
+      timestamp = date.AsSeconds().ToStr()
+  
+      device = CreateObject("roDeviceInfo")
+  
+      uniqueId = device.GetDeviceUniqueId() + date.AsSeconds().ToStr()
+  
+      RegWrite("RegToken", uniqueId, "Authentication555ef22569702d048c9d0e00")
+  
+      m.device_id = RegRead("RegToken", "Authentication555ef22569702d048c9d0e00")
+    endif
+    print m.device_id
+  end if
+
+
+  'preconfiguring to true for alpha testing
+  m.linked = false 'as linked is false, once authenticated linked = true
+  'SVOD'
+
   m.loading_offset = 1 'how many categories to load at start
   m.loading_group = 2 'how many categories to grab at a time when scrolling
 
@@ -27,15 +58,36 @@ Function get_dynamic_config() as void
 
   m.config.per_page = Str(m.config.per_page).Trim()
   m.config.info = {
-        header: "About Zype Media"
+        header: "About"
         paragraphs: [
-            "NEXT GENERATION ONLINE VIDEO PLATFORM FOR DESTINATIONS & APPS",
-            "",
-            "Our platform includes everything you need to create immersive video experiences to drive revenue and reach.",
-            "",
-            "http://www.zype.com"
+            "All about the Roku Channel.",
+            ""
         ]
     }
+
+    if app_type = "UNIVERSAL_SVOD" then
+      ' SVOD '
+      'hardcoding the authentication variables for now, will be dynamic from the Zype API
+      ' m.config.use_authentication = true 'whether or not to use authentication
+      ' m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"
+      ' m.config.activate_button_x_hd = 275
+      ' m.config.activate_button_y_hd = 575
+      ' m.config.browse_button_x_hd = 700
+      ' m.config.browse_button_y_hd = 575
+      ' m.config.visitor_background_img_sd = "pkg:/images/splash_screen_sd.jpg"
+      ' m.config.activate_button_x_sd = 50
+      ' m.config.activate_button_y_sd = 375
+      ' m.config.browse_button_x_sd = 380
+      ' m.config.browse_button_y_sd = 375
+      ' m.config.target_rect_x_visitor_screen = 0
+      ' m.config.target_rect_y_visitor_screen = 0
+      ' m.config.visitor_background_color = "#000000"
+      ' m.config.device_link_url = "www.example.com/link"
+      ' m.config.subscription_button = "Subscription Required"
+      'end hardcoding of authentication variables
+      ' SVOD'
+    end if
+
   cache_images(m.config.app_images)
 End Function
 

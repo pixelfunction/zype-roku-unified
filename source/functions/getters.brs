@@ -52,6 +52,10 @@ Function get_stream_url(id As String) as Object
           stream_url = output.url
           return {url: stream_url}
         end if
+        if(output.name = "m3u8")
+          stream_url = output.url
+          return {url: stream_url}
+        end if
       end for
     endif
   endif
@@ -70,6 +74,12 @@ Function get_stream_info(id As String) as Object
           stream_info.url = {url: stream_url}
           stream_info.format = output.name
           return stream_info
+        end if
+        if(output.name = "m3u8")
++          stream_url = output.url
++          stream_info.url = {url: stream_url}
++          stream_info.format = output.name
++          return stream_info
         end if
         if(output.name = "mp4")
           stream_url = output.url
@@ -94,23 +104,30 @@ Function get_player_info(id As String) as Object
         if(output.name = "hls")
           stream_url = output.url
           player_info.stream =  {url: stream_url}
-          player_info.format = output.name
+          player_info.format = "hls"
+        end if
+        if(output.name = "m3u8")
+          stream_url = output.url
+          player_info.stream = {url: stream_url}
+          player_info.format = "hls"
         end if
         if(output.name = "mp4")
           stream_url = output.url
           player_info.stream =  {url: stream_url}
-          player_info.format = output.name
+          player_info.format = "mp4"
         end if
       end for
-      for each advertising in res.body.advertising
-        if (advertising = "schedule")
-          for each ad in res.body.advertising.schedule
-            print "DYNAMIC VAST URL"
-            print ad.tag
-            scheduled_ads.push({offset: ad.offset / 1000, url: ad.tag, played: false})
-          end for
-        end if
-      end for
+      if(res.body.DoesExist("advertising"))
+        for each advertising in res.body.advertising
+          if (advertising = "schedule")
+            for each ad in res.body.advertising.schedule
+              print "DYNAMIC VAST URL"
+              print ad.tag
+              scheduled_ads.push({offset: ad.offset / 1000, url: ad.tag, played: false})
+            end for
+          end if
+        end for
+      end  if
     endif
   endif
   player_info.ads = scheduled_ads
@@ -195,6 +212,7 @@ Function get_video_feed(url As String, short As Boolean) as object
       'ReleaseDate: ,
       Rating: rating,
       Description: item.description,
+      SubscriptionRequired: item.subscription_required,
       SwitchingStrategy: m.config.switching_strategy
     }
 
