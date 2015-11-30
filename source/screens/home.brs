@@ -59,7 +59,7 @@ endfor
   endfor
 
   screen.SetContentList(total_rows-1, toolbar.tools)
-
+  screen.SetFocusedListItem(0,0)
   'show screen once featured playlist and tools are ready
   screen.show()
 
@@ -96,6 +96,7 @@ endfor
     if type(msg) = "roGridScreenEvent"
       if (msg.isListItemSelected())
         row = msg.GetIndex()
+        m.home_y = msg.GetData()
         m.home_x = row
 
         if(row = 0)

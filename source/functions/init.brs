@@ -45,6 +45,9 @@ Function init() as void
   m.home_y = 0
   m.previous_home_x = 0
   m.previous_home_y = 0
+
+  'determine autoplay
+  m.config.autoplay = false
 End Function
 
 'pull and setup configuration from api
@@ -68,24 +71,25 @@ Function get_dynamic_config() as void
     if app_type = "UNIVERSAL_SVOD" then
       ' SVOD '
       'hardcoding the authentication variables for now, will be dynamic from the Zype API
-      ' m.config.use_authentication = true 'whether or not to use authentication
-      ' m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"
-      ' m.config.activate_button_x_hd = 275
-      ' m.config.activate_button_y_hd = 575
-      ' m.config.browse_button_x_hd = 700
-      ' m.config.browse_button_y_hd = 575
-      ' m.config.visitor_background_img_sd = "pkg:/images/splash_screen_sd.jpg"
-      ' m.config.activate_button_x_sd = 50
-      ' m.config.activate_button_y_sd = 375
-      ' m.config.browse_button_x_sd = 380
-      ' m.config.browse_button_y_sd = 375
-      ' m.config.target_rect_x_visitor_screen = 0
-      ' m.config.target_rect_y_visitor_screen = 0
-      ' m.config.visitor_background_color = "#000000"
-      ' m.config.device_link_url = "www.example.com/link"
-      ' m.config.subscription_button = "Subscription Required"
+       m.config.use_authentication = true 'whether or not to use authentication
+       m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"
+       m.config.activate_button_x_hd = 275
+       m.config.activate_button_y_hd = 575
+       m.config.browse_button_x_hd = 700
+       m.config.browse_button_y_hd = 575
+       m.config.visitor_background_img_sd = "pkg:/images/splash_screen_sd.jpg"
+       m.config.activate_button_x_sd = 190
+       m.config.activate_button_y_sd = 375
+       m.config.browse_button_x_sd = 380
+       m.config.browse_button_y_sd = 375
+       m.config.target_rect_x_visitor_screen = 0
+       m.config.target_rect_y_visitor_screen = 0
+       m.config.visitor_background_color = "#000000"
+       m.config.device_link_url = "www.example.com/link"
+       m.config.subscription_button = "Subscription Required"
       'end hardcoding of authentication variables
-      ' SVOD'
+      
+       ' SVOD'
     end if
 
   cache_images(m.config.app_images)
@@ -169,6 +173,7 @@ Function init_theme() as void
     GridScreenDescriptionOffsetHD: m.config.grid_description_image_offset_hd,
     GridScreenDescriptionOffsetSD: m.config.grid_description_image_offset_sd,
     GridScreenBorderOffsetHD: m.config.grid_border_offset_hd,
+    GridScreenBorderOffsetSD: m.config.grid_border_offset_sd,
     GridScreenOverhangHeightHD: m.config.grid_overhang_height_hd,
     GridScreenOverhangHeightSD: m.config.grid_overhang_height_sd,
     GridScreenLogoOffsetHD_X: m.config.grid_logo_offset_hd_x,

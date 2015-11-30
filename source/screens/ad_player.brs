@@ -1,21 +1,28 @@
 ' ad player (for avod)
-sub play_episode_with_ad(video as object, ad as object)
+sub play_episode_with_ad(episodes as object, index as integer, offset as integer)
+  m.home_y = index
+  episode = episodes[index]
+
+  player_info = get_player_info(episode.id)
+  episode.stream = player_info.stream
+  episode.StreamFormat = player_info.format
+  episode.ads = player_info.ads
+  ad = get_ad(episode, offset)
+
   vast = NWM_VAST()
-
-  video.preroll = vast.GetPrerollFromURL(ad.url)
-
+  episode.preroll = vast.GetPrerollFromURL(ad.url)
   'set the ad being played to true
   ad.played = true
 
-  'tell the video when to start playing from after the ad (graceful fall back to the beginning)
+  'tell the episode when to start playing from after the ad (graceful fall back to the beginning)
   if ad.offset <> invalid
-    video.playStart = ad.offset
+    episode.playStart = ad.offset
   else
-    video.playStart = 0
+    episode.playStart = 0
   end if
 
   print "******"
-  print video.playStart
+  print episode.playStart
   print "******"
 
 	canvas = CreateObject("roImageCanvas")
@@ -26,21 +33,22 @@ sub play_episode_with_ad(video as object, ad as object)
   ' play the pre-roll
   adCompleted = true
 
-  if video.preroll <> invalid
-    adCompleted = ShowPreRoll(canvas, video.preroll)
+  if episode.preroll <> invalid
+    adCompleted = ShowPreRoll(canvas, episode.preroll)
   end if
 
   if adCompleted
     ' if the ad completed without the user pressing UP, play the content
-    ShowVideoScreen(video, ad.offset)
+    ShowEpisodeScreen(episodes, index, ad.offset)
   end if
 
 	canvas.Close()
 end sub
 
-Function ShowVideoScreen(episode as object, time as Integer) as object
+Function ShowEpisodeScreen(episodes as object, index as integer, offset as integer) as object
+  episode = episodes[index]
   print "LEAVING AD, ENTERING PLAYER"
-  episode.playStart = time
+  episode.playStart = offset
   print episode.playStart
   print "***"
 
@@ -61,9 +69,17 @@ Function ShowVideoScreen(episode as object, time as Integer) as object
       return -1
     endif
     if msg.isfullresult()
-      print "Video Completed Playback Normally"
+      print "episode Completed Playback Normally"
       RegDelete(episode.id)
       print "deleted bookmark for playback position"
+      print "WILL I GO INTO AUTOPLAY"
+      print m.config.autoplay
+      print "WILL I GO INTO AUTOPLAY"
+      if m.config.autoplay
+        if (index + 1) < episodes.count()
+          play_episode_with_ad(episodes, index + 1, 0)
+        endif
+      endif
     else if msg.isPlaybackPosition()
       nowpos = msg.GetIndex()
       print "PLAYBACK POSITION"
@@ -74,7 +90,7 @@ Function ShowVideoScreen(episode as object, time as Integer) as object
       if (ad.played = false)
         print "going to an ad"
         screen.Close()
-        play_episode_with_ad(episode, ad)
+        play_episode_with_ad(episodes, index, offset)
       end if
     endif
 
@@ -110,7 +126,7 @@ function ShowPreRoll(canvas, ad)
 				exit while
 			else if msg.isStatusMessage()
 				if msg.GetMessage() = "start of play"
-				  ' once the video starts, clear out the canvas so it doesn't cover the video
+				  ' once the episode starts, clear out the canvas so it doesn't cover the episode
 					canvas.ClearLayer(2)
 					canvas.SetLayer(1, {color: "#00000000", CompositionMode: "Source"})
 					canvas.Show()
@@ -174,8 +190,8 @@ function FireTrackingEvent(trackingEvent)
   return result
 end function
 
-function get_ad(video, seconds)
-  for each ad in video.ads
+function get_ad(episode, seconds)
+  for each ad in episode.ads
     if ad.offset = seconds
       return ad
     end if

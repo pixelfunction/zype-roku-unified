@@ -9,11 +9,12 @@ Function Main() as void
   init()
   
   if app_type = "REGULAR" then
-    home_screen()
+     home_screen()
   elseif app_type = "UNIVERSAL_SVOD" then
-    authenticate()
+     authenticate()
   elseif app_type = "NATIVE_SVOD" then
     `statements for native svod
+    authenticate_native_svod()
   end if
 
 End Function

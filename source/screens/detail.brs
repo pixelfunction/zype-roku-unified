@@ -1,25 +1,24 @@
 ' logic to show/refresh detail page based on category selected
 
-Function displayShowDetailScreen(category as Object, showIndex as Integer) As Integer
+Function displayShowDetailScreen(category as Object, index as Integer) As Integer
 
     if validateParam(category, "roAssociativeArray", "displayShowDetailScreen") = false return -1
 
     shows = category.episodes
 
-    screen = preShowDetailScreen(category.name, shows[showIndex].Title)
+    screen = preShowDetailScreen(category.name, shows[index].Title)
 
+    index = showDetailScreen(screen, shows, index, category.name)
 
-    showIndex = showDetailScreen(screen, shows, showIndex, category.name)
-
-    return showIndex
+    return index
 End Function
 
-Function showDetailScreen(screen As Object, showList As Object, showIndex as Integer, categoryName as String) As Integer
+Function showDetailScreen(screen As Object, episodes As Object, index as Integer, categoryName as String) As Integer
 
     if validateParam(screen, "roSpringboardScreen", "showDetailScreen") = false return -1
-    if validateParam(showList, "roArray", "showDetailScreen") = false return -1
+    if validateParam(episodes, "roArray", "showDetailScreen") = false return -1
 
-    refreshShowDetail(screen, showList, showIndex, categoryName)
+    refreshShowDetail(screen, episodes, index, categoryName)
 
     'remote key id's for left/right navigation
     remoteKeyLeft  = 4
@@ -30,84 +29,68 @@ Function showDetailScreen(screen As Object, showList As Object, showIndex as Int
 
         if type(msg) = "roSpringboardScreenEvent" then
             if msg.isScreenClosed()
-                'set the m.home_y to the showIndex
                 print "SETTING HOME Y"
-                m.home_y = showIndex
-                
+                print m.home_y
                 print "Screen closed"
                 exit while
             else if msg.isRemoteKeyPressed()
                 print "Remote key pressed"
                 if msg.GetIndex() = remoteKeyLeft then
-                        showIndex = getPrevShow(showList, showIndex)
-                        if showIndex <> -1
-                            refreshShowDetail(screen, showList, showIndex, categoryName)
+                        index = getPrevShow(episodes, index)
+                        if index <> -1
+                            refreshShowDetail(screen, episodes, index, categoryName)
                         end if
                 else if msg.GetIndex() = remoteKeyRight
-                    showIndex = getNextShow(showList, showIndex)
-                        if showIndex <> -1
-                           refreshShowDetail(screen, showList, showIndex, categoryName)
+                    index = getNextShow(episodes, index)
+                        if index <> -1
+                           refreshShowDetail(screen, episodes, index, categoryName)
                         end if
                 endif
             else if msg.isButtonPressed()
-                print "ButtonPressed"
-                episode = showList[showIndex]
+                episode = episodes[index]
                 if msg.GetIndex() = 1
                   print "PRESS BUTTON 1"
-                    '1st button pressed
-                    if m.linked = false
-                        if m.config.play_ads = true
+                    '1st button pressed (play video from offset)
                             offset = RegRead(episode.id).toInt()
-
-                            ad = get_ad(episode, offset)
-                            play_episode_with_ad(episode, ad)
+                    if m.linked
+                      print "going to ad free player"
+                      play_episode_ad_free(episodes, index, offset)
                         else
-                            offset = RegRead(episode.id).toInt()
-                            play_episode(episode, offset)
+                      print "going to ad player"
+                      play_episode_with_ad(episodes, index, offset)
                         end if
-                    else
-                        print "THERE WILL NOT BE ADS"
-                        offset = RegRead(episode.id).toInt()
-                        play_episode(episode, offset)
-                    endif
-                    refreshShowDetail(screen,showList,showIndex, categoryName)
+
+                    refreshShowDetail(screen,episodes,index, categoryName)
                 endif
                 if msg.GetIndex() = 2
                     '2nd button pressed (play video from start)
-                    if m.linked = false
-                        if m.config.play_ads = true
-                            'play episode with the ad offset
-                            ad = get_ad(episode, 0)
-                            play_episode_with_ad(episode, ad)
+                    if m.linked
+                      print "going to ad free player"
+                      play_episode_ad_free(episodes, index, 0)
                         else
-                            'play episode at 0
-                            play_episode(episode, 0)
+                      print "going to ad player"
+                      play_episode_with_ad(episodes, index, 0)
                         endif
-                    else
-                        print "THERE WILL NOT BE ADS"
-                        'play episode at 0
-                         play_episode(episode, 0)
                     end if
-                endif
-                if msg.GetIndex() = 0
-                    ShowFullDescription(episode)
-                end if 
                 if msg.GetIndex() = 3
-                    '  '3rd button pressed (modal for pinning)
-                    '  show_link_modal(episode.title)
+                  print "PAY FOR MONTHLY"
+                  purchase_subscription(episode, screen, m.monthly_sub)
+                endif
+                if msg.GetIndex() = 4
+                  print "PAY FOR YEARLY"
+                  purchase_subscription(episode, screen, m.yearly_sub)
                 end if
                 print "Button pressed: "; msg.GetIndex(); " " msg.GetData()
-                'refresh the detail screen for latest bookmark position
-                refreshShowDetail(screen,showList,showIndex, categoryName)
+                refreshShowDetail(screen,episodes,index, categoryName)
             end if
         else
             print "Unexpected message class: "; type(msg)
         end if
     end while
 
-    return showIndex
-End Function
+    return index
 
+End Function
 
 
 Function ShowFullDescription(episode as Object) As Void
@@ -130,31 +113,21 @@ End Function
 
 
 
-Function refreshShowDetail(screen As Object, showList As Object, showIndex as Integer, categoryName as String) As Integer
-    screen.SetBreadcrumbText(categoryName, showList[showIndex].title)
+
+Function refreshShowDetail(screen As Object, episodes As Object, index as Integer, categoryName as String) As Integer
+    if m.home_y = invalid
+      m.home_y = index
+            end if
+
+    show = episodes[m.home_y]
+
+    screen.SetBreadcrumbText(categoryName, show.title)
     if validateParam(screen, "roSpringboardScreen", "refreshShowDetail") = false return -1
-    if validateParam(showList, "roArray", "refreshShowDetail") = false return -1
-
-    show = showList[showIndex]
-
-    player_info = get_player_info(show.id)
-    show.stream = player_info.stream
-    print show.stream
-    show.StreamFormat = player_info.format
-    show.ads = player_info.ads
-    print show.StreamFormat
-    print show.stream
-    print "REFRESHING STREAM URL"
-
-    'Uncomment this statement to dump the details for each show
-    'PrintAA(show)
+    if validateParam(episodes, "roArray", "refreshShowDetail") = false return -1
 
     screen.ClearButtons()
     
-    screen.AddButton(0, "View Full Description")
-    
-    'show different button depending on if user is linked and if subscription is required
-    if m.linked
+    if show.SubscriptionRequired <> true OR m.linked = true
       if regread(show.id) <> invalid and regread(show.id).toint() >=30 then
         screen.AddButton(1, "Resume playing")
         screen.AddButton(2, "Play from beginning")
@@ -162,21 +135,16 @@ Function refreshShowDetail(screen As Object, showList As Object, showIndex as In
         screen.addbutton(2, m.config.play_button_text)
       end if
     else
-      if show.SubscriptionRequired
-        screen.AddButton(3, m.config.subscription_button)
-      else
-        if regread(show.id) <> invalid and regread(show.id).toint() >=30 then
-          screen.AddButton(1, "Resume playing")
-          screen.AddButton(2, "Play from beginning")
-        else
-          screen.addbutton(2, m.config.play_button_text)
+      if m.monthly_sub <> invalid
+        screen.AddButton(3, m.monthly_sub.button)
         end if
+      if m.yearly_sub <> invalid
+        screen.AddButton(4, m.yearly_sub.button)
       endif
     endif
     
     screen.SetContent(show)
     screen.Show()
-
 End Function
 
 '********************************************************
@@ -184,33 +152,37 @@ End Function
 '** around case to implement a circular list for left/right
 '** navigation on the springboard screen
 '********************************************************
-Function getNextShow(showList As Object, showIndex As Integer) As Integer
-    if validateParam(showList, "roArray", "getNextShow") = false return -1
+Function getNextShow(episodes As Object, index As Integer) As Integer
+    if validateParam(episodes, "roArray", "getNextShow") = false return -1
 
-    nextIndex = showIndex + 1
-    if nextIndex >= showList.Count() or nextIndex < 0 then
+    nextIndex = index + 1
+    if nextIndex >= episodes.Count() or nextIndex < 0 then
        nextIndex = 0
     end if
 
-    show = showList[nextIndex]
+    m.home_y = nextIndex
+
+    show = episodes[nextIndex]
     if validateParam(show, "roAssociativeArray", "getNextShow") = false return -1
 
     return nextIndex
 End Function
 
-Function getPrevShow(showList As Object, showIndex As Integer) As Integer
-    if validateParam(showList, "roArray", "getPrevShow") = false return -1
+Function getPrevShow(episodes As Object, index As Integer) As Integer
+    if validateParam(episodes, "roArray", "getPrevShow") = false return -1
 
-    prevIndex = showIndex - 1
-    if prevIndex < 0 or prevIndex >= showList.Count() then
-        if showList.Count() > 0 then
-            prevIndex = showList.Count() - 1
+    prevIndex = index - 1
+    if prevIndex < 0 or prevIndex >= episodes.Count() then
+        if episodes.Count() > 0 then
+            prevIndex = episodes.Count() - 1
         else
             return -1
         end if
     end if
 
-    show = showList[prevIndex]
+    m.home_y = prevIndex
+
+    show = episodes[prevIndex]
     if validateParam(show, "roAssociativeArray", "getPrevShow") = false return -1
 
     return prevIndex
