@@ -6,7 +6,7 @@ Function init() as void
   get_dynamic_config()
   init_theme()
 
-  if app_type = "SVOD" then
+  if m.app_type = "UNIVERSAL_SVOD" then
     'SVOD'
     'read channel registry to see if there is a unique device id, if not set it to be unique with device id and time set
     'uncomment out the RegDelete if want to wipe out the token in dev
@@ -20,13 +20,13 @@ Function init() as void
       print "WRITING A NEW REGISTRY TOKEN"
       date = CreateObject("roDateTime")
       timestamp = date.AsSeconds().ToStr()
-  
+
       device = CreateObject("roDeviceInfo")
-  
+
       uniqueId = device.GetDeviceUniqueId() + date.AsSeconds().ToStr()
-  
+
       RegWrite("RegToken", uniqueId, "Authentication555ef22569702d048c9d0e00")
-  
+
       m.device_id = RegRead("RegToken", "Authentication555ef22569702d048c9d0e00")
     endif
     print m.device_id
@@ -47,7 +47,8 @@ Function init() as void
   m.previous_home_y = 0
 
   'determine autoplay
-  m.config.autoplay = false
+  'should be added to the API response
+  m.config.autoplay = true
 End Function
 
 'pull and setup configuration from api
@@ -68,7 +69,7 @@ Function get_dynamic_config() as void
         ]
     }
 
-    if app_type = "UNIVERSAL_SVOD" then
+    if m.app_type = "UNIVERSAL_SVOD" then
       ' SVOD '
       'hardcoding the authentication variables for now, will be dynamic from the Zype API
        m.config.use_authentication = true 'whether or not to use authentication
@@ -88,7 +89,7 @@ Function get_dynamic_config() as void
        m.config.device_link_url = "www.example.com/link"
        m.config.subscription_button = "Subscription Required"
       'end hardcoding of authentication variables
-      
+
        ' SVOD'
     end if
 

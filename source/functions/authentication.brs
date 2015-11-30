@@ -27,7 +27,7 @@ Function is_linked() as boolean
   request.AddHeader("X-Roku-Reserved-Dev-Id", "")
   request.InitClientCertificates()
 
-  url = m.api.endpoint + "/pin/status/?api_key="+ m.api.key +"&linked_device_id=" + m.device_id
+  url = m.api.endpoint + "/pin/status/?api_key=" + m.api.key + "&linked_device_id=" + m.device_id
   print url
   request.SetUrl(url)
 
@@ -133,7 +133,7 @@ End Function
 'all the authentication functions
 ' the native svod validation
 Function authenticate_native_svod() as object
-  check_subscription()
+    check_subscription()
     home_screen()
 end Function
 

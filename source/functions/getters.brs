@@ -69,19 +69,19 @@ Function get_stream_info(id As String) as Object
   if(res.DoesExist("body"))
     if(res.body.DoesExist("outputs"))
       for each output in res.body.outputs
-        if(output.name = "hls")
+        if (output.name = "hls")
           stream_url = output.url
           stream_info.url = {url: stream_url}
           stream_info.format = output.name
           return stream_info
         end if
-        if(output.name = "m3u8")
-+          stream_url = output.url
-+          stream_info.url = {url: stream_url}
-+          stream_info.format = output.name
-+          return stream_info
+        if (output.name = "m3u8")
+          stream_url = output.url
+          stream_info.url = {url: stream_url}
+          stream_info.format = output.name
+          return stream_info
         end if
-        if(output.name = "mp4")
+        if (output.name = "mp4")
           stream_url = output.url
           stream_info.url = {url: stream_url}
           stream_info.format = output.name

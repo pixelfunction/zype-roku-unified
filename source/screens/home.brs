@@ -38,8 +38,8 @@ Function home_screen()
 
   else
     row_titles.push(title)
-  endif
-endfor
+  end if
+end for
 
   'get toolbar info
   toolbar = grid_toolbar()

@@ -48,48 +48,59 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
                 endif
             else if msg.isButtonPressed()
                 episode = episodes[index]
-                if msg.GetIndex() = 1
-                  print "PRESS BUTTON 1"
-                    '1st button pressed (play video from offset)
-                            offset = RegRead(episode.id).toInt()
-                    if m.linked
-                      print "going to ad free player"
-                      play_episode_ad_free(episodes, index, offset)
-                        else
-                      print "going to ad player"
-                      play_episode_with_ad(episodes, index, offset)
-                        end if
 
-                    refreshShowDetail(screen,episodes,index, categoryName)
+                if msg.GetIndex() = 0 then
+                  ShowFullDescription(episode)
                 endif
-                if msg.GetIndex() = 2
-                    '2nd button pressed (play video from start)
+
+                if msg.GetIndex() = 1 then
+                  offset = RegRead(episode.id).toInt()
+                  if m.app_type = "REGULAR" then
+                    play_episode_with_ad(episodes, index, offset)
+                  else
                     if m.linked
-                      print "going to ad free player"
-                      play_episode_ad_free(episodes, index, 0)
-                        else
-                      print "going to ad player"
-                      play_episode_with_ad(episodes, index, 0)
-                        endif
+                      play_episode_ad_free(episodes, index, offset)
+                    else
+                      play_episode_with_ad(episodes, index, offset)
                     end if
-                if msg.GetIndex() = 3
+                    refreshShowDetail(screen,episodes,index, categoryName)
+                  end if
+                end if
+
+                if msg.GetIndex() = 2 then
+                  if m.app_type = "REGULAR" then
+                    play_episode_with_ad(episodes, index, 0)
+                  else
+                    if m.linked
+                      play_episode_ad_free(episodes, index, 0)
+                    else
+                      play_episode_with_ad(episodes, index, 0)
+                    end if
+                    refreshShowDetail(screen,episodes,index, categoryName)
+                  end if
+                end if
+
+                if msg.GetIndex() = 3 then
+                  show_link_modal(episode.title)
+                end if
+
+                if msg.GetIndex() = 4
                   print "PAY FOR MONTHLY"
                   purchase_subscription(episode, screen, m.monthly_sub)
-                endif
-                if msg.GetIndex() = 4
+                end if
+
+                if msg.GetIndex() = 5
                   print "PAY FOR YEARLY"
                   purchase_subscription(episode, screen, m.yearly_sub)
                 end if
-                print "Button pressed: "; msg.GetIndex(); " " msg.GetData()
+
                 refreshShowDetail(screen,episodes,index, categoryName)
             end if
         else
             print "Unexpected message class: "; type(msg)
         end if
     end while
-
     return index
-
 End Function
 
 
@@ -112,8 +123,6 @@ Function ShowFullDescription(episode as Object) As Void
 End Function
 
 
-
-
 Function refreshShowDetail(screen As Object, episodes As Object, index as Integer, categoryName as String) As Integer
     if m.home_y = invalid
       m.home_y = index
@@ -126,23 +135,31 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
     if validateParam(episodes, "roArray", "refreshShowDetail") = false return -1
 
     screen.ClearButtons()
-    
-    if show.SubscriptionRequired <> true OR m.linked = true
+
+    screen.AddButton(0, "View Full Description")
+
+    if m.SubscriptionRequired <> true OR m.linked then
       if regread(show.id) <> invalid and regread(show.id).toint() >=30 then
         screen.AddButton(1, "Resume playing")
         screen.AddButton(2, "Play from beginning")
       else
-        screen.addbutton(2, m.config.play_button_text)
+        screen.addbutton(2, "Play from beginning")
       end if
     else
-      if m.monthly_sub <> invalid
-        screen.AddButton(3, m.monthly_sub.button)
+      if m.app_type = "UNIVERSAL_SVOD" then
+        if show.SubscriptionRequired then
+          screen.AddButton(3, m.config.subscription_button)
         end if
-      if m.yearly_sub <> invalid
-        screen.AddButton(4, m.yearly_sub.button)
-      endif
-    endif
-    
+      else if m.app_type = "NATIVE_SVOD" then
+        if m.monthly_sub <> invalid then
+          screen.AddButton(4, m.monthly_sub.button)
+        end if
+        if m.yearly_sub <> invalid then
+          screen.AddButton(5, m.yearly_sub.button)
+        end if
+      end if
+    end if
+
     screen.SetContent(show)
     screen.Show()
 End Function
