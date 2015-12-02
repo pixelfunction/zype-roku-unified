@@ -51,19 +51,19 @@ Function visitor_screen() as object
         if (event.isRemoteKeyPressed())
           index = event.GetIndex()
           print index
-          if (index = 0)
+          if (index = 0) then
             return -1
-          else if (index = 2) OR (index = 3) OR (index = 4) OR (index = 5)'any arrow
-            if selectedIndex = 0
+          else if (index = 2) OR (index = 3) OR (index = 4) OR (index = 5)'any arrow then
+            if selectedIndex = 0 then
               canvas.SetLayer(2, hover_on)
               selectedIndex = 1
             else
               canvas.SetLayer(2, active_on)
               selectedIndex = 0
-            endif
+            end if
         else if (index = 6) 'OK
           if selectedIndex = 0
-            refresh_pin_screen()
+            pin_screen()
           else if selectedIndex = 1
             home_screen()
           end if

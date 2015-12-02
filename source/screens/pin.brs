@@ -1,4 +1,4 @@
-Function pin_screen(pin as String) as object
+Function pin_screen() as object
   ggaa = GetGlobalAA()
   m.config = ggaa.config
 
@@ -12,7 +12,14 @@ Function pin_screen(pin as String) as object
   screen.AddParagraph("1. From your computer or mobile device, go to " + m.config.device_link_url)
   screen.AddParagraph("2. Enter Pin:")
   screen.AddFocalText(" ", "spacing-dense")
+
+  if update_pin()
+    pin = acquire_pin()
+  else
+    pin = m.pin
+  end if
   screen.SetRegistrationCode(pin)
+
   screen.AddFocalText(" ", "spacing-dense")
   screen.AddParagraph("3. This screen will automatically update as soon as your activation is complete!")
   screen.AddButton(1, "Back")
@@ -20,14 +27,31 @@ Function pin_screen(pin as String) as object
 
   while (true)
     msg = wait(5000, port)
-    if type(msg) = "roCodeRegistrationScreenEvent"
-      'exit if user wants it
-      if msg.isScreenClosed() OR msg.GetIndex() = 1
-        print "Screen closed"
+
+    if msg = invalid
+      if is_linked()
+        print m.linked
+        home_screen()
+      else
+        if update_pin()
+          pin = acquire_pin()
+        else
+          pin = m.pin
+        end if
+      end if
+    else if type(msg) = "roCodeRegistrationScreenEvent"
+
+      if msg.isScreenClosed()
         return -1
-      endif
-    endif
-    'check if linked
-    refresh_pin_screen()
+      end if
+
+      if msg.isButtonPressed() OR msg.GetIndex() = 1
+        return -1
+      end if
+
+    end if
   end while
+
+  screen.Close()
+
 End Function

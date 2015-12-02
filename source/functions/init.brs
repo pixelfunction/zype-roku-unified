@@ -48,7 +48,7 @@ Function init() as void
 
   'determine autoplay
   'should be added to the API response
-  m.config.autoplay = true
+  m.config.autoplay = false
 End Function
 
 'pull and setup configuration from api

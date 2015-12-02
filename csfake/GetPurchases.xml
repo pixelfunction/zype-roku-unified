@@ -1,0 +1,29 @@
+<result xmlns="http://api.roku.com/products" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+        <errorCode i:nil="true" xmlns=""/>
+        <errorDetails i:nil="true" xmlns=""/>
+        <errorMessage xmlns=""/>
+        <status xmlns="">Success</status>
+        <products>
+<!-- Comment out because not purchased -->
+                <product xmlns="">
+                        <HDPosterUrl i:nil="true"/>
+                        <SDPosterUrl i:nil="true"/>
+                        <code>babytvbetamonthlysub</code>
+                        <cost>$0.99</cost>
+                        <description>Monthly Subscription</description>
+                        <expirationDate i:nil="true"/>
+                        <freeTrialQuantity>0</freeTrialQuantity>
+                        <freeTrialType>None</freeTrialType>
+                        <fulfills i:nil="true" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+                        <inStock>true</inStock>
+                        <maxQty i:nil="true"/>
+                        <name>Monthly Subscription</name>
+                        <productType>MonthlySub</productType>
+                        <purchaseDate>2013-04-29T23:29:20</purchaseDate>
+                        <purchaseId>c27ff6d04f3847c3b238a1af0130b0df</purchaseId>
+                        <qty>1</qty>
+                        <renewalDate i:nil="true"/>
+                        <upsellProduct i:nil="true"/>
+                </product>
+        </products>
+</result>

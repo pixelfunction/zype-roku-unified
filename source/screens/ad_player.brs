@@ -77,7 +77,7 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       print "WILL I GO INTO AUTOPLAY"
       if m.config.autoplay
         if (index + 1) < episodes.count()
-          play_episode_with_ad(episodes, index + 1, 0)
+          play_episode(episodes, index + 1, 0)
         endif
       endif
     else if msg.isPlaybackPosition()
@@ -88,9 +88,9 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       ad = get_ad(episode, nowpos)
 
       if (ad.played = false)
-        print "going to an ad"
+        print "going to an ad unless subscribed"
         screen.Close()
-        play_episode_with_ad(episodes, index, offset)
+        play_episode(episodes, index, nowpos)
       end if
     endif
 

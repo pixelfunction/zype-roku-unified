@@ -13,8 +13,9 @@ Function Main() as void
   elseif m.app_type = "UNIVERSAL_SVOD" then
      authenticate()
   elseif m.app_type = "NATIVE_SVOD" then
-    'statements for native svod
-    authenticate_native_svod()
+     authenticate_native_svod()
+  elseif m.app_type = "EST" then
+     set_up_est()
   end if
 
 End Function

@@ -200,6 +200,7 @@ Function get_video_feed(url As String, short As Boolean) as object
   episodes = CreateObject("roArray", 1, true)
   res = call_api(url)
   for each item in res
+    print item
     thumbnail = parse_thumbnail(item)
     rating = parse_rating(item)
     episode = {
@@ -209,7 +210,6 @@ Function get_video_feed(url As String, short As Boolean) as object
       SDPosterUrl: thumbnail,
       HDPosterUrl: thumbnail,
       Length: item.duration,
-      'ReleaseDate: ,
       Rating: rating,
       Description: item.description,
       SubscriptionRequired: item.subscription_required,

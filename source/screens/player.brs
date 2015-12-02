@@ -1,4 +1,17 @@
 ' ad free player (for svod)
+
+Function play_episode(episodes as object, index as integer, offset as integer)
+
+    if m.linked
+      print "going to ad free player"
+      play_episode_ad_free(episodes, index, offset)
+    else
+      print "going to ad player"
+      play_episode_with_ad(episodes, index, offset)
+    endif
+
+End Function
+
 Function play_episode_ad_free(episodes as object, index as integer, offset as integer)
     m.home_y = index
     episode = episodes[index]
@@ -44,7 +57,7 @@ Function play_episode_ad_free(episodes as object, index as integer, offset as in
               print "WILL I GO INTO AUTOPLAY"
               if m.config.autoplay
                 if (index + 1) < episodes.count()
-                  play_episode_with_ad(episodes, index + 1, 0)
+                  play_episode(episodes, index + 1, 0)
                 endif
               endif
             	print "deleted bookmark for playback position"

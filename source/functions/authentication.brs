@@ -97,22 +97,6 @@ Function acquire_pin() as object
   endif
 End Function
 
-Function refresh_pin_screen() as Object
-  if is_linked()
-    print "you are already linked"
-    home_screen()
-  else
-
-    if update_pin()
-      pin = acquire_pin()
-    else
-      pin = m.pin
-    endif
-
-    pin_screen(pin)
-  endif
-end Function
-
 Function update_pin() as Boolean
   pin = m.pin
 
@@ -131,14 +115,18 @@ End Function
 ' native svod utils
 
 'all the authentication functions
-' the native svod validation
+'the native svod validation
 Function authenticate_native_svod() as object
     check_subscription()
     home_screen()
 end Function
 
+Function set_up_est() as object
+  set_up_shopping()
+  home_screen()
+End Function
+
 Function check_subscription() as object
-  print "Checking if there is a subscription in the catalogue"
   set_up_shopping()
 
   for each item in m.user_purchases
@@ -146,25 +134,24 @@ Function check_subscription() as object
       m.linked = true
       print "CONGRATS, YOU ARE SUBSCRIBED NATIVELY"
     endif
-  endfor
+  end for
 
   for each item in m.store_items
     if item.productType = "MonthlySub"
       m.monthly_sub = item
       m.monthly_sub.button = item.cost + " " + item.name
     endif
-
     if item.productType = "YearlySub"
       m.yearly_sub = item
       m.yearly_sub.button = item.cost + " " + item.name
-  endif
-  endfor
+    endif
+  end for
 end Function
 
 Function set_up_shopping() as void
   m.store = CreateObject("roChannelStore")
   'fake out store for right now
-  'm.store.FakeServer(true)
+  m.store.FakeServer(true)
 
   m.store_items = []
   m.user_purchases = []
@@ -179,15 +166,18 @@ Function get_channel_catalog() as void
   m.store.SetMessagePort(port)
   m.store.GetCatalog()
 
-    while(true)
-      msg = wait(0, port)
+  while(true)
+    msg = wait(0, port)
     if (type(msg) = "roChannelStoreEvent")
       if (msg.isRequestSucceeded())
         m.store_items = msg.GetResponse()
+        for each video in videos
+          m.store_items.push({name: video.name, cost: video.cost, code: video.code, description: video.description})
+        end for
         exit while
-        endif
       endif
-    end while
+    endif
+  end while
 End Function
 
 
@@ -197,15 +187,18 @@ Function set_user_purchases() as void
   m.store.SetMessagePort(port)
   m.store.GetPurchases()
 
-    while(true)
-      msg = wait(0, port)
+  while(true)
+    msg = wait(0, port)
     if (type(msg) = "roChannelStoreEvent")
       if (msg.isRequestSucceeded())
         m.user_purchases = msg.GetResponse()
+        for each purchase in purchases
+           m.user_purchases.push({name: purchase.name, cost: purchase.cost, code: purchase.code, description: purchase.description})
+        end for
         exit while
-        endif
       endif
-    end while
+    endif
+  end while
 end Function
 
 ' native svod some extra function for subscription transactions
@@ -236,6 +229,7 @@ Function purchase_subscription(episode, screen, item) as void
   endif
 end Function
 
+' duplicate
 Function success_purchase_modal(episode, screen, item) as object
   port = CreateObject("roMessagePort")
   dialog = CreateObject("roMessageDialog")
@@ -263,6 +257,7 @@ Function success_purchase_modal(episode, screen, item) as object
   end while
 end Function
 
+' duplicate
 Function error_purchase_modal(episode) As Object
     port = CreateObject("roMessagePort")
     dialog = CreateObject("roMessageDialog")
