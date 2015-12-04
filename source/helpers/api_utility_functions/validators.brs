@@ -5,34 +5,31 @@ Function valid_featured_playlist() as String
   else
     return "true"
   endif
-end Function
+End Function
 
 Function valid_category() as String
   category_id = m.config.category_id
-
   if category_id = invalid
     return "false"
   else
     return "true"
   end if
-end Function
+End Function
 
 Function valid_top_zobject() as String
   zobject = m.config.top_description_zobject
-
   if zobject = invalid
     return "false"
   else
     return "true"
   end if
-end Function
+End Function
 
 Function valid_bottom_zobject() as String
   zobject = m.config.bottom_description_zobject
-
   if zobject = invalid
     return "false"
   else
     return "true"
   end if
-end Function
+End Function

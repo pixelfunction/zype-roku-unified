@@ -1,4 +1,4 @@
-Function grid_toolbar() as object
+function grid_toolbar() as object
   toolbar = {name: m.config.toolbar_title, tools: []}
   toolbar.tools = [
     {
@@ -17,4 +17,4 @@ Function grid_toolbar() as object
     },
   ]
   return toolbar
-End Function
+end function
