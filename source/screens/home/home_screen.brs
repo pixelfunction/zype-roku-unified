@@ -1,4 +1,4 @@
-Function home_screen()
+Function home_screen() as void
   screen = CreateObject("roGridScreen")
   port = CreateObject("roMessagePort")
   screen.SetMessagePort(port)

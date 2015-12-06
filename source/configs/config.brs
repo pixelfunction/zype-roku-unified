@@ -11,11 +11,11 @@ Function set_api() as void
 End Function
 
 ' pull and setup configuration from the API
-Function get_dynamic_config() as void
+Function set_dynamic_config() as void
   url = m.api.endpoint + "/app/?api_key=" + m.api.key + "&app_key=" + m.api.app
   res = call_api(url)
-  m.config = res
 
+  m.config = res
   m.config.per_page = Str(m.config.per_page).Trim()
   ' @toberefactored Should be set by values returned from the API
   m.config.info = {
@@ -27,24 +27,35 @@ Function get_dynamic_config() as void
   }
 
   ' SVOD Visitor Screen Settings
-   m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"
-   m.config.activate_button_x_hd = 275
-   m.config.activate_button_y_hd = 575
-   m.config.browse_button_x_hd = 700
-   m.config.browse_button_y_hd = 575
-   m.config.visitor_background_img_sd = "pkg:/images/splash_screen_sd.jpg"
-   m.config.activate_button_x_sd = 190
-   m.config.activate_button_y_sd = 375
-   m.config.browse_button_x_sd = 380
-   m.config.browse_button_y_sd = 375
-   m.config.target_rect_x_visitor_screen = 0
-   m.config.target_rect_y_visitor_screen = 0
-   m.config.visitor_background_color = "#000000"
-   '@toberefactored
-   m.config.device_link_url = "www.example.com/link"
-   m.config.subscription_button = "Subscription Required"
+  m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"
+  m.config.activate_button_x_hd = 275
+  m.config.activate_button_y_hd = 575
+  m.config.browse_button_x_hd = 700
+  m.config.browse_button_y_hd = 575
+  m.config.visitor_background_img_sd = "pkg:/images/splash_screen_sd.jpg"
+  m.config.activate_button_x_sd = 190
+  m.config.activate_button_y_sd = 375
+  m.config.browse_button_x_sd = 380
+  m.config.browse_button_y_sd = 375
+  m.config.target_rect_x_visitor_screen = 0
+  m.config.target_rect_y_visitor_screen = 0
+  m.config.visitor_background_color = "#000000"
+  '@toberefactored
+  m.config.device_link_url = "www.example.com/link"
+  m.config.subscription_button = "Subscription Required"
 
-   cache_images(m.config.app_images)
+  ' stores where the x,y position are in the home screen for every time you go back it maintains position
+  m.home_x = 0
+  m.home_y = 0
+  m.previous_home_x = 0
+  m.previous_home_y = 0
+
+  ' how many categories to load at start
+  m.loading_offset = 1
+  ' how many categories to grab at a time when scrolling
+  m.loading_group = 2
+
+  cache_images(m.config.app_images)
 End Function
 
 ' initialize the theme variables
