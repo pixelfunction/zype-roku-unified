@@ -25,10 +25,10 @@ sub play_episode_with_ad(episodes as object, index as integer, offset as integer
   print episode.playStart
   print "******"
 
-	canvas = CreateObject("roImageCanvas")
-	canvas.SetMessagePort(CreateObject("roMessagePort"))
-	canvas.SetLayer(1, {color: "#000000"})
-	canvas.Show()
+  canvas = CreateObject("roImageCanvas")
+  canvas.SetMessagePort(CreateObject("roMessagePort"))
+  canvas.SetLayer(1, {color: "#000000"})
+  canvas.Show()
 
   ' play the pre-roll
   adCompleted = true
@@ -42,7 +42,7 @@ sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     ShowEpisodeScreen(episodes, index, ad.offset)
   end if
 
-	canvas.Close()
+  canvas.Close()
 end sub
 
 Function ShowEpisodeScreen(episodes as object, index as integer, offset as integer) as object
@@ -77,7 +77,7 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       print "WILL I GO INTO AUTOPLAY"
       if m.config.autoplay
         if (index + 1) < episodes.count()
-          play_episode(episodes, index + 1, 0)
+          play_episode_with_ad(episodes, index + 1, 0)
         endif
       endif
     else if msg.isPlaybackPosition()
@@ -88,9 +88,9 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       ad = get_ad(episode, nowpos)
 
       if (ad.played = false)
-        print "going to an ad unless subscribed"
+        print "going to an ad"
         screen.Close()
-        play_episode(episodes, index, nowpos)
+        play_episode_with_ad(episodes, index, offset)
       end if
     endif
 
@@ -98,11 +98,11 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
 end Function
 
 function ShowPreRoll(canvas, ad)
-	result = true
+  result = true
 
-	player = CreateObject("roVideoPlayer")
-	' be sure to use the same message port for both the canvas and the player
-	player.SetMessagePort(canvas.GetMessagePort())
+  player = CreateObject("roVideoPlayer")
+  ' be sure to use the same message port for both the canvas and the player
+  player.SetMessagePort(canvas.GetMessagePort())
   player.SetDestinationRect(canvas.GetCanvasRect())
   player.SetPositionNotificationPeriod(1)
 
@@ -110,36 +110,36 @@ function ShowPreRoll(canvas, ad)
   canvas.SetLayer(2, {text: "Loading Ad ..."})
   canvas.Show()
 
-	player.AddContent(ad)
-	player.Play()
+  player.AddContent(ad)
+  player.Play()
 
-	while true
-		msg = wait(0, canvas.GetMessagePort())
+  while true
+    msg = wait(0, canvas.GetMessagePort())
 
-		if type(msg) = "roVideoPlayerEvent"
-			if msg.isFullResult()
-				exit while
-			else if msg.isPartialResult()
-				exit while
-			else if msg.isRequestFailed()
-			  print "isRequestFailed"
-				exit while
-			else if msg.isStatusMessage()
-				if msg.GetMessage() = "start of play"
-				  ' once the episode starts, clear out the canvas so it doesn't cover the episode
-					canvas.ClearLayer(2)
-					canvas.SetLayer(1, {color: "#00000000", CompositionMode: "Source"})
-					canvas.Show()
-				end if
-			else if msg.isPlaybackPosition()
-			  print "isPlaybackPosition: " + msg.GetIndex().ToStr()
-			  for each trackingEvent in ad.trackingEvents
-			    if trackingEvent.time = msg.GetIndex()
-			      FireTrackingEvent(trackingEvent)
-			    end if
-			  next
-			end if
-		else if type(msg) = "roImageCanvasEvent"
+    if type(msg) = "roVideoPlayerEvent"
+      if msg.isFullResult()
+        exit while
+      else if msg.isPartialResult()
+        exit while
+      else if msg.isRequestFailed()
+        print "isRequestFailed"
+        exit while
+      else if msg.isStatusMessage()
+        if msg.GetMessage() = "start of play"
+          ' once the episode starts, clear out the canvas so it doesn't cover the episode
+          canvas.ClearLayer(2)
+          canvas.SetLayer(1, {color: "#00000000", CompositionMode: "Source"})
+          canvas.Show()
+        end if
+      else if msg.isPlaybackPosition()
+        print "isPlaybackPosition: " + msg.GetIndex().ToStr()
+        for each trackingEvent in ad.trackingEvents
+          if trackingEvent.time = msg.GetIndex()
+            FireTrackingEvent(trackingEvent)
+          end if
+        next
+      end if
+    else if type(msg) = "roImageCanvasEvent"
       if msg.isRemoteKeyPressed()
         index = msg.GetIndex()
         if index = 2 or index = 0  '<UP> or BACK
@@ -147,17 +147,16 @@ function ShowPreRoll(canvas, ad)
             if trackingEvent.event = "CLOSE"
               FireTrackingEvent(trackingEvent)
             end if
-          next
-
-        	result = false
-        	exit while
+            next
+            result = false
+          exit while
         end if
       end if
-		end if
-	end while
+    end if
+  end while
 
-	player.Stop()
-	return result
+  player.Stop()
+  return result
 end function
 
 function FireTrackingEvent(trackingEvent)

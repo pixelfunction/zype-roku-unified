@@ -15,6 +15,10 @@ Function set_dynamic_config() as void
   url = m.api.endpoint + "/app/?api_key=" + m.api.key + "&app_key=" + m.api.app
   res = call_api(url)
 
+  'AVOD,USVOD,NSVOD,EST
+  '@toberefactored type should be in the API
+  m.app_version = "AVOD"
+
   m.config = res
   m.config.per_page = Str(m.config.per_page).Trim()
   ' @toberefactored Should be set by values returned from the API

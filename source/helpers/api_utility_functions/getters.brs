@@ -73,6 +73,38 @@ Function get_videos(url As String, short As Boolean) as object
   return episodes
 End Function
 
+' (for nested home)
+Function get_series() as object
+  url = m.api.endpoint + "/zobjects/?api_key=" + m.api.key + "&zobject_type=channels&per_page=100&sort=priority&order=asc"
+  series = CreateObject("roArray", 1, true)
+  res = call_api(url)
+  for each zobject in res
+    series.push({ title: zobject.title, playlist_id: zobject.playlist_id, category_id: zobject.category_id, image: get_zobject_thumbnail(zobject), description: zobject.description })
+  end for
+  return series
+end Function
+
+' (for nested home)
+Function get_zobject_thumbnail(zobject as object) as object
+  if zobject.pictures <> invalid
+    return zobject.pictures[0].url
+  end if
+end Function
+
+' (for nested home)
+Function get_playlist(playlist_id as String) as object
+  featured = {}
+  url = m.api.endpoint + "/playlists/" + playlist_id + "/videos/?api_key=" + m.api.key + "&per_page=" + m.config.per_page
+  episodes = get_videos(url, false)
+  if(episodes.count() > 0)
+    featured = {name: get_playlist_name(playlist_id), episodes: episodes}
+  else
+    url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=10&dpt=true"
+    featured = {name: "New Releases", episodes: get_videos(url, false)}
+  endif
+  return featured
+End Function
+
 ' returns a list of videos filtered by a query
 Function get_search_results(query As String) as object
   url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=" + m.config.per_page + "&q=" + HttpEncode(query) + "&dpt=true"

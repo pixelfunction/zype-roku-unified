@@ -1,9 +1,9 @@
-Function error_purchase_modal(episode) As Object
+Function error_dialog(episode as object) As Object
     port = CreateObject("roMessagePort")
     dialog = CreateObject("roMessageDialog")
     dialog.SetMessagePort(port)
-    dialog.SetTitle("Transaction cancelled")
-    dialog.SetText("If you would like to purchase this video, please try again.")
+    dialog.SetTitle("Transaction failure")
+    dialog.SetText("Please, try again.")
 
     dialog.AddButton(1, "Go back")
     dialog.EnableBackButton(true)

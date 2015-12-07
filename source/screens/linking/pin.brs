@@ -13,7 +13,7 @@ Function pin_screen() as object
   screen.AddParagraph("2. Enter Pin:")
   screen.AddFocalText(" ", "spacing-dense")
 
-  if update_pin()
+  if is_pin_update_required()
     pin = acquire_pin()
   else
     pin = m.pin
@@ -30,10 +30,9 @@ Function pin_screen() as object
 
     if msg = invalid
       if is_linked()
-        print m.linked
-        home_screen()
+        home()
       else
-        if update_pin()
+        if is_pin_update_required()
           pin = acquire_pin()
         else
           pin = m.pin

@@ -65,7 +65,7 @@ Function visitor_screen() as object
           if selectedIndex = 0
             pin_screen()
           else if selectedIndex = 1
-            home_screen()
+            home()
           end if
         endif
       endif

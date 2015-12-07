@@ -1,9 +1,14 @@
-Function success_purchase_modal(episode, screen) as object
+Function success_dialog(episode as object, screen as object, item=invalid) as object
   port = CreateObject("roMessagePort")
   dialog = CreateObject("roMessageDialog")
   dialog.SetMessagePort(port)
   dialog.SetTitle("Success")
-  dialog.SetText("You have successfully purchased " + episode.title + "!")
+
+  if item <> invalid
+    dialog.SetText("You have successfully purchased " + item.name + " " + for + item.cost + " per subscription interval.")
+  else
+    dialog.SetText("You have successfully purchased " + episode.title + "!")
+  end if
 
   dialog.AddButton(1, "OK")
   dialog.Show()
@@ -22,4 +27,4 @@ Function success_purchase_modal(episode, screen) as object
       end if
     end if
   end while
-end Function
+End Function

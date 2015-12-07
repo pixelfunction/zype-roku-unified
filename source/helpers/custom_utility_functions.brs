@@ -27,7 +27,7 @@ End Function
 '******************************************************
 ' Set up Tool Bar Items for Home Screen
 '******************************************************
-function grid_toolbar() as object
+Function grid_toolbar() as object
   toolbar = {name: m.config.toolbar_title, tools: []}
   toolbar.tools = [
     {
@@ -46,4 +46,4 @@ function grid_toolbar() as object
     },
   ]
   return toolbar
-end function
+End Function
