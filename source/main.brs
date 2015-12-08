@@ -2,12 +2,8 @@
 Function Main() as void
   init()
 
-  m.nested = true
-  if m.nested = true
-    nested_home()
-  else
-    home()
-  end if
+  ' @toberefactored should be configurable from the dashboard.
+  home()
 End Function
 
 ' initializes and configures the app

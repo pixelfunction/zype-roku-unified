@@ -21,9 +21,9 @@ sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     episode.playStart = 0
   end if
 
-  print "******"
-  print episode.playStart
-  print "******"
+  'print "******"
+  'print episode.playStart
+  'print "******"
 
   canvas = CreateObject("roImageCanvas")
   canvas.SetMessagePort(CreateObject("roMessagePort"))
@@ -47,10 +47,10 @@ end sub
 
 Function ShowEpisodeScreen(episodes as object, index as integer, offset as integer) as object
   episode = episodes[index]
-  print "LEAVING AD, ENTERING PLAYER"
+  'print "LEAVING AD, ENTERING PLAYER"
   episode.playStart = offset
-  print episode.playStart
-  print "***"
+  'print episode.playStart
+  'print "***"
 
   port = CreateObject("roMessagePort")
 
@@ -69,12 +69,12 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       return -1
     endif
     if msg.isfullresult()
-      print "episode Completed Playback Normally"
+      'print "episode Completed Playback Normally"
       RegDelete(episode.id)
-      print "deleted bookmark for playback position"
-      print "WILL I GO INTO AUTOPLAY"
-      print m.config.autoplay
-      print "WILL I GO INTO AUTOPLAY"
+      'print "deleted bookmark for playback position"
+      'print "WILL I GO INTO AUTOPLAY"
+      'print m.config.autoplay
+      'print "WILL I GO INTO AUTOPLAY"
       if m.config.autoplay
         if (index + 1) < episodes.count()
           play_episode_with_ad(episodes, index + 1, 0)
@@ -82,13 +82,13 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       endif
     else if msg.isPlaybackPosition()
       nowpos = msg.GetIndex()
-      print "PLAYBACK POSITION"
-      print nowpos
+      'print "PLAYBACK POSITION"
+      'print nowpos
       RegWrite(episode.id, nowpos.toStr())
       ad = get_ad(episode, nowpos)
 
       if (ad.played = false)
-        print "going to an ad"
+        'print "going to an ad"
         screen.Close()
         play_episode_with_ad(episodes, index, offset)
       end if
@@ -122,7 +122,7 @@ function ShowPreRoll(canvas, ad)
       else if msg.isPartialResult()
         exit while
       else if msg.isRequestFailed()
-        print "isRequestFailed"
+        'print "isRequestFailed"
         exit while
       else if msg.isStatusMessage()
         if msg.GetMessage() = "start of play"
@@ -132,7 +132,7 @@ function ShowPreRoll(canvas, ad)
           canvas.Show()
         end if
       else if msg.isPlaybackPosition()
-        print "isPlaybackPosition: " + msg.GetIndex().ToStr()
+        'print "isPlaybackPosition: " + msg.GetIndex().ToStr()
         for each trackingEvent in ad.trackingEvents
           if trackingEvent.time = msg.GetIndex()
             FireTrackingEvent(trackingEvent)
@@ -169,7 +169,7 @@ function FireTrackingEvent(trackingEvent)
   xfer.SetPort(port)
 
   xfer.SetURL(trackingEvent.url)
-  print "~~~TRACKING: " + xfer.GetURL()
+  'print "~~~TRACKING: " + xfer.GetURL()
   ' have to do this synchronously so that we don't colide with
   ' other tracking events firing at or near the same time
   if xfer.AsyncGetToString()
@@ -180,9 +180,9 @@ function FireTrackingEvent(trackingEvent)
       xfer.AsyncCancel()
       result = false
     else
-      print "Req finished: " + timer.TotalMilliseconds().ToStr()
-      print event.GetResponseCode().ToStr()
-      print event.GetFailureReason()
+      'print "Req finished: " + timer.TotalMilliseconds().ToStr()
+      'print event.GetResponseCode().ToStr()
+      'print event.GetFailureReason()
     end if
   end if
 

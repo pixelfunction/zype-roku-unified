@@ -3,6 +3,7 @@ Function displayShowDetailScreen(category as Object, index as Integer) As Intege
     shows = category.episodes
     screen = preShowDetailScreen(category.name, shows[index].Title)
     showDetailScreen(screen, shows, index, category.name)
+    return 1
 End Function
 
 Function preShowDetailScreen(breadA=invalid, breadB=invalid) As Object
@@ -61,7 +62,7 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
 
               if msg.GetIndex() = 0 then
                 ShowFullDescription(episode)
-                  end if
+              end if
 
               if msg.GetIndex() = 1 then
                 offset = RegRead(episode.id).toInt()
@@ -77,18 +78,18 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
               end if
 
               if msg.GetIndex() = 4
-                res = subscribe(episode, screen, m.monthly_sub)
+                res = subscribe(episode, m.monthly_sub)
                 if res
-                  success_dialog(episode, screen, m.monthly_sub)
+                  success_dialog(episode, m.monthly_sub)
                 else
                   error_dialog(episode)
                 end if
               end if
 
               if msg.GetIndex() = 5
-                res = subscribe(episode, screen, m.yearly_sub)
+                res = subscribe(episode, m.yearly_sub)
                 if res
-                  success_dialog(episode, screen, m.yearly_sub)
+                  success_dialog(episode, m.yearly_sub)
                 else
                   error_dialog(episode)
                 end if
@@ -97,7 +98,7 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
               if msg.GetIndex() = 6
                 res = purchase_item(episode)
                 if res
-                  success_dialog(episode, screen)
+                  success_dialog(episode)
                 else
                   error_dialog(episode)
                 end if
@@ -109,7 +110,8 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
             print "Unexpected message class: "; type(msg)
         end if
     end while
-    return index
+    screen.close()
+    return 1
 End Function
 
 '**************************************************************
@@ -125,12 +127,19 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
   if validateParam(screen, "roSpringboardScreen", "refreshShowDetail") = false return -1
   if validateParam(episodes, "roArray", "refreshShowDetail") = false return -1
 
+  ' @refactored this force to dump the old port with needless clicks, and etc.
+  ' it creates a new MessagePort object and binds it to the screen object.
+  ' then we force the garbage collector to remove the previous port.
+  port=CreateObject("roMessagePort")
+  screen.SetMessagePort(port)
+  RunGarbageCollector()
+
   if m.home_y = invalid
     m.home_y = index
   end if
 
   show = episodes[index]
-  print show
+  'print show
   screen.SetBreadcrumbText(categoryName, show.title)
 
   screen.ClearButtons()
@@ -154,12 +163,13 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
         screen.AddButton(5, m.yearly_sub.button)
       end if
     else if m.app_version = "EST"
-      screen.AddButton(6, "Purchase for " + show.cost)
+      screen.AddButton(6, "Purchase for " + show.cost + "!")
     end if
   end if
 
   screen.SetContent(show)
   screen.Show()
+  return 1
 End Function
 
 '******************************************************
@@ -182,6 +192,7 @@ Function is_playable(episode as object) as Boolean
       return true
     end if
   else if m.app_version = "EST"
+    print episode
     if episode.PurchaseRequired = true and is_purchased(episode) <> true
       return false
     else
@@ -235,19 +246,19 @@ End Function
 
 ' show screen with full description
 Function ShowFullDescription(episode as Object) As Void
-    port = CreateObject("roMessagePort")
-    screen = CreateObject("roParagraphScreen")
-    screen.SetMessagePort(port)
-    screen.SetTitle("Full Description")
-    screen.AddHeaderText(episode.title)
-    screen.AddParagraph(episode.description)
-    screen.Show()
-    while true
-        dlgMsg = wait(0, screen.GetMessagePort())
-        If type(dlgMsg) = "roParagraphScreenEvent"
-            if dlgMsg.isScreenClosed()
-                exit while
-            end if
-        end if
-    end while
+  port = CreateObject("roMessagePort")
+  screen = CreateObject("roParagraphScreen")
+  screen.SetMessagePort(port)
+  screen.SetTitle("Full Description")
+  screen.AddHeaderText(episode.title)
+  screen.AddParagraph(episode.description)
+  screen.Show()
+  while true
+      dlgMsg = wait(0, screen.GetMessagePort())
+      If type(dlgMsg) = "roParagraphScreenEvent"
+          if dlgMsg.isScreenClosed()
+              exit while
+          end if
+      end if
+  end while
 End Function

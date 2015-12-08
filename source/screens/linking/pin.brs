@@ -31,12 +31,14 @@ Function pin_screen() as object
     if msg = invalid
       if is_linked()
         home()
+        return -1
       else
         if is_pin_update_required()
           pin = acquire_pin()
         else
           pin = m.pin
         end if
+        screen.SetRegistrationCode(pin)
       end if
     else if type(msg) = "roCodeRegistrationScreenEvent"
 

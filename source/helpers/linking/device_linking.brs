@@ -54,9 +54,12 @@ Function acquire_pin() as object
           res = ParseJSON(msg.GetString())
           response = res.response
           m.pin = response.pin
-          timer = CreateObject("roTimespan")
-          timer.Mark()
-          m.pin_expiration = timer
+          if m.timer <> invalid
+            m.timer.Mark()
+          else
+            m.timer = CreateObject("roTimespan")
+            m.timer.Mark()
+          end if
           return response.pin
         else if (code = 404)
           return "ERROR"
@@ -76,10 +79,12 @@ Function is_pin_update_required() As Boolean
     return true
   else
     'need to reaquire pin every 30 minutes or it expires (refresh every ~25 minutes)
-    if m.pin_expiration.TotalSeconds() > 1500
-      return true
-    else
-      return false
+    if m.timer <> invalid
+      if m.timer.TotalSeconds() > 1500
+        return true
+      else
+        return false
+      end if
     end if
   end if
 End Function

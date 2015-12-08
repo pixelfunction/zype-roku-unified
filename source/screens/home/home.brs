@@ -1,4 +1,11 @@
 Function home() as void
+
+  m.nested = false
+  if m.nested = true
+    nested_home()
+    return
+  end if
+
   screen = CreateObject("roGridScreen")
   port = CreateObject("roMessagePort")
   screen.SetMessagePort(port)
@@ -162,10 +169,10 @@ Function nested_home()
        if type(msg) = "roGridScreenEvent" then
          if msg.isScreenClosed() then
           return -1
-         elseif msg.isListItemFocused()
+         else if msg.isListItemFocused()
              'print "Focused msg: ";msg.GetMessage();"row: ";msg.GetIndex();
              'print " col: ";msg.GetData()
-         elseif msg.isListItemSelected()
+         else if msg.isListItemSelected()
             row = msg.GetIndex()
             col = msg.GetData()
             index_position = col + (4 * row)

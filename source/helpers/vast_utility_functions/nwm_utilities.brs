@@ -20,7 +20,7 @@ function NWM_UT_GetStringFromURL(url, auth = invalid)
     ut.AddHeader("Authorization", auth)
   end if
   ut.SetURL(url)
-  print "~~~FETCH: " + ut.GetURL()
+  'print "~~~FETCH: " + ut.GetURL()
 	if ut.AsyncGetToString()
 		event = wait(timeout, ut.GetPort())
 		if type(event) = "roUrlEvent"

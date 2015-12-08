@@ -39,42 +39,42 @@ Function play_episode_ad_free(episodes as object, index as integer, offset as in
   screen.SetContent(episode)
   screen.Show()
 
-  PrintAA(episode)
+  'PrintAA(episode)
 
   while true
       msg = wait(0, port)
 
       if type(msg) = "roVideoScreenEvent" then
-          print "showHomeScreen | msg = "; msg.getMessage() " | index = "; msg.GetIndex()
+          'print "showHomeScreen | msg = "; msg.getMessage() " | index = "; msg.GetIndex()
           if msg.isfullresult()
-          	print "Video Completed Playback Normally"
+          	'print "Video Completed Playback Normally"
           	RegDelete(episode.id)
-            print "WILL I GO INTO AUTOPLAY"
-            print m.config.autoplay
-            print "WILL I GO INTO AUTOPLAY"
+            'print "WILL I GO INTO AUTOPLAY"
+            'print m.config.autoplay
+            'print "WILL I GO INTO AUTOPLAY"
             if m.config.autoplay
               if (index + 1) < episodes.count()
                 play_episode(episodes, index + 1, 0)
               endif
             endif
-          	print "deleted bookmark for playback position"
+          	'print "deleted bookmark for playback position"
           else if msg.isScreenClosed()
-              print "Screen closed"
+              'print "Screen closed"
               exit while
-          elseif msg.isRequestFailed()
-              print "Video request failure: "; msg.GetIndex(); " " msg.GetData()
-          elseif msg.isStatusMessage()
-              print "Video status: "; msg.GetIndex(); " " msg.GetData()
-          elseif msg.isButtonPressed()
-              print "Button pressed: "; msg.GetIndex(); " " msg.GetData()
-          elseif msg.isPlaybackPosition()
+          else if msg.isRequestFailed()
+              'print "Video request failure: "; msg.GetIndex(); " " msg.GetData()
+          else if msg.isStatusMessage()
+              'print "Video status: "; msg.GetIndex(); " " msg.GetData()
+          else if msg.isButtonPressed()
+              'print "Button pressed: "; msg.GetIndex(); " " msg.GetData()
+          else if msg.isPlaybackPosition()
               nowpos = msg.GetIndex()
               RegWrite(episode.id, nowpos.toStr())
           else
-              print "Unexpected event type: "; msg.GetType()
+              'print "Unexpected event type: "; msg.GetType()
           end if
       else
-          print "Unexpected message class: "; type(msg)
+          'print "Unexpected message class: "; type(msg)
       end if
   end while
 

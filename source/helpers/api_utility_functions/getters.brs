@@ -35,7 +35,9 @@ Function get_videos(url As String, short As Boolean) as object
   episodes = CreateObject("roArray", 1, true)
   res = call_api(url)
   for each item in res
-    'print item
+    if item.description = invalid
+      item.description = ""
+    end if
     thumbnail = parse_thumbnail(item)
     rating = parse_rating(item)
     episode = {
@@ -51,8 +53,19 @@ Function get_videos(url As String, short As Boolean) as object
       PassRequired: item.pass_required,
       PurchaseRequired: item.purchase_required,
       RentalRequired: item.rental_required,
-      SwitchingStrategy: m.config.switching_strategy
+      SwitchingStrategy: m.config.switching_strategy,
+      Cost: 0,
+      ProductType: "none"
     }
+
+    ' @toberefactored
+    for each el in m.store_items
+      if el.code = episode.id
+        episode.cost = el.cost
+        episode.productType = el.productType
+      end if
+    end for
+
     top_validation = valid_top_zobject()
     bottom_validation = valid_bottom_zobject()
 

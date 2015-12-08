@@ -19,7 +19,7 @@ Function get_channel_catalog() as void
     if (type(msg) = "roChannelStoreEvent")
       if (msg.isRequestSucceeded())
         for each video in msg.GetResponse()
-          m.store_items.push({name: video.name, cost: video.cost, code: video.code, description: video.description})
+          m.store_items.push({name: video.name, cost: video.cost, code: video.code, description: video.description, productType: video.productType})
         end for
         for each item in m.store_items
           if item.productType = "MonthlySub"
@@ -47,7 +47,7 @@ Function get_user_purchases() as void
     if (type(msg) = "roChannelStoreEvent")
       if (msg.isRequestSucceeded())
         for each purchase in msg.GetResponse()
-           m.user_purchases.push({name: purchase.name, cost: purchase.cost, code: purchase.code, description: purchase.description})
+           m.user_purchases.push({name: purchase.name, cost: purchase.cost, code: purchase.code, description: purchase.description, productType: purchase.productType})
         end for
         exit while
       endif
@@ -69,20 +69,16 @@ End Function
 Function subscribe(episode as object, item as object) as boolean
   port = CreateObject("roMessagePort")
   m.store.SetMessagePort(port)
-
   order = [{code: item.code, qty: 1}]
   m.store.SetOrder(order)
   result = m.store.DoOrder()
-
   return result
 end Function
 
 ' @refactored check if the item was bought
 Function is_purchased(episode as object) as boolean
-  for each item in m.store_items
+  for each item in m.user_purchases
     if item.code = episode.id
-      episode.order_code = item.code
-      episode.cost = item.cost
       return true
     end if
   end for
@@ -93,15 +89,17 @@ End Function
 Function purchase_item(episode as object) as Boolean
   port = CreateObject("roMessagePort")
   m.store.SetMessagePort(port)
-
-  order = [{code: episode.order_code, qty: 1}]
-
+  order = [{code: episode.id, qty: 1}]
   m.store.SetOrder(order)
   result = m.store.DoOrder()
-
+  for each item in m.store_items
+    if item.code = episode.id
+      return true
+    end if
+  end for
   if result = true
     'add the episode as one that has been purchased
-    m.user_purchases.push({code: episode.title, code: episode.order_code, description: episode.title})
+    m.user_purchases.push({name: episode.name, cost: episode.cost, code: episode.id, description: episode.description, productType: episode.productType})
     return true
   else
     return false
