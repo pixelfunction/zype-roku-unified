@@ -7,12 +7,43 @@ Function parse_thumbnail(input As Object) as string
   for each  thumbnail in input.thumbnails
     if(thumbnail.DoesExist("width"))
       if(thumbnail.width >= 250)
-        thumbnail_url = thumbnail.url
+        thumbnail_url = cached_thumbnail_path(thumbnail.url, input._id)
         return thumbnail_url
       endif
     endif
   end for
   return thumbnail_url
+End Function
+
+Function cached_thumbnail_path(url as string, name as string) as string
+  r = CreateObject("roRegex", "(\.png|\.jpg|\.gif|\.jpeg)", "i")
+  if r.isMatch(url)
+    r_ext = CreateObject("roRegex", "[\w:]+\.(jpe?g|png|gif)", "i")
+    ext = r_ext.Match(url)[1]
+    file_name = "tmp:/thumbnail-" + name + "." + ext
+
+    fs = CreateObject( "roFileSystem" )
+    if fs.exists(file_name)
+      return file_name
+    end if
+
+    xfer = createObject("roUrlTransfer")
+    xfer.setCertificatesFile("common:/certs/ca-bundle.crt")
+    xfer.addHeader("X-Roku-Reserved-Dev-Id", "")
+    xfer.initClientCertificates()
+    xfer.setUrl(url)
+    respCode = xfer.getToFile(file_name)
+
+    if respCode = 200
+      return file_name
+    else
+      'print 'Not cached'
+      return url
+    end if
+  else
+    'print 'Not cached'
+    return url
+  end if
 End Function
 
 ' returns a video monitization type and its content restrictions.

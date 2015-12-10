@@ -17,7 +17,7 @@ Function set_dynamic_config() as void
 
   'AVOD,USVOD,NSVOD,EST
   '@toberefactored type should be in the API
-  m.app_version = "NSVOD"
+  m.app_version = "AVOD"
   m.config = res
   m.config.per_page = Str(m.config.per_page).Trim()
   ' @toberefactored Should be set by values returned from the API
@@ -131,16 +131,22 @@ Function cache_images(images As Object) as void
   cached_images = CreateObject("roAssociativeArray")
   for each image in images
     for each key in image
-      if image[key] = invalid
-      else
-        'print "caching: " + image[key]
-        file = "tmp:/" + key + ".png"
+      if image[key] <> invalid
+        r_ext = CreateObject("roRegex", "[\w:]+\.(jpe?g|png|gif)", "i")
+        ext = r_ext.Match(image[key])[1]
+        file = "tmp:/app-" + key + ext
+
+
+        fs = CreateObject( "roFileSystem" )
+        if fs.exists(file)
+          cached_images[key] = file
+        end if
+
         ut = CreateObject("roUrlTransfer")
         ut.SetUrl(image[key])
         responseCode = ut.GetToFile(file)
         if responseCode = 200
           cached_images[key] = file
-          'print "success"
         end if
       end if
     end for
