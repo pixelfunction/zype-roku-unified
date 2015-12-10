@@ -1,4 +1,4 @@
-Function info_screen() as object
+Function info_screen() as void
   ggaa = GetGlobalAA()
   m.config = ggaa.config
 
@@ -20,11 +20,13 @@ Function info_screen() as object
     msg = wait(0, port)
     if type(msg) = "roParagraphScreenEvent"
       if (msg.isScreenClosed())
-        return -1
+        exit while
       endif
       if msg.GetIndex() = 1
-        return -1
+        exit while
       endif
     endif
   end while
+
+  screen.close()
 End Function

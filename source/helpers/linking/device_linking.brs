@@ -63,13 +63,13 @@ Function acquire_pin() as object
           return response.pin
         else if (code = 404)
           return "ERROR"
-        endif
+        end if
       else if(event = invalid)
         request.AsyncCancel()
         return "ERROR"
-      endif
+      end if
     end while
-  endif
+  end if
 End Function
 
 ' updates the pin if it is required

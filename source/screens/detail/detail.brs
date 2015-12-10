@@ -34,7 +34,11 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
     if validateParam(screen, "roSpringboardScreen", "showDetailScreen") = false return -1
     if validateParam(episodes, "roArray", "showDetailScreen") = false return -1
 
-    refreshShowDetail(screen, episodes, index, categoryName)
+    if m.home_y = invalid
+      m.home_y = index
+    end if
+
+    refreshShowDetail(screen, episodes, m.home_y, categoryName)
 
     'remote key id's for left/right navigation
     remoteKeyLeft  = 4
@@ -66,11 +70,11 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
 
               if msg.GetIndex() = 1 then
                 offset = RegRead(episode.id).toInt()
-                play(episodes, index, offset)
+                play(episodes, m.home_y, offset)
               end if
 
               if msg.GetIndex() = 2 then
-                play(episodes, index, 0)
+                play(episodes, m.home_y, 0)
               end if
 
               if msg.GetIndex() = 3 then
@@ -104,10 +108,11 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
                 end if
               end if
 
-              refreshShowDetail(screen,episodes,index, categoryName)
+              refreshShowDetail(screen, episodes, m.home_y, categoryName)
             end if
         else
             print "Unexpected message class: "; type(msg)
+            exit while
         end if
     end while
     screen.close()
@@ -216,10 +221,10 @@ Function getNextShow(episodes As Object, index As Integer) As Integer
        nextIndex = 0
     end if
 
-    m.home_y = nextIndex
-
     show = episodes[nextIndex]
     if validateParam(show, "roAssociativeArray", "getNextShow") = false return -1
+
+    m.home_y = nextIndex
 
     return nextIndex
 End Function
@@ -236,10 +241,10 @@ Function getPrevShow(episodes As Object, index As Integer) As Integer
         end if
     end if
 
-    m.home_y = prevIndex
-
     show = episodes[prevIndex]
     if validateParam(show, "roAssociativeArray", "getPrevShow") = false return -1
+
+    m.home_y = prevIndex
 
     return prevIndex
 End Function
@@ -261,4 +266,5 @@ Function ShowFullDescription(episode as Object) As Void
           end if
       end if
   end while
+  screen.close()
 End Function

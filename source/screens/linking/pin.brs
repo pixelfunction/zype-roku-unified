@@ -1,4 +1,4 @@
-Function pin_screen() as object
+Function pin_screen() as void
   ggaa = GetGlobalAA()
   m.config = ggaa.config
 
@@ -31,7 +31,7 @@ Function pin_screen() as object
     if msg = invalid
       if is_linked()
         home()
-        return -1
+        exit while
       else
         if is_pin_update_required()
           pin = acquire_pin()
@@ -43,11 +43,11 @@ Function pin_screen() as object
     else if type(msg) = "roCodeRegistrationScreenEvent"
 
       if msg.isScreenClosed()
-        return -1
+        exit while
       end if
 
       if msg.isButtonPressed() OR msg.GetIndex() = 1
-        return -1
+        exit while
       end if
 
     end if

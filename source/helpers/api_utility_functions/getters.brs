@@ -23,6 +23,7 @@ Function call_api(url As String) as Object
         end if
       else if(event = invalid)
         request.AsyncCancel()
+        exit while
       end if
     end while
   endif
@@ -251,6 +252,7 @@ Function get_category_info(category_id As String) as Object
         endif
       else if(event = invalid)
         request.AsyncCancel()
+        exit while
       endif
     end while
   endif

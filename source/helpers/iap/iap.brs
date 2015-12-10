@@ -2,7 +2,7 @@
 Function set_up_store() As Void
   m.store = CreateObject("roChannelStore")
   'fake out store for right now
-  m.store.FakeServer(true)
+  'm.store.FakeServer(true)
   m.store_items = []
   m.user_purchases = []
   get_channel_catalog()
@@ -32,6 +32,9 @@ Function get_channel_catalog() as void
           endif
         end for
         exit while
+      else if (msg.isRequestFailed())
+        'print "***** Failure: " + msg.GetStatusMessage() + " Status Code: " + stri(msg.GetStatus()) + " *****"
+        exit while
       end if
     end if
   end while
@@ -50,8 +53,11 @@ Function get_user_purchases() as void
            m.user_purchases.push({name: purchase.name, cost: purchase.cost, code: purchase.code, description: purchase.description, productType: purchase.productType})
         end for
         exit while
-      endif
-    endif
+      else if (msg.isRequestFailed())
+        'print "***** Failure: " + msg.GetStatusMessage() + " Status Code: " + stri(msg.GetStatus()) + " *****"
+        exit while
+      end if
+    end if
   end while
 End Function
 
@@ -92,11 +98,6 @@ Function purchase_item(episode as object) as Boolean
   order = [{code: episode.id, qty: 1}]
   m.store.SetOrder(order)
   result = m.store.DoOrder()
-  for each item in m.store_items
-    if item.code = episode.id
-      return true
-    end if
-  end for
   if result = true
     'add the episode as one that has been purchased
     m.user_purchases.push({name: episode.name, cost: episode.cost, code: episode.id, description: episode.description, productType: episode.productType})

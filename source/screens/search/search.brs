@@ -1,4 +1,5 @@
-Function search_screen() as object
+' @refactored
+Function search_screen() as void
   ggaa = GetGlobalAA()
   m.config = ggaa.config
 
@@ -18,18 +19,25 @@ Function search_screen() as object
     msg = wait(0, port)
     if type(msg) = "roKeyboardScreenEvent"
       if (msg.isScreenClosed())
-        return -1
+        exit while
       else if msg.isButtonPressed()
         if msg.GetIndex() = 1
           trimmed_search_text = strTrim(screen.GetText())
           if Len(trimmed_search_text) > 0
             search_results_screen(trimmed_search_text)
           endif
+
+          ' prevent multiple button presses
+          port=CreateObject("roMessagePort")
+          screen.SetMessagePort(port)
+          RunGarbageCollector()
         endif
         if msg.GetIndex() = 2
-          return -1
+          exit while
         endif
       endif
     endif
   end while
+
+  screen.close()
 End Function

@@ -18,6 +18,8 @@ Function set_dynamic_config() as void
   'AVOD,USVOD,NSVOD,EST
   '@toberefactored type should be in the API
   m.app_version = "AVOD"
+  m.nested = false
+
   m.config = res
   m.config.per_page = Str(m.config.per_page).Trim()
   ' @toberefactored Should be set by values returned from the API

@@ -24,7 +24,10 @@ Function cached_thumbnail_path(url as string, name as string) as string
 
     fs = CreateObject( "roFileSystem" )
     if fs.exists(file_name)
+      'print "Returning cached files"
       return file_name
+    else
+      'print "nope"
     end if
 
     xfer = createObject("roUrlTransfer")

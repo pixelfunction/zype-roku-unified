@@ -1,5 +1,5 @@
 ' @refactored
-Function success_dialog(episode as object, item=invalid) as object
+Function success_dialog(episode as object, item=invalid) as void
   port = CreateObject("roMessagePort")
   dialog = CreateObject("roMessageDialog")
   dialog.SetMessagePort(port)
@@ -19,10 +19,12 @@ Function success_dialog(episode as object, item=invalid) as object
     if type(dlgMsg) = "roMessageDialogEvent"
       if dlgMsg.isButtonPressed()
         if dlgMsg.GetIndex() = 1
-          return -1
+          exit while
+        else if dlgMsg.isScreenClosed()
           exit while
         end if
       end if
     end if
   end while
+  dialog.close()
 End Function

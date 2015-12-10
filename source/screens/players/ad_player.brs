@@ -45,7 +45,7 @@ sub play_episode_with_ad(episodes as object, index as integer, offset as integer
   canvas.Close()
 end sub
 
-Function ShowEpisodeScreen(episodes as object, index as integer, offset as integer) as object
+Function ShowEpisodeScreen(episodes as object, index as integer, offset as integer) as void
   episode = episodes[index]
   'print "LEAVING AD, ENTERING PLAYER"
   episode.playStart = offset
@@ -66,8 +66,8 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
   while(true)
     msg = wait(0, port)
     if msg.isScreenClosed()
-      return -1
-    endif
+      exit while
+    end if
     if msg.isfullresult()
       'print "episode Completed Playback Normally"
       RegDelete(episode.id)
@@ -77,9 +77,10 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       'print "WILL I GO INTO AUTOPLAY"
       if m.config.autoplay
         if (index + 1) < episodes.count()
+          screen.close()
           play_episode_with_ad(episodes, index + 1, 0)
-        endif
-      endif
+        end if
+      end if
     else if msg.isPlaybackPosition()
       nowpos = msg.GetIndex()
       'print "PLAYBACK POSITION"
@@ -92,9 +93,9 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
         screen.Close()
         play_episode_with_ad(episodes, index, offset)
       end if
-    endif
-
+    end if
   end while
+  screen.close()
 end Function
 
 function ShowPreRoll(canvas, ad)
@@ -155,6 +156,7 @@ function ShowPreRoll(canvas, ad)
     end if
   end while
 
+  canvas.close()
   player.Stop()
   return result
 end function

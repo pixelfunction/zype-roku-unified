@@ -1,4 +1,4 @@
-Function error_dialog(episode as object) As Object
+Function error_dialog(episode as object) As Void
     port = CreateObject("roMessagePort")
     dialog = CreateObject("roMessageDialog")
     dialog.SetMessagePort(port)
@@ -13,13 +13,12 @@ Function error_dialog(episode as object) As Object
       If type(dlgMsg) = "roMessageDialogEvent"
         if dlgMsg.isButtonPressed()
           if dlgMsg.GetIndex() = 1
-            return -1
             exit while
           end if
           else if dlgMsg.isScreenClosed()
-            return -1
             exit while
           end if
         end if
     end while
+    dialog.close()
 End Function

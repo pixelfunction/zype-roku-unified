@@ -26,4 +26,6 @@ Function show_link_modal(title as String) As Void
         end if
       end if
   end while
+
+  dialog.close()
 End Function

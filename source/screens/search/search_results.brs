@@ -1,4 +1,4 @@
-Function search_results_screen(query As String) as object
+Function search_results_screen(query As String) as void
   screen = CreateObject("roPosterScreen")
   port = CreateObject("roMessagePort")
   screen.SetMessagePort(port)
@@ -15,15 +15,15 @@ Function search_results_screen(query As String) as object
   while (true)
     if(results.Count() <= 0)
       screen.ShowMessage(m.config.search_error_text)
-
     endif
+
     msg = wait(0, port)
     if type(msg) = "roPosterScreenEvent"
       if (msg.isScreenClosed())
-        return -1
+        exit while
       else if msg.isListItemSelected()
         if(results.Count() <= 0)
-          return -1
+          exit while
         else
           displayShowDetailScreen(search_info, msg.GetIndex())
         endif
@@ -31,4 +31,5 @@ Function search_results_screen(query As String) as object
     endif
   end while
 
+  screen.close()
 End Function

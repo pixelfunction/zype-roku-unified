@@ -1,7 +1,7 @@
 Function home() as void
 
-  m.nested = false
   if m.nested = true
+    'print "Nested"
     nested_home()
     return
   end if
@@ -111,10 +111,13 @@ Function home() as void
       end if
     end if
   end while
+
+  ' should be reachable only on Exit Event
+  screen.close()
 End Function
 
 ' launches the nested home screen
-Function nested_home()
+Function nested_home() as void
     port = CreateObject("roMessagePort")
     grid = CreateObject("roGridScreen")
     grid.SetGridStyle(m.config.grid_layout)
@@ -156,7 +159,7 @@ Function nested_home()
              o.SDPosterUrl = series[i].image
              o.HDPosterUrl = series[i].image
              list.Push(o)
-          endif
+          end if
        end for
        grid.SetContentList(j, list)
      end for
@@ -168,7 +171,7 @@ Function nested_home()
        msg = wait(0, port)
        if type(msg) = "roGridScreenEvent" then
          if msg.isScreenClosed() then
-          return -1
+          exit while
          else if msg.isListItemFocused()
              'print "Focused msg: ";msg.GetMessage();"row: ";msg.GetIndex();
              'print " col: ";msg.GetData()
@@ -179,12 +182,14 @@ Function nested_home()
 
             'print series[index_position].title
             category_home(series[index_position])
-         endif
-       endif
+         end if
+       end if
      end while
+
+     grid.close()
 End Function
 
-Function category_home(series as object)
+Function category_home(series as object) as void
   screen = CreateObject("roGridScreen")
   port = CreateObject("roMessagePort")
   screen.SetMessagePort(port)
@@ -211,7 +216,7 @@ Function category_home(series as object)
   else
     'there is no category_id so create a fake category
     category_info = {name: "", values: ["All Videos"]}
-  endif
+  end if
 
   category_name = category_info.name
   category_titles = category_info.values
@@ -223,7 +228,7 @@ Function category_home(series as object)
       row_titles.push(category_name + " " + title)
     else
       row_titles.push(title)
-    endif
+    end if
   end for
 
   'get toolbar info
@@ -257,7 +262,7 @@ Function category_home(series as object)
         'set the m.previous_home_x and m.previous_home_y to current status
         m.previous_home_x = m.home_x
         m.previous_home_y = m.home_y
-      endif
+      end if
 
       current_row = msg.GetIndex()
       row_to_load = current_row + m.loading_group
@@ -269,9 +274,9 @@ Function category_home(series as object)
           'only load category if row data does not yet exist
           if m.categories[i] = invalid AND i < (total_rows - 1)
             load_category_row(row_titles, category_titles, i, category_name, screen)
-          endif
+          end if
         end for
-      endif
+      end if
     if type(msg) = "roGridScreenEvent"
       if (msg.isListItemSelected())
         row = msg.GetIndex()
@@ -286,16 +291,16 @@ Function category_home(series as object)
             category = m.categories[msg.GetIndex()]
           else
             category = m.categories[msg.GetIndex()-1]
-          endif
+          end if
           displayShowDetailScreen(category, msg.GetData())
-        endif
-      endif
+        end if
+      end if
       if (msg.isScreenClosed())
-        return -1
-      endif
-    endif
+        exit while
+      end if
+    end if
   end while
-
+  screen.close()
 End Function
 
 Function load_category_row(row as Object, titles as Object, position as Integer, category_name as String, screen as Object) as Object

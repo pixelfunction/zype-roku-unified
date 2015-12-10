@@ -9,23 +9,20 @@ Function play(episodes as object, index as integer, offset as integer)
 End Function
 
 ' ad free player (for svod)
-Function play_episode_ad_free(episodes as object, index as integer, offset as integer)
+Function play_episode_ad_free(episodes as object, index as integer, offset as integer) as void
   m.home_y = index
   episode = episodes[index]
-  print "REFRESHING STREAM URL"
-  if type(episode) <> "roAssociativeArray" then
+
+  if type(episode) <> "roAssociativeArray"
       print "invalid data passed to showVideoScreen"
-      return -1
-  endif
+      return
+  end if
 
   'get the stream information right before I play it
   player_info = get_player_info(episode.id)
   episode.stream = player_info.stream
   episode.StreamFormat = player_info.format
   episode.ads = player_info.ads
-  print episode.StreamFormat
-  print episode.stream
-
   episode.playStart = offset
 
   port = CreateObject("roMessagePort")
@@ -54,7 +51,8 @@ Function play_episode_ad_free(episodes as object, index as integer, offset as in
             'print "WILL I GO INTO AUTOPLAY"
             if m.config.autoplay
               if (index + 1) < episodes.count()
-                play_episode(episodes, index + 1, 0)
+                screen.close()
+                play(episodes, index + 1, 0)
               endif
             endif
           	'print "deleted bookmark for playback position"
@@ -63,6 +61,7 @@ Function play_episode_ad_free(episodes as object, index as integer, offset as in
               exit while
           else if msg.isRequestFailed()
               'print "Video request failure: "; msg.GetIndex(); " " msg.GetData()
+              exit while
           else if msg.isStatusMessage()
               'print "Video status: "; msg.GetIndex(); " " msg.GetData()
           else if msg.isButtonPressed()
@@ -77,5 +76,5 @@ Function play_episode_ad_free(episodes as object, index as integer, offset as in
           'print "Unexpected message class: "; type(msg)
       end if
   end while
-
+  screen.close()
 End Function
