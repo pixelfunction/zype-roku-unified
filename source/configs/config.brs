@@ -36,19 +36,19 @@ Function set_dynamic_config() as void
   m.config.subscription_button = "Subscription Required"
 
   ' SVOD Visitor Screen Settings
-  m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"
-  m.config.activate_button_x_hd = 275
-  m.config.activate_button_y_hd = 575
-  m.config.browse_button_x_hd = 700
-  m.config.browse_button_y_hd = 575
-  m.config.visitor_background_img_sd = "pkg:/images/splash_screen_sd.jpg"
-  m.config.activate_button_x_sd = 190
-  m.config.activate_button_y_sd = 375
-  m.config.browse_button_x_sd = 380
-  m.config.browse_button_y_sd = 375
-  m.config.target_rect_x_visitor_screen = 0
-  m.config.target_rect_y_visitor_screen = 0
-  m.config.visitor_background_color = "#000000"
+  ' m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"
+  ' m.config.activate_button_x_hd = 275
+  ' m.config.activate_button_y_hd = 575
+  ' m.config.browse_button_x_hd = 700
+  ' m.config.browse_button_y_hd = 575
+  ' m.config.visitor_background_img_sd = "pkg:/images/splash_screen_sd.jpg"
+  ' m.config.activate_button_x_sd = 190
+  ' m.config.activate_button_y_sd = 375
+  ' m.config.browse_button_x_sd = 380
+  ' m.config.browse_button_y_sd = 375
+  ' m.config.target_rect_x_visitor_screen = 0
+  ' m.config.target_rect_y_visitor_screen = 0
+  ' m.config.visitor_background_color = "#000000"
 
   ' stores where the x,y position are in the home screen for every time you go back it maintains position
   m.home_x = 0
