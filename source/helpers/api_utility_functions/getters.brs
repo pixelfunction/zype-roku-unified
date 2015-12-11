@@ -2,6 +2,7 @@
 
 ' calls the api with a specific URL
 Function call_api(url As String) as Object
+  'print "API call "; url
   request = CreateObject("roUrlTransfer")
   port = CreateObject("roMessagePort")
   request.SetPort(port)
@@ -9,9 +10,7 @@ Function call_api(url As String) as Object
   request.SetCertificatesFile("common:/certs/ca-bundle.crt")
   request.AddHeader("X-Roku-Reserved-Dev-Id", "")
   request.InitClientCertificates()
-
   request.SetUrl(url)
-
   if(request.AsyncGetToString())
     while(true)
       msg = wait(0, port)
@@ -26,7 +25,7 @@ Function call_api(url As String) as Object
         exit while
       end if
     end while
-  endif
+  end if
 
   return invalid
 End Function
@@ -35,6 +34,11 @@ End Function
 Function get_videos(url As String, short As Boolean) as object
   episodes = CreateObject("roArray", 1, true)
   res = call_api(url)
+
+  'print "Loading videos..."
+  'timer = CreateObject("roTimespan")
+  'timer.Mark()
+
   for each item in res
     if item.description = invalid
       item.description = ""
@@ -59,14 +63,6 @@ Function get_videos(url As String, short As Boolean) as object
       ProductType: "none"
     }
 
-    ' @toberefactored
-    for each el in m.store_items
-      if el.code = episode.id
-        episode.cost = el.cost
-        episode.productType = el.productType
-      end if
-    end for
-
     top_validation = valid_top_zobject()
     bottom_validation = valid_bottom_zobject()
 
@@ -82,8 +78,21 @@ Function get_videos(url As String, short As Boolean) as object
       episode.ShortDescriptionLine1 = item.title
       episode.ShortDescriptionLine2 = rating
     end if
+
     episodes.push(episode)
   end for
+
+  ' @toberefactored
+  for each ep in episodes
+    for each el in m.store_items
+      if el.code = ep.id
+        ep.cost = el.cost
+        ep.productType = el.productType
+      end if
+    end for
+  end for
+
+  'print "Loading vidoes finished "; timer.TotalSeconds()
   return episodes
 End Function
 
@@ -115,7 +124,7 @@ Function get_playlist(playlist_id as String) as object
   else
     url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=10&dpt=true"
     featured = {name: "New Releases", episodes: get_videos(url, false)}
-  endif
+  end if
   return featured
 End Function
 
@@ -193,8 +202,8 @@ Function get_player_info(id As String) as Object
           end if
         end for
       end  if
-    endif
-  endif
+    end if
+  end if
   player_info.ads = scheduled_ads
   return player_info
 End Function
@@ -209,7 +218,7 @@ Function get_category_playlist(category_name as string, category_value as string
   else
     url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=6&dpt=true"
     playlist = {name: category_value, episodes: get_videos(url, false)}
-  endif
+  end if
   return playlist
 End Function
 
@@ -220,7 +229,7 @@ Function get_all_videos_playlist() as Object
   episodes = get_videos(url, false)
   if(episodes.count() > 0)
     playlist = {name: "All Videos", episodes: episodes}
-  endif
+  end if
   return playlist
 End Function
 
@@ -249,13 +258,13 @@ Function get_category_info(category_id As String) as Object
           category_info.name = res.title
           category_info.values = res.values
           return category_info
-        endif
+        end if
       else if(event = invalid)
         request.AsyncCancel()
         exit while
-      endif
+      end if
     end while
-  endif
+  end if
 
   return invalid
 End Function

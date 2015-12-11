@@ -1,6 +1,6 @@
 Function home() as void
 
-  if m.nested = true
+  if m.config.nested = true
     'print "Nested"
     nested_home()
     return
@@ -13,6 +13,7 @@ Function home() as void
   screen.SetBreadcrumbText(m.config.home_name, "")
   screen.setGridStyle(m.config.grid_layout)
   screen.SetDisplayMode(m.config.scale_mode)
+  screen.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
 
   row_titles = CreateObject("roArray", 1, true)
   m.categories = CreateObject("roArray", 1, true)
@@ -122,6 +123,7 @@ Function nested_home() as void
     grid = CreateObject("roGridScreen")
     grid.SetGridStyle(m.config.grid_layout)
     grid.SetBreadcrumbText(m.config.home_name, "")
+    grid.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
     grid.SetCounterVisible(false)
     grid.SetDescriptionVisible(false)
     grid.SetMessagePort(port)
@@ -195,6 +197,7 @@ Function category_home(series as object) as void
   screen.SetMessagePort(port)
 
   screen.SetBreadcrumbText("", series.title)
+  screen.SetBreadcrumbEnabled(m.config.category_home_breadcrumb_enabled)
   screen.setGridStyle(m.config.grid_layout)
   screen.SetDisplayMode(m.config.scale_mode)
 

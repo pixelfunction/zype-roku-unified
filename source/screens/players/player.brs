@@ -1,5 +1,5 @@
 Function play(episodes as object, index as integer, offset as integer)
-    if m.app_version = "AVOD"
+    if m.config.monetization_type = "AVOD"
       'print "going to ad free player"
       play_episode_with_ad(episodes, index, offset)
     else

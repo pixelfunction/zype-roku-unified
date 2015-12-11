@@ -14,6 +14,7 @@ Function preShowDetailScreen(breadA=invalid, breadB=invalid) As Object
     screen.SetDisplayMode(m.config.scale_mode)
     screen.SetStaticRatingEnabled(false)
     screen.SetPosterStyle(m.config.springboard_poster_style)
+    screen.SetBreadcrumbEnabled(m.config.springboard_breadcrumb_enabled)
 
     screen.SetMessagePort(port)
     if breadA<>invalid and breadB<>invalid then
@@ -158,16 +159,16 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
       screen.addbutton(2, m.config.play_button_text)
     end if
   else:
-    if m.app_version = "USVOD"
+    if m.config.monetization_type = "USVOD"
       screen.AddButton(3, m.config.subscription_button)
-    else if m.app_version = "NSVOD"
+    else if m.config.monetization_type = "NSVOD"
       if m.monthly_sub <> invalid
         screen.AddButton(4, m.monthly_sub.button)
       end if
       if m.yearly_sub <> invalid
         screen.AddButton(5, m.yearly_sub.button)
       end if
-    else if m.app_version = "EST"
+    else if m.config.monetization_type = "EST"
       screen.AddButton(6, "Purchase for " + show.cost + "!")
     end if
   end if
@@ -182,21 +183,21 @@ End Function
 '******************************************************
 ' @toberefactored
 Function is_playable(episode as object) as Boolean
-  if m.app_version = "AVOD"
+  if m.config.monetization_type = "AVOD"
      return true
-  else if m.app_version = "USVOD"
+  else if m.config.monetization_type = "USVOD"
     if episode.SubscriptionRequired = true and is_linked() <> true
       return false
     else
       return true
     end if
-  else if m.app_version = "NSVOD"
+  else if m.config.monetization_type = "NSVOD"
     if episode.SubscriptionRequired = true and is_subscribed() <> true
       return false
     else
       return true
     end if
-  else if m.app_version = "EST"
+  else if m.config.monetization_type = "EST"
     print episode
     if episode.PurchaseRequired = true and is_purchased(episode) <> true
       return false

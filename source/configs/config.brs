@@ -16,13 +16,15 @@ Function set_dynamic_config() as void
   res = call_api(url)
 
   'AVOD,USVOD,NSVOD,EST
-  '@toberefactored type should be in the API
-  m.app_version = "AVOD"
-  m.nested = false
-
+  '@toberefactored the following config fields should be added to the zype-core.
+  m.config = {}
   m.config = res
+  m.config.monetization_type = "AVOD"
+  m.config.nested = false
+  m.config.springboard_breadcrumb_enabled = true
+  m.config.home_breadcrumb_enabled = true
+  m.config.category_home_breadcrumb_enabled = true
   m.config.per_page = Str(m.config.per_page).Trim()
-  ' @toberefactored Should be set by values returned from the API
   m.config.info = {
     header: "About",
     paragraphs: [
@@ -30,6 +32,8 @@ Function set_dynamic_config() as void
             ""
     ]
   }
+  m.config.device_link_url = "www.example.com/link"
+  m.config.subscription_button = "Subscription Required"
 
   ' SVOD Visitor Screen Settings
   m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"
@@ -45,9 +49,6 @@ Function set_dynamic_config() as void
   m.config.target_rect_x_visitor_screen = 0
   m.config.target_rect_y_visitor_screen = 0
   m.config.visitor_background_color = "#000000"
-  '@toberefactored
-  m.config.device_link_url = "www.example.com/link"
-  m.config.subscription_button = "Subscription Required"
 
   ' stores where the x,y position are in the home screen for every time you go back it maintains position
   m.home_x = 0
