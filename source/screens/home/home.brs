@@ -176,7 +176,11 @@ Function home_posterscreen() as void
       else if msg.isListSelected()
         m.home_x = msg.GetIndex()
         poster.SetContentList([])
-        categoryItems = getDetails(category_name, category_titles[m.home_x]).episodes
+        if m.home_x = row_titles.count() - 1
+          categoryItems = toolbar.tools
+        else
+          categoryItems = getDetails(category_name, category_titles[m.home_x]).episodes
+        endif
         poster.SetContentList(categoryItems)
         poster.SetFocusedListItem(0)
       else if msg.isListItemFocused()
@@ -188,8 +192,12 @@ Function home_posterscreen() as void
         'print"You have selected"
         'print"Category Index= "; m.home_y
         'print"Category Item index = "; msg.GetIndex()
-        category = getDetails(category_name, category_titles[m.home_x])
-        displayShowDetailScreen(category, m.home_y)
+        if m.home_x = row_titles.count() - 1
+          category = toolbar.tools[m.home_y].function_name()
+        else
+          category = getDetails(category_name, category_titles[m.home_x])
+          displayShowDetailScreen(category, m.home_y)
+        endif
       else if msg.isScreenClosed()
         exit while
         poster.close()
