@@ -117,6 +117,96 @@ Function home() as void
   screen.close()
 End Function
 
+' **************************************************
+' Home - Poster Screen (Category based only)
+' @tobedone Fix SetFocusedListItem()
+' **************************************************
+Function home_posterscreen() as void
+  mPort = CreateObject("roMessagePort")
+  poster = CreateObject("roPosterScreen")
+  poster.SetMessagePort(mPort)
+  poster.SetListStyle("flat-episodic-16x9")
+
+  'get category titles
+  category_titles = CreateObject("roArray", 1, true)
+  if m.config.category_id <> invalid
+    category_info = get_category_info(m.config.category_id)
+  else
+    'there is no category_id so create a fake category
+    category_info = {name: "", values: ["All Videos"]}
+  end if
+  category_name = category_info.name
+  category_titles = category_info.values
+  category_value_size = category_titles.count()
+
+  row_titles = CreateObject("roArray", 1, true)
+
+  for each title in category_titles
+    row_titles.push(title)
+  end for
+
+  'get toolbar info
+  toolbar = grid_toolbar()
+  row_titles.push(toolbar.name)
+
+  poster.SetListNames(row_titles)
+
+  m.home_y = 0
+  m.home_x = 0
+
+  categoryItems = getDetails(category_name, category_titles[m.home_x]).episodes
+  poster.SetContentList(categoryItems)
+  poster.Show()
+
+  while true
+    msg = wait(0, poster.GetMessagePort())
+
+    if m.previous_home_x <> m.home_x OR m.previous_home_y <> m.home_y
+      'set the m.previous_home_x and m.previous_home_y to current status
+      m.previous_home_x = m.home_x
+      m.previous_home_y = m.home_y
+    end if
+
+    'change the focused list item if m.home_x, or m.home_y position has changed via user interactions
+
+    if type(msg) = "roPosterScreenEvent"
+      if msg.isListFocused()
+        'print "Category Index= "; msg.GetIndex()
+        m.home_x = msg.GetIndex()
+      else if msg.isListSelected()
+        m.home_x = msg.GetIndex()
+        poster.SetContentList([])
+        categoryItems = getDetails(category_name, category_titles[m.home_x]).episodes
+        poster.SetContentList(categoryItems)
+        poster.SetFocusedListItem(0)
+      else if msg.isListItemFocused()
+        m.home_y = msg.GetIndex()
+        'print"Category Index= "; m.home_x
+        'print"Category Item index = "; msg.GetIndex()
+      else if msg.isListItemSelected()
+        m.home_y = msg.GetIndex()
+        'print"You have selected"
+        'print"Category Index= "; m.home_y
+        'print"Category Item index = "; msg.GetIndex()
+        category = getDetails(category_name, category_titles[m.home_x])
+        displayShowDetailScreen(category, m.home_y)
+      else if msg.isScreenClosed()
+        exit while
+        poster.close()
+      end if
+    end if
+  end while
+End Function
+
+Function getDetails(category_name as string, title as string) as object
+  if m.config.category_id <> invalid
+    category = get_category_playlist(category_name, title, m.config.category_id)
+  else
+    category = get_category_playlist(category_name, title, "*")
+  end if
+  return category
+End Function
+
 ' launches the nested home screen
 Function nested_home() as void
     port = CreateObject("roMessagePort")
@@ -189,6 +279,55 @@ Function nested_home() as void
      end while
 
      grid.close()
+End Function
+
+' **************************************************
+' Nested Categories - Poster Screen
+' **************************************************
+
+Function nested_home_posterscreen() as void
+  port = CreateObject("roMessagePort")
+  poster = CreateObject("roPosterScreen")
+  poster.SetBreadcrumbText(m.config.home_name, "")
+  poster.SetMessagePort(port)
+  poster.SetListStyle("flat-category")
+  poster.SetListDisplayMode("scale-to-fill")
+
+  series = get_series()
+  total_rows = Int(series.count())
+  list = CreateObject("roArray", total_rows, true)
+
+  for i = 0 to total_rows - 1
+    if series[i] <> invalid
+      o = CreateObject("roAssociativeArray")
+      o.ContentType = "episode"
+      o.Title = series[i].title
+      o.Description = ""
+      o.Description = series[i].description
+      o.ShortDescriptionLine2 = series[i].title
+      o.SDPosterUrl = series[i].image
+      o.HDPosterUrl = series[i].image
+      list.Push(o)
+    end if
+  end for
+
+  poster.SetContentList(list)
+  poster.Show()
+
+  while true
+    msg = wait(0, port)
+    if type(msg) = "roPosterScreenEvent" then
+      if msg.isScreenClosed() then
+        exit while
+        poster.close()
+      elseif msg.isListItemFocused()
+        print "msg: ";msg.GetMessage();"idx: ";msg.GetIndex()
+      elseif msg.isListItemSelected()
+        index_position = msg.GetIndex()
+        category_home(series[index_position])
+      end if
+    end if
+  end while
 End Function
 
 Function category_home(series as object) as void
