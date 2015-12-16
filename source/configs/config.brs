@@ -33,7 +33,7 @@ Function set_dynamic_config() as void
     ]
   }
   m.config.device_link_url = "www.example.com/link"
-  m.config.subscription_button = "Subscription Required"
+  m.config.subscription_button_text = "Subscription Required"
 
   ' SVOD Visitor Screen Settings
   ' m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"

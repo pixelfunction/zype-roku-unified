@@ -49,38 +49,12 @@ Function cached_thumbnail_path(url as string, name as string) as string
   end if
 End Function
 
-' returns a video monitization type and its content restrictions.
+' returns a video content restrictions.
 Function parse_rating(input As Object) as string
-  if input.subscription_required
-    if input.mature_content
-      return "Subscription / TV-MA"
-    else
-      return "Subscription / NR"
-    end if
-  else if input.purchase_required
-    if input.mature_content
-      return "Purchase / TV-MA"
-    else
-      return "Purchase / NR"
-    end if
-  else if input.pass_required
-    if input.mature_content
-      return "Pass / TV-MA"
-    else
-      return "Pass / NR"
-    end if
-  else if input.rental_required
-    if input.mature_content
-      return "Rental / TV-MA"
-    else
-      return "Rental / NR"
-    end if
+  if input.mature_content
+    return "TV-MA"
   else
-    if input.mature_content
-      return "TV-MA"
-    else
-      return "NR"
-    end if
+    return "NR"
   end if
 End Function
 

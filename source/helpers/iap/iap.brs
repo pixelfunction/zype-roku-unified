@@ -19,6 +19,7 @@ Function get_channel_catalog() as void
     if (type(msg) = "roChannelStoreEvent")
       if (msg.isRequestSucceeded())
         for each video in msg.GetResponse()
+          ' @desc the video object defined on the Roku Accoune end.
           m.store_items.push({name: video.name, cost: video.cost, code: video.code, description: video.description, productType: video.productType})
         end for
         for each item in m.store_items
