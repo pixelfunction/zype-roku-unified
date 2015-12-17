@@ -1,2 +1,3 @@
 /dist/*
+/source/configs/api_config.brs
 **/.DS_Store

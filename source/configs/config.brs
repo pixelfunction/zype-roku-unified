@@ -1,15 +1,3 @@
-' @toberefactored Should be set by values returned from the API
-' these are the hard coded keys/initialization variables
-Function set_api() as void
-  m.api = {
-    key: "<API Key>",
-    app: "<App Key>",
-    endpoint: "https://api.zype.com",
-    player_endpoint: "https://player.zype.com",
-    version: "0.0.1"
-  }
-End Function
-
 ' pull and setup configuration from the API
 Function set_dynamic_config() as void
   url = m.api.endpoint + "/app/?api_key=" + m.api.key + "&app_key=" + m.api.app
@@ -19,7 +7,12 @@ Function set_dynamic_config() as void
   '@toberefactored the following config fields should be added to the zype-core.
   m.config = {}
   m.config = res
-  m.config.monetization_type = "AVOD"
+
+  m.config.ads = false
+  m.config.iap = false
+  m.config.device_linking = false
+  m.config.subscribe_to_watch_ad_free = false
+
   m.config.nested = false
   m.config.springboard_breadcrumb_enabled = true
   m.config.home_breadcrumb_enabled = true

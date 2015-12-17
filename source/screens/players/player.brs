@@ -1,11 +1,6 @@
 Function play(episodes as object, index as integer, offset as integer)
-    if m.config.monetization_type = "AVOD"
-      'print "going to ad free player"
-      play_episode_with_ad(episodes, index, offset)
-    else
-      'print "going to ad player"
+      'play_episode_with_ad(episodes, index, offset)
       play_episode_ad_free(episodes, index, offset)
-    end if
 End Function
 
 ' ad free player (for svod)

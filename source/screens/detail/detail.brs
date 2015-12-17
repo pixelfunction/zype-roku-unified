@@ -151,27 +151,7 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
   screen.ClearButtons()
   screen.AddButton(0, "View Full Description")
 
-  if is_playable(show) = true
-    if regread(show.id) <> invalid and regread(show.id).toint() >=30 then
-      screen.AddButton(1, "Resume playing")
-      screen.AddButton(2, "Play from beginning")
-    else
-      screen.addbutton(2, m.config.play_button_text)
-    end if
-  else:
-    if m.config.monetization_type = "USVOD"
-      screen.AddButton(3, m.config.subscription_button)
-    else if m.config.monetization_type = "NSVOD"
-      if m.monthly_sub <> invalid
-        screen.AddButton(4, m.monthly_sub.button)
-      end if
-      if m.yearly_sub <> invalid
-        screen.AddButton(5, m.yearly_sub.button)
-      end if
-    else if m.config.monetization_type = "EST"
-      screen.AddButton(6, "Purchase for " + show.cost + "!")
-    end if
-  end if
+  print is_playable(show)
 
   screen.SetContent(show)
   screen.Show()
@@ -183,29 +163,49 @@ End Function
 '******************************************************
 ' @toberefactored
 Function is_playable(episode as object) as Boolean
-  if m.config.monetization_type = "AVOD"
-     return true
-  else if m.config.monetization_type = "USVOD"
-    if episode.SubscriptionRequired = true and is_linked() <> true
-      return false
-    else
+  if m.config.iap = true
+    ' @desc IAP mode
+    print  "IAP mode"
+    if episode.SubscriptionRequired = false and episode.PurchaseRequired = false
       return true
+    else if episode.SubscriptionRequired = true and episode.PurchaseRequired = false
+      if subscribe_to_watch_ad_free = true
+        return true
+      else
+        if is_subscribed() = true
+          return true
+        else
+          return false
+        end if
+      end if
+    else if episode.SubscriptionRequired = false and episode.PurchaseRequired = true
+      if is_purchased(episode) = true
+        return true
+      else
+        return false
+      end if
+    else if episode.SubscriptionRequired = true and episode.PurchaseRequired = true
+      if is_subscribed() or is_purchased(episode)
+        return true
+      else if
+        return false
+      end if
     end if
-  else if m.config.monetization_type = "NSVOD"
-    if episode.SubscriptionRequired = true and is_subscribed() <> true
-      return false
-    else
-      return true
-    end if
-  else if m.config.monetization_type = "EST"
-    print episode
-    if episode.PurchaseRequired = true and is_purchased(episode) <> true
-      return false
+  else if m.config.device_linking = true
+    ' @desc Device linking mode
+    print "Device linking mode"
+    if episode.SubscriptionRequired = true
+      if is_linked() = true
+        return true
+      else
+        return false
     else
       return true
     end if
   else
-    return false
+    ' @desc Basic mode
+    print "Basic mode"
+    return true
   end if
 End Function
 
