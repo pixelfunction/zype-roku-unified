@@ -78,7 +78,9 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
       if m.config.autoplay
         if (index + 1) < episodes.count()
           screen.close()
-          play_episode_with_ad(episodes, index + 1, 0)
+          if is_playable(episodes[index + 1])
+            play(episodes, index + 1, 0)
+          end if
         end if
       end if
     else if msg.isPlaybackPosition()

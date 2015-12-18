@@ -1,6 +1,31 @@
 Function play(episodes as object, index as integer, offset as integer)
-      'play_episode_with_ad(episodes, index, offset)
-      play_episode_ad_free(episodes, index, offset)
+  if show_ads(episodes[index]) = true
+    play_episode_with_ad(episodes, index, offset)
+  else
+    play_episode_ad_free(episodes, index, offset)
+  end if
+End Function
+
+Function show_ads(episode as object) as boolean
+  if m.config.ads = true
+    if m.config.iap = true
+      if is_subscribed() or is_purchased(episode)
+        return false
+      else
+        return true
+      end if
+    else if m.config.device_linking = true
+      if is_linked()
+        return false
+      else
+        return true
+      end if
+    else
+      return true
+    end if
+  else
+    return false
+  end if
 End Function
 
 ' ad free player (for svod)
@@ -47,7 +72,9 @@ Function play_episode_ad_free(episodes as object, index as integer, offset as in
             if m.config.autoplay
               if (index + 1) < episodes.count()
                 screen.close()
-                play(episodes, index + 1, 0)
+                if is_playable(episodes[index + 1])
+                  play(episodes, index + 1, 0)
+                end if
               endif
             endif
           	'print "deleted bookmark for playback position"

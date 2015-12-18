@@ -1,4 +1,3 @@
-' @toberefactored Should be set by values returned from the API
 ' these are the hard coded keys/initialization variables
 ' @NOTE
 ' rename api_config.tmpl.brs to api_config.brs

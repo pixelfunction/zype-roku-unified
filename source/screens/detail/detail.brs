@@ -151,7 +151,7 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
   screen.ClearButtons()
   screen.AddButton(0, "View Full Description")
 
-  print is_playable(show)
+  add_buttons(screen, show)
 
   screen.SetContent(show)
   screen.Show()
@@ -159,9 +159,90 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
 End Function
 
 '******************************************************
-' Can play the video?
+' Add buttons
 '******************************************************
-' @toberefactored
+Function add_buttons(screen as object, episode as object) as void
+  if m.config.iap = true
+    ' @desc IAP mode
+    print  "IAP mode"
+    if episode.SubscriptionRequired = false and episode.PurchaseRequired = false
+      add_play_btn(screen, episode)
+    else if episode.SubscriptionRequired = true and episode.PurchaseRequired = false
+      if m.config.subscribe_to_watch_ad_free = true
+        add_play_btn(screen, episode)
+        if is_subscribed() = false
+          m.config.subscription_button_text = "Subscribe to watch ad free"
+          if m.monthly_sub <> invalid
+            screen.AddButton(4, m.monthly_sub.button)
+          end if
+          if m.yearly_sub <> invalid
+            screen.AddButton(5, m.yearly_sub.button)
+          end if
+        end if
+      else
+        if is_subscribed() = true
+          add_play_btn(screen, episode)
+        else
+          if m.monthly_sub <> invalid
+            screen.AddButton(4, m.monthly_sub.button)
+          end if
+          if m.yearly_sub <> invalid
+            screen.AddButton(5, m.yearly_sub.button)
+          end if
+        end if
+      end if
+    else if episode.SubscriptionRequired = false and episode.PurchaseRequired = true
+      if is_purchased(episode) = true
+        add_play_btn(screen, episode)
+      else
+        screen.AddButton(6, "Purchase for " + episode.cost + "!")
+      end if
+    else if episode.SubscriptionRequired = true and episode.PurchaseRequired = true
+      ' @desc This part is not tested (as for now, we cannot set those to fields to be true)
+      if is_subscribed() or is_purchased(episode)
+        add_play_btn(screen, episode)
+      else
+        if m.monthly_sub <> invalid
+          screen.AddButton(4, m.monthly_sub.button)
+        end if
+        if m.yearly_sub <> invalid
+          screen.AddButton(5, m.yearly_sub.button)
+        end if
+        screen.AddButton(6, "Purchase for " + episode.cost + "!")
+      end if
+    end if
+  else if m.config.device_linking = true
+    ' @desc Device linking mode
+    print "Device linking mode"
+    if episode.SubscriptionRequired = true
+      if is_linked() = true
+        add_play_btn(screen, episode)
+      else
+        screen.AddButton(3, m.config.subscription_button_text)
+      end if
+    else
+      add_play_btn(screen, episode)
+    end if
+  else
+    ' @desc Basic mode
+    print "Basic mode"
+    add_play_btn(screen, episode)
+  end if
+End Function
+
+' add play and resume buttons
+Function add_play_btn(screen as object, show as object) as void
+  if regread(show.id) <> invalid and regread(show.id).toint() >=30 then
+    screen.AddButton(1, "Resume playing")
+    screen.AddButton(2, "Play from beginning")
+  else
+    screen.addbutton(2, m.config.play_button_text)
+  end if
+End Function
+
+'******************************************************
+' Can we play the video?
+'******************************************************
 Function is_playable(episode as object) as Boolean
   if m.config.iap = true
     ' @desc IAP mode
@@ -187,7 +268,7 @@ Function is_playable(episode as object) as Boolean
     else if episode.SubscriptionRequired = true and episode.PurchaseRequired = true
       if is_subscribed() or is_purchased(episode)
         return true
-      else if
+      else
         return false
       end if
     end if
@@ -199,6 +280,7 @@ Function is_playable(episode as object) as Boolean
         return true
       else
         return false
+      end if
     else
       return true
     end if
