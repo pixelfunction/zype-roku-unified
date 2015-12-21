@@ -1,5 +1,7 @@
 '@refactored checks if the device is linked
 Function is_linked() As Boolean
+  ' uncomment to test the device linking feature
+  'return true
   request = CreateObject("roUrlTransfer")
   port = CreateObject("roMessagePort")
   request.SetPort(port)

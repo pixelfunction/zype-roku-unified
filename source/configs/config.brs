@@ -3,7 +3,6 @@ Function set_dynamic_config() as void
   url = m.api.endpoint + "/app/?api_key=" + m.api.key + "&app_key=" + m.api.app
   res = call_api(url)
 
-  'AVOD,USVOD,NSVOD,EST
   '@toberefactored the following config fields should be added to the zype-core.
   m.config = {}
   m.config = res

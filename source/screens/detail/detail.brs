@@ -195,7 +195,7 @@ Function add_buttons(screen as object, episode as object) as void
       if is_purchased(episode) = true
         add_play_btn(screen, episode)
       else
-        screen.AddButton(6, "Purchase for " + episode.cost + "!")
+        screen.AddButton(6, "Purchase for " + ToString(episode.cost) + "!")
       end if
     else if episode.SubscriptionRequired = true and episode.PurchaseRequired = true
       ' @desc This part is not tested (as for now, we cannot set those to fields to be true)
@@ -208,7 +208,7 @@ Function add_buttons(screen as object, episode as object) as void
         if m.yearly_sub <> invalid
           screen.AddButton(5, m.yearly_sub.button)
         end if
-        screen.AddButton(6, "Purchase for " + episode.cost + "!")
+        screen.AddButton(6, "Purchase for " + ToString(episode.cost) + "!")
       end if
     end if
   else if m.config.device_linking = true

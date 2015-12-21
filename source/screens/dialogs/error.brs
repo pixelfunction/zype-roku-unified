@@ -2,8 +2,8 @@ Function error_dialog(episode as object) As Void
     port = CreateObject("roMessagePort")
     dialog = CreateObject("roMessageDialog")
     dialog.SetMessagePort(port)
-    dialog.SetTitle("Transaction failure")
-    dialog.SetText("Please, try again.")
+    dialog.SetTitle("Transaction cancelled or failed")
+    dialog.SetText("Please, try again to subscribe or make a purchase.")
 
     dialog.AddButton(1, "Go back")
     dialog.EnableBackButton(true)
