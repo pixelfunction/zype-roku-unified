@@ -171,7 +171,6 @@ Function add_buttons(screen as object, episode as object) as void
       if m.config.subscribe_to_watch_ad_free = true
         add_play_btn(screen, episode)
         if is_subscribed() = false
-          m.config.subscription_button_text = "Subscribe to watch ad free"
           if m.monthly_sub <> invalid
             screen.AddButton(4, m.monthly_sub.button)
           end if

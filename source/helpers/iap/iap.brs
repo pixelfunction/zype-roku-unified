@@ -25,11 +25,19 @@ Function get_channel_catalog() as void
         for each item in m.store_items
           if item.productType = "MonthlySub"
             m.monthly_sub = item
-            m.monthly_sub.button = item.cost + " " + item.name
+            if m.config.subscription_button_text
+              m.monthly_sub.button = item.cost + " " + m.config.subscription_button_text
+            else
+              m.monthly_sub.button = item.cost + " " + item.name
+            end if
           endif
           if item.productType = "YearlySub"
             m.yearly_sub = item
-            m.yearly_sub.button = item.cost + " " + item.name
+            if m.config.subscription_button_text
+              m.yearly_sub.button = item.cost + " " + m.config.subscription_button_text
+            else
+              m.yearly_sub.button = item.cost + " " + item.name
+            end if
           endif
         end for
         exit while
