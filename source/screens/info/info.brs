@@ -30,3 +30,31 @@ Function info_screen() as void
 
   screen.close()
 End Function
+
+function terms_screen() as void
+  port = CreateObject("roMessagePort")
+  screen = CreateObject("roTextScreen")
+  screen.SetMessagePort(Port)
+
+  screen.SetTitle("Title")
+  screen.SetHeaderText("Header Text")
+  screen.SetText("Text")
+
+  screen.AddButton(1,"Back")
+  screen.Show()
+
+  while true
+    msg = wait(0, screen.GetMessagePort())
+    if type(msg) = "roTextScreenEvent"
+        if msg.isScreenClosed() then
+             exit while
+        else if msg.isButtonPressed() then
+             if msg.GetIndex() = 1 then
+                exit while
+             endif
+        endif
+    endif
+  end while
+
+  screen.close()
+end function

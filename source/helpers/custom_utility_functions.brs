@@ -29,6 +29,16 @@ End Function
 '******************************************************
 Function grid_toolbar() as object
   toolbar = {name: m.config.toolbar_title, tools: []}
+  ' @tobedone
+  ' We can add extra items to the toolbar if we need
+  ' Example
+  ' {
+  '   Title: "Terms And Conditions",
+  '   SDPosterUrl: "",
+  '   HDPosterUrl: "",
+  '   Description: "Terms And Conditions May Apply",
+  '   function_name: terms_screen
+  ' }
   toolbar.tools = [
     {
       Title: m.config.search_title,
