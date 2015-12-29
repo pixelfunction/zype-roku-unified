@@ -229,7 +229,7 @@ Function nested_home() as void
     series = get_series()
 
     'only want to include 4 tiles per row
-    total_rows = Int(series.count() / 4)
+    total_rows = Int(series.count() / 4) + 1
 
     'need to unhardcode number for rowTitles
     rowTitles = CreateObject("roArray", total_rows, true)
@@ -264,9 +264,13 @@ Function nested_home() as void
        grid.SetContentList(j, list)
      end for
 
+     'get toolbar info
+     toolbar = grid_toolbar()
+     grid.SetContentList(total_rows-1, toolbar.tools)
 
      grid.Show()
      grid.SetDescriptionVisible(false)
+
      while true
        msg = wait(0, port)
        if type(msg) = "roGridScreenEvent" then
@@ -278,10 +282,13 @@ Function nested_home() as void
          else if msg.isListItemSelected()
             row = msg.GetIndex()
             col = msg.GetData()
-            index_position = col + (4 * row)
-
-            'print series[index_position].title
-            category_home(series[index_position])
+            if msg.GetIndex() = total_rows - 1
+              toolbar.tools[msg.GetData()].function_name()
+            else
+              index_position = col + (4 * row)
+              'print series[index_position].title
+              category_home(series[index_position])
+            end if
          end if
        end if
      end while
