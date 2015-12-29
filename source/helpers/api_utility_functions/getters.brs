@@ -43,6 +43,9 @@ Function get_videos(url As String, short As Boolean) as object
     if item.description = invalid
       item.description = ""
     end if
+    if item.short_description = invalid
+      item.description = ""
+    end if
     thumbnail = parse_thumbnail(item)
     rating = parse_rating(item)
     episode = {
@@ -53,7 +56,8 @@ Function get_videos(url As String, short As Boolean) as object
       HDPosterUrl: thumbnail,
       Length: item.duration,
       Rating: rating,
-      Description: item.description,
+      Description: item.short_description,
+      FullDescription: item.description,
       SubscriptionRequired: item.subscription_required,
       PassRequired: item.pass_required,
       PurchaseRequired: item.purchase_required,

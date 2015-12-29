@@ -338,7 +338,7 @@ Function ShowFullDescription(episode as Object) As Void
   screen.SetMessagePort(port)
   screen.SetTitle("Full Description")
   screen.AddHeaderText(episode.title)
-  screen.AddParagraph(episode.description)
+  screen.AddParagraph(episode.fulldescription)
   screen.Show()
   while true
       dlgMsg = wait(0, screen.GetMessagePort())
