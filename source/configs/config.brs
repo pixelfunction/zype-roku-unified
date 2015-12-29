@@ -48,6 +48,12 @@ Function set_dynamic_config() as void
   m.previous_home_x = 0
   m.previous_home_y = 0
 
+  ' stores where the x,y position are in the nested home screen for every time you go back it maintains position
+  m.nested_x = 0
+  m.nested_y = 0
+  m.previous_nested_x = 0
+  m.previous_nested_y = 0
+
   ' how many categories to load at start
   m.loading_offset = 1
   ' how many categories to grab at a time when scrolling

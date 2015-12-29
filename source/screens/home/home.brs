@@ -273,6 +273,19 @@ Function nested_home() as void
 
      while true
        msg = wait(0, port)
+
+       if m.previous_nested_x <> m.nested_x OR m.previous_nested_y <> m.nested_y
+         print "changing focused list to"
+         print m.nested_x
+         print m.nested_y
+
+         grid.SetFocusedListItem(m.nested_x, m.nested_y)
+
+         'set the m.previous_home_x and m.previous_home_y to current status
+         m.previous_nested_x = m.nested_x
+         m.previous_nested_y = m.nested_y
+       end if
+
        if type(msg) = "roGridScreenEvent" then
          if msg.isScreenClosed() then
           exit while
@@ -282,6 +295,8 @@ Function nested_home() as void
          else if msg.isListItemSelected()
             row = msg.GetIndex()
             col = msg.GetData()
+            m.nested_y = col
+            m.nested_x = row
             if msg.GetIndex() = total_rows - 1
               toolbar.tools[msg.GetData()].function_name()
             else
