@@ -229,7 +229,9 @@ Function nested_home() as void
     series = get_series()
 
     'only want to include 4 tiles per row
-    total_rows = Int(series.count() / 4) + 1
+    total_rows = (series.count() / 4) + 1
+    total_rows = ceiling(total_rows)
+    print total_rows
 
     'need to unhardcode number for rowTitles
     rowTitles = CreateObject("roArray", total_rows, true)

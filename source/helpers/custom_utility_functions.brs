@@ -75,3 +75,13 @@ Function ToString(variable As Dynamic) As String
         Return Type(variable)
     End If
 End Function
+
+
+'******************************************************
+' String Casting
+'******************************************************
+Function ceiling(x) as Integer
+  i = int(x)
+  if i < x then i = i + 1
+  return i
+End Function
