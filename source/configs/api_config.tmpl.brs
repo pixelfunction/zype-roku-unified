@@ -6,8 +6,8 @@ Function set_api_tmpl() as void
   m.api = {
     key: "<APIKEY>",
     app: "<APPKEY>",
-    endpoint: "<End Point URL>",
-    player_endpoint: "<Player End Point URL>",
+    endpoint: "https://api.zype.com/",
+    player_endpoint: "https://player.zype.com/",
     version: "0.0.1"
   }
 End Function
