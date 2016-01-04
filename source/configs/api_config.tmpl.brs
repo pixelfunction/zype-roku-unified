@@ -4,8 +4,8 @@
 ' rename set_api_tmpl() to set_api()
 Function set_api_tmpl() as void
   m.api = {
-    key: "<API Key>",
-    app: "<App Key>",
+    key: "<APIKEY>",
+    app: "<APPKEY>",
     endpoint: "<End Point URL>",
     player_endpoint: "<Player End Point URL>",
     version: "0.0.1"
