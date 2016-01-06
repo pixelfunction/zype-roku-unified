@@ -10,7 +10,7 @@ Function is_linked() As Boolean
   request.AddHeader("X-Roku-Reserved-Dev-Id", "")
   request.InitClientCertificates()
 
-  url = m.api.endpoint + "/pin/status/?api_key=" + m.api.key + "&linked_device_id=" + m.device_id
+  url = m.api.endpoint + "/pin/status/?app_key=" + m.api.app + "&linked_device_id=" + m.device_id
   request.SetUrl(url)
 
   if(request.AsyncGetToString())
@@ -43,7 +43,7 @@ Function acquire_pin() as object
   request.AddHeader("X-Roku-Reserved-Dev-Id", "")
   request.InitClientCertificates()
 
-  url = "https://api.zype.com/pin/acquire/?api_key=" + m.api.key
+  url = "https://api.zype.com/pin/acquire/?app_key=" + m.api.app
   request.SetUrl(url)
   pin_request = "linked_device_id=" + m.device_id + "&type=roku"
 

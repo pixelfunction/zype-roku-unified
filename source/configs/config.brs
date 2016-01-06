@@ -1,6 +1,6 @@
 ' pull and setup configuration from the API
 Function set_dynamic_config() as void
-  url = m.api.endpoint + "/app/?api_key=" + m.api.key + "&app_key=" + m.api.app
+  url = m.api.endpoint + "/app/?app_key=" + m.api.app
   res = call_api(url)
 
   '@toberefactored the following config fields should be added to the zype-core.

@@ -102,7 +102,7 @@ End Function
 
 ' (for nested home)
 Function get_series() as object
-  url = m.api.endpoint + "/zobjects/?api_key=" + m.api.key + "&zobject_type=channels&per_page=100&sort=priority&order=asc"
+  url = m.api.endpoint + "/zobjects/?app_key=" + m.api.app + "&zobject_type=channels&per_page=100&sort=priority&order=asc"
   series = CreateObject("roArray", 1, true)
   res = call_api(url)
   for each zobject in res
@@ -121,12 +121,12 @@ end Function
 ' (for nested home)
 Function get_playlist(playlist_id as String) as object
   featured = {}
-  url = m.api.endpoint + "/playlists/" + playlist_id + "/videos/?api_key=" + m.api.key + "&per_page=" + m.config.per_page
+  url = m.api.endpoint + "/playlists/" + playlist_id + "/videos/?app_key=" + m.api.app + "&per_page=" + m.config.per_page
   episodes = get_videos(url, false)
   if(episodes.count() > 0)
     featured = {name: get_playlist_name(playlist_id), episodes: episodes}
   else
-    url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=10&dpt=true"
+    url = m.api.endpoint + "/videos/?app_key=" + m.api.app + "&per_page=10&dpt=true"
     featured = {name: "New Releases", episodes: get_videos(url, false)}
   end if
   return featured
@@ -134,7 +134,7 @@ End Function
 
 ' returns a list of videos filtered by a query
 Function get_search_results(query As String) as object
-  url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=" + m.config.per_page + "&q=" + HttpEncode(query) + "&dpt=true"
+  url = m.api.endpoint + "/videos/?app_key=" + m.api.app + "&per_page=" + m.config.per_page + "&q=" + HttpEncode(query) + "&dpt=true"
   episodes = get_videos(url, true)
   if (episodes.count() > 0)
     search_results = {name: "Search: " + query, episodes: episodes}
@@ -148,16 +148,16 @@ End Function
 Function get_featured_playlist() as object
   validation = valid_featured_playlist()
   if(validation = "true")
-    url = m.api.endpoint + "/playlists/" + m.config.featured_playlist_id + "/videos/?api_key=" + m.api.key + "&per_page=" + m.config.per_page
+    url = m.api.endpoint + "/playlists/" + m.config.featured_playlist_id + "/videos/?app_key=" + m.api.app + "&per_page=" + m.config.per_page
     episodes = get_videos(url, false)
     if(episodes.count() > 0)
       featured = {name: get_playlist_name(m.config.featured_playlist_id), episodes: episodes}
     else
-      url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=10&dpt=true"
+      url = m.api.endpoint + "/videos/?app_key=" + m.api.app + "&per_page=10&dpt=true"
       featured = {name: "New Releases", episodes: get_videos(url, false)}
     end if
   else
-    url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=10&dpt=true"
+    url = m.api.endpoint + "/videos/?app_key=" + m.api.app + "&per_page=10&dpt=true"
     featured = {name: "New Releases", episode: get_videos(url, false)}
   end if
   return featured
@@ -166,7 +166,7 @@ End Function
 ' returns the playlist's name.
 Function get_playlist_name(playlist_id As String) as string
   name = ""
-  url = m.api.endpoint + "/playlists/" + playlist_id + "?api_key=" + m.api.key + "&per_page=" + m.config.per_page
+  url = m.api.endpoint + "/playlists/" + playlist_id + "?app_key=" + m.api.app + "&per_page=" + m.config.per_page
   res = call_api(url)
   if res.DoesExist("title")
     name = res.title
@@ -178,7 +178,7 @@ End Function
 Function get_player_info(id As String) as Object
   player_info = {}
   scheduled_ads = []
-  url = m.api.player_endpoint + "/embed/" + id + "/?api_key=" + m.api.key
+  url = m.api.player_endpoint + "/embed/" + id + "/?app_key=" + m.api.app
   res = call_api(url)
   if(res.DoesExist("body"))
     if(res.body.DoesExist("outputs"))
@@ -215,12 +215,12 @@ End Function
 ' returns a playlist for a specific category with its videos.
 Function get_category_playlist(category_name as string, category_value as string, category_id as string) as Object
   playlist = {}
-  url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&category%5B" + HttpEncode(category_name) + "%5D=" + HttpEncode(category_value) + "&dpt=true&per_page=" + m.config.per_page + "&sort=episode&order=asc"
+  url = m.api.endpoint + "/videos?app_key=" + m.api.app + "&category%5B" + HttpEncode(category_name) + "%5D=" + HttpEncode(category_value) + "&dpt=true&per_page=" + m.config.per_page + "&sort=episode&order=asc"
   episodes = get_videos(url, false)
   if(episodes.count() > 0)
     playlist = {name: category_value, episodes: episodes}
   else
-    url = m.api.endpoint + "/videos/?api_key=" + m.api.key + "&per_page=6&dpt=true"
+    url = m.api.endpoint + "/videos/?app_key=" + m.api.app + "&per_page=6&dpt=true"
     playlist = {name: category_value, episodes: get_videos(url, false)}
   end if
   return playlist
@@ -229,7 +229,7 @@ End Function
 ' return a "All Videos" playlist.
 Function get_all_videos_playlist() as Object
   playlis= {}
-  url = m.api.endpoint + "/videos?api_key=" + m.api.key + "&dpt=true&per_page=" + m.config.per_page
+  url = m.api.endpoint + "/videos?app_key=" + m.api.app + "&dpt=true&per_page=" + m.config.per_page
   episodes = get_videos(url, false)
   if(episodes.count() > 0)
     playlist = {name: "All Videos", episodes: episodes}
@@ -247,7 +247,7 @@ Function get_category_info(category_id As String) as Object
   request.AddHeader("X-Roku-Reserved-Dev-Id", "")
   request.InitClientCertificates()
 
-  url = m.api.endpoint + "/categories/" + category_id + "/?api_key=" + m.api.key
+  url = m.api.endpoint + "/categories/" + category_id + "/?app_key=" + m.api.app
   request.SetUrl(url)
   category_info = {name: "", values: CreateObject("roArray", 1, true)}
 
