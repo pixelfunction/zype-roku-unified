@@ -7,6 +7,9 @@ Function play(episodes as object, index as integer, offset as integer)
 End Function
 
 Function show_ads(episode as object) as boolean
+  if m.config.force_ads = true
+    return true
+  end if
   if m.config.ads = true
     if m.config.iap = true
       if is_subscribed() or is_purchased(episode)

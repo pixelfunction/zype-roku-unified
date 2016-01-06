@@ -7,6 +7,7 @@ Function set_dynamic_config() as void
   m.config = {}
   m.config = res
 
+  m.config.force_ads = false
   m.config.ads = false
   m.config.iap = false
   m.config.device_linking = false
