@@ -26,6 +26,11 @@ Function search_results_screen(query As String) as void
           exit while
         else
           displayShowDetailScreen(search_info, msg.GetIndex())
+
+          ' prevent multiple button presses
+          port=CreateObject("roMessagePort")
+          screen.SetMessagePort(port)
+          RunGarbageCollector()
         endif
       endif
     endif

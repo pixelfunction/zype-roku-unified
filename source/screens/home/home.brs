@@ -106,6 +106,11 @@ Function home() as void
           end if
           displayShowDetailScreen(category, msg.GetData())
         end if
+
+        ' prevent multiple button presses
+        port=CreateObject("roMessagePort")
+        screen.SetMessagePort(port)
+        RunGarbageCollector()
       end if
       if (msg.isScreenClosed())
         exit while
@@ -306,6 +311,11 @@ Function nested_home() as void
               'print series[index_position].title
               category_home(series[index_position])
             end if
+
+            ' prevent multiple button presses
+            port=CreateObject("roMessagePort")
+            grid.SetMessagePort(port)
+            RunGarbageCollector()
          end if
        end if
      end while
@@ -468,6 +478,11 @@ Function category_home(series as object) as void
           end if
           displayShowDetailScreen(category, msg.GetData())
         end if
+
+        ' prevent multiple button presses
+        port=CreateObject("roMessagePort")
+        screen.SetMessagePort(port)
+        RunGarbageCollector()
       end if
       if (msg.isScreenClosed())
         exit while
