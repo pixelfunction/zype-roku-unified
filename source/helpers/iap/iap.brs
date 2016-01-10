@@ -4,7 +4,7 @@ Function set_up_store() As Void
   'fake out store for right now
   'm.store.FakeServer(true)
   m.store_items = []
-  m.user_purchases = []
+  m.user_purchases_dict = CreateObject("roAssociativeArray")
   get_channel_catalog()
   get_user_purchases()
 End Function
@@ -59,7 +59,12 @@ Function get_user_purchases() as void
     if (type(msg) = "roChannelStoreEvent")
       if (msg.isRequestSucceeded())
         for each purchase in msg.GetResponse()
-           m.user_purchases.push({name: purchase.name, cost: purchase.cost, code: purchase.code, description: purchase.description, productType: purchase.productType})
+          if purchase.productType = "MonthlySub" OR purchase.productType = "YearlySub"
+            ' Add SubToken to indentify that a user has a subscription
+            m.user_purchases_dict.AddReplace("SubToken", purchase.productType)
+          else
+            m.user_purchases_dict.AddReplace(purchase.code, purchase.productType)
+          end if
         end for
         exit while
       else if (msg.isRequestFailed())
@@ -72,11 +77,9 @@ End Function
 
 ' @refactored checks if the user is SUBSCRIBED (native svod)
 Function is_subscribed() as object
-  for each item in m.user_purchases
-    if item.productType = "MonthlySub" OR item.productType = "YearlySub"
-      return true
-    endif
-  end for
+  if m.user_purchases_dict.DoesExist("SubToken")
+    return true
+  end if
   return false
 End Function
 
@@ -92,11 +95,9 @@ end Function
 
 ' @refactored check if the item was bought
 Function is_purchased(episode as object) as boolean
-  for each item in m.user_purchases
-    if item.code = episode.id
-      return true
-    end if
-  end for
+  if m.user_purchases_dict.DoesExist(episode.id)
+    return true
+  end if
   return false
 End Function
 
@@ -109,7 +110,7 @@ Function purchase_item(episode as object) as Boolean
   result = m.store.DoOrder()
   if result = true
     'add the episode as one that has been purchased
-    m.user_purchases.push({name: episode.name, cost: episode.cost, code: episode.id, description: episode.description, productType: episode.productType})
+    m.user_purchases_dict.AddReplace(episode.code, episode.productType)
     return true
   else
     return false
