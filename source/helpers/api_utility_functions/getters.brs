@@ -70,11 +70,11 @@ Function get_videos(url As String, short As Boolean) as object
     top_validation = valid_top_zobject()
     bottom_validation = valid_bottom_zobject()
 
-    if top_validation = "true"
+    if top_validation = true
       episode.Actors = parse_zobjects(item, m.config.top_description_zobject)
     end if
 
-    if bottom_validation = "true"
+    if bottom_validation = true
       episode.Categories = parse_zobjects(item, m.config.bottom_description_zobject)
     end if
 

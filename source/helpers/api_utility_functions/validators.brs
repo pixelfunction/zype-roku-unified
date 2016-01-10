@@ -16,20 +16,20 @@ Function valid_category() as String
   end if
 End Function
 
-Function valid_top_zobject() as String
+Function valid_top_zobject() as Boolean
   zobject = m.config.top_description_zobject
   if zobject = invalid
-    return "false"
+    return false
   else
-    return "true"
+    return true
   end if
 End Function
 
-Function valid_bottom_zobject() as String
+Function valid_bottom_zobject() as Boolean
   zobject = m.config.bottom_description_zobject
   if zobject = invalid
-    return "false"
+    return false
   else
-    return "true"
+    return true
   end if
 End Function
