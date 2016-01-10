@@ -87,14 +87,16 @@ Function get_videos(url As String, short As Boolean) as object
   end for
 
   ' @toberefactored
-  for each ep in episodes
-    for each el in m.store_items
-      if el.code = ep.id
-        ep.cost = el.cost
-        ep.productType = el.productType
-      end if
+  if m.config.iap = true
+    for each ep in episodes
+      for each el in m.store_items
+        if el.code = ep.id
+          ep.cost = el.cost
+          ep.productType = el.productType
+        end if
+      end for
     end for
-  end for
+  end if
 
   'print "Loading vidoes finished "; timer.TotalSeconds()
   return episodes
