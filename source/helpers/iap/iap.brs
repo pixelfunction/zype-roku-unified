@@ -25,7 +25,7 @@ Function get_channel_catalog() as void
         for each item in m.store_items
           if item.productType = "MonthlySub"
             m.monthly_sub = item
-            if m.config.subscription_button_text
+            if len(m.config.subscription_button_text) > 0
               m.monthly_sub.button = item.cost + " " + m.config.subscription_button_text
             else
               m.monthly_sub.button = item.cost + " " + item.name
