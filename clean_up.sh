@@ -4,9 +4,8 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 rm -rf "$DIR/screenshots"
 rm "$DIR/README.md"
 find "$DIR" -name "*.DS_Store" -type f -delete
-rm "$DIR/dist/zype-roku.zip"
-rm "$DIR/dist/zype.zip"
+rm -rf "$DIR/dist"
 rm -rf "$DIR/.git"
+rm "$DIR/.gitignore"
+rm -rf "$DIR/csfake"
 
-# Remove clean_up
-rm "$DIR/clean_up.sh"
