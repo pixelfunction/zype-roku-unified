@@ -1,8 +1,5 @@
 ' these are the hard coded keys/initialization variables
-' @NOTE
-' rename api_config.tmpl.brs to api_config.brs
-' rename set_api_tmpl() to set_api()
-Function set_api_tmpl() as void
+Function set_api() as void
   m.api = {
     app: "<APPKEY>",
     endpoint: "https://api.zype.com/",
