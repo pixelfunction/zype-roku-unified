@@ -12,6 +12,7 @@ Function set_dynamic_config() as void
   m.config.iap = false
   m.config.device_linking = false
   m.config.subscribe_to_watch_ad_free = false
+  m.config.autoplay = false
 
   m.config.nested = false
   m.config.springboard_breadcrumb_enabled = true
