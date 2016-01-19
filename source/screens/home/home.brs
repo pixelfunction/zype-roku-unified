@@ -68,14 +68,6 @@ Function home() as void
   while(true)
     msg = wait(0, port)
 
-    'change the focused list item if m.home_x, or m.home_y position has changed via user interactions
-    if m.previous_home_x <> m.home_x OR m.previous_home_y <> m.home_y
-      screen.SetFocusedListItem(m.home_x, m.home_y)
-      'set the m.previous_home_x and m.previous_home_y to current status
-      m.previous_home_x = m.home_x
-      m.previous_home_y = m.home_y
-    end if
-
     current_row = msg.GetIndex()
     row_to_load = current_row + m.loading_group
 
@@ -111,6 +103,14 @@ Function home() as void
         port=CreateObject("roMessagePort")
         screen.SetMessagePort(port)
         RunGarbageCollector()
+
+        'change the focused list item if m.home_x, or m.home_y position has changed via user interactions
+        if m.previous_home_x <> m.home_x OR m.previous_home_y <> m.home_y
+          screen.SetFocusedListItem(m.home_x, m.home_y)
+          'set the m.previous_home_x and m.previous_home_y to current status
+          m.previous_home_x = m.home_x
+          m.previous_home_y = m.home_y
+        end if
       end if
       if (msg.isScreenClosed())
         exit while
@@ -183,18 +183,6 @@ Function nested_home() as void
      while true
        msg = wait(0, port)
 
-       if m.previous_nested_x <> m.nested_x OR m.previous_nested_y <> m.nested_y
-         print "changing focused list to"
-         print m.nested_x
-         print m.nested_y
-
-         grid.SetFocusedListItem(m.nested_x, m.nested_y)
-
-         'set the m.previous_home_x and m.previous_home_y to current status
-         m.previous_nested_x = m.nested_x
-         m.previous_nested_y = m.nested_y
-       end if
-
        if type(msg) = "roGridScreenEvent" then
          if msg.isScreenClosed() then
           exit while
@@ -218,6 +206,18 @@ Function nested_home() as void
             port=CreateObject("roMessagePort")
             grid.SetMessagePort(port)
             RunGarbageCollector()
+
+            if m.previous_nested_x <> m.nested_x OR m.previous_nested_y <> m.nested_y
+              print "changing focused list to"
+              print m.nested_x
+              print m.nested_y
+
+              grid.SetFocusedListItem(m.nested_x, m.nested_y)
+
+              'set the m.previous_home_x and m.previous_home_y to current status
+              m.previous_nested_x = m.nested_x
+              m.previous_nested_y = m.nested_y
+            end if
          end if
        end if
      end while
@@ -293,14 +293,6 @@ Function category_home(series as object) as void
   while(true)
     msg = wait(0, port)
 
-      'change the focused list item if m.home_x, or m.home_y position has changed via user interactions
-      if m.previous_home_x <> m.home_x OR m.previous_home_y <> m.home_y
-        screen.SetFocusedListItem(m.home_x, m.home_y)
-        'set the m.previous_home_x and m.previous_home_y to current status
-        m.previous_home_x = m.home_x
-        m.previous_home_y = m.home_y
-      end if
-
       current_row = msg.GetIndex()
       row_to_load = current_row + m.loading_group
 
@@ -336,6 +328,14 @@ Function category_home(series as object) as void
         port=CreateObject("roMessagePort")
         screen.SetMessagePort(port)
         RunGarbageCollector()
+
+        'change the focused list item if m.home_x, or m.home_y position has changed via user interactions
+        if m.previous_home_x <> m.home_x OR m.previous_home_y <> m.home_y
+          screen.SetFocusedListItem(m.home_x, m.home_y)
+          'set the m.previous_home_x and m.previous_home_y to current status
+          m.previous_home_x = m.home_x
+          m.previous_home_y = m.home_y
+        end if
       end if
       if (msg.isScreenClosed())
         exit while

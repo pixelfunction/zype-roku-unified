@@ -36,9 +36,7 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
     if validateParam(episodes, "roArray", "showDetailScreen") = false return -1
 
     if fromSearch <> true
-      if m.home_y = invalid
-        m.home_y = index
-      end if
+      m.home_y = index
     else
       m.search_x = index
     end if
@@ -113,7 +111,11 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
                 end if
               end if
 
-              refreshShowDetail(screen, episodes, index, categoryName, fromSearch)
+              if fromSearch <> true
+                refreshShowDetail(screen, episodes, m.home_y, categoryName, fromSearch)
+              else
+                refreshShowDetail(screen, episodes, m.search_x, categoryName, fromSearch)
+              end if
             end if
         else
             print "Unexpected message class: "; type(msg)
@@ -145,9 +147,7 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
   RunGarbageCollector()
 
   if fromSearch <> true
-    if m.home_y = invalid
-      m.home_y = index
-    end if
+    m.home_y = index
   else
     m.search_x = index
   end if

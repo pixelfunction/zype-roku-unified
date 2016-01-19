@@ -50,6 +50,7 @@ Function set_dynamic_config() as void
   m.previous_home_x = 0
   m.previous_home_y = 0
   m.search_x = 0
+  m.previous_search_x = 0
 
   ' stores where the x,y position are in the nested home screen for every time you go back it maintains position
   m.nested_x = 0
