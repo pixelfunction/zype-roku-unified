@@ -1,8 +1,8 @@
-Function displayShowDetailScreen(category as Object, index as Integer) As Integer
+Function displayShowDetailScreen(category as Object, index as Integer, fromSearch as Boolean) As Integer
     if validateParam(category, "roAssociativeArray", "displayShowDetailScreen") = false return -1
     shows = category.episodes
     screen = preShowDetailScreen(category.name, shows[index].Title)
-    showDetailScreen(screen, shows, index, category.name)
+    showDetailScreen(screen, shows, index, category.name, fromSearch)
     return 1
 End Function
 
@@ -30,16 +30,20 @@ End Function
 '** and where we spend our time waiting until the user presses a
 '** button and then we decide how best to handle the event.
 '***************************************************************
-Function showDetailScreen(screen As Object, episodes As Object, index as Integer, categoryName as String) As Integer
+Function showDetailScreen(screen As Object, episodes As Object, index as Integer, categoryName as String, fromSearch as Boolean) As Integer
 
     if validateParam(screen, "roSpringboardScreen", "showDetailScreen") = false return -1
     if validateParam(episodes, "roArray", "showDetailScreen") = false return -1
 
-    if m.home_y = invalid
-      m.home_y = index
+    if fromSearch <> true
+      if m.home_y = invalid
+        m.home_y = index
+      end if
+    else
+      m.search_x = index
     end if
 
-    refreshShowDetail(screen, episodes, m.home_y, categoryName)
+    refreshShowDetail(screen, episodes, index, categoryName, fromSearch)
 
     'remote key id's for left/right navigation
     remoteKeyLeft  = 4
@@ -52,14 +56,14 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
                 exit while
             else if msg.isRemoteKeyPressed()
                 if msg.GetIndex() = remoteKeyLeft then
-                        index = getPrevShow(episodes, index)
+                        index = getPrevShow(episodes, index, fromSearch)
                         if index <> -1
-                          refreshShowDetail(screen, episodes, index, categoryName)
+                          refreshShowDetail(screen, episodes, index, categoryName, fromSearch)
                         end if
                 else if msg.GetIndex() = remoteKeyRight
-                    index = getNextShow(episodes, index)
+                    index = getNextShow(episodes, index, fromSearch)
                         if index <> -1
-                          refreshShowDetail(screen, episodes, index, categoryName)
+                          refreshShowDetail(screen, episodes, index, categoryName, fromSearch)
                         end if
                 end if
             else if msg.isButtonPressed()
@@ -71,11 +75,11 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
 
               if msg.GetIndex() = 1 then
                 offset = RegRead(episode.id).toInt()
-                play(episodes, m.home_y, offset)
+                play(episodes, index, offset, fromSearch)
               end if
 
               if msg.GetIndex() = 2 then
-                play(episodes, m.home_y, 0)
+                play(episodes, index, 0, fromSearch)
               end if
 
               if msg.GetIndex() = 3 then
@@ -109,7 +113,7 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
                 end if
               end if
 
-              refreshShowDetail(screen, episodes, m.home_y, categoryName)
+              refreshShowDetail(screen, episodes, index, categoryName, fromSearch)
             end if
         else
             print "Unexpected message class: "; type(msg)
@@ -129,7 +133,7 @@ End Function
 '** When leaving the screen, the should be positioned on the
 '** corresponding item in the poster screen matching the current show
 '**************************************************************
-Function refreshShowDetail(screen As Object, episodes As Object, index as Integer, categoryName as String) As Integer
+Function refreshShowDetail(screen As Object, episodes As Object, index as Integer, categoryName as String, fromSearch as Boolean) As Integer
   if validateParam(screen, "roSpringboardScreen", "refreshShowDetail") = false return -1
   if validateParam(episodes, "roArray", "refreshShowDetail") = false return -1
 
@@ -140,8 +144,12 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
   screen.SetMessagePort(port)
   RunGarbageCollector()
 
-  if m.home_y = invalid
-    m.home_y = index
+  if fromSearch <> true
+    if m.home_y = invalid
+      m.home_y = index
+    end if
+  else
+    m.search_x = index
   end if
 
   show = episodes[index]
@@ -295,7 +303,7 @@ End Function
 '** around case to implement a circular list for left/right
 '** navigation on the springboard screen
 '********************************************************
-Function getNextShow(episodes As Object, index As Integer) As Integer
+Function getNextShow(episodes As Object, index As Integer, fromSearch as Boolean) As Integer
     if validateParam(episodes, "roArray", "getNextShow") = false return -1
 
     nextIndex = index + 1
@@ -306,12 +314,16 @@ Function getNextShow(episodes As Object, index As Integer) As Integer
     show = episodes[nextIndex]
     if validateParam(show, "roAssociativeArray", "getNextShow") = false return -1
 
-    m.home_y = nextIndex
+    if fromSearch <> true
+      m.home_y = nextIndex
+    else
+      m.search_x = nextIndex
+    end if
 
     return nextIndex
 End Function
 
-Function getPrevShow(episodes As Object, index As Integer) As Integer
+Function getPrevShow(episodes As Object, index As Integer, fromSearch as Boolean) As Integer
     if validateParam(episodes, "roArray", "getPrevShow") = false return -1
 
     prevIndex = index - 1
@@ -326,7 +338,11 @@ Function getPrevShow(episodes As Object, index As Integer) As Integer
     show = episodes[prevIndex]
     if validateParam(show, "roAssociativeArray", "getPrevShow") = false return -1
 
-    m.home_y = prevIndex
+    if fromSearch <> true
+      m.home_y = prevIndex
+    else
+      m.search_x = prevIndex
+    end if
 
     return prevIndex
 End Function

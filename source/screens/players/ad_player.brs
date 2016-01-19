@@ -1,6 +1,11 @@
 ' ad player (for avod)
-sub play_episode_with_ad(episodes as object, index as integer, offset as integer)
-  m.home_y = index
+sub play_episode_with_ad(episodes as object, index as integer, offset as integer, fromSearch as Boolean)
+  if fromSearch <> true
+    m.home_y = index
+  else
+    m.search_x = index
+  end if
+
   episode = episodes[index]
 
   player_info = get_player_info(episode.id)
@@ -39,13 +44,13 @@ sub play_episode_with_ad(episodes as object, index as integer, offset as integer
 
   if adCompleted
     ' if the ad completed without the user pressing UP, play the content
-    ShowEpisodeScreen(episodes, index, ad.offset)
+    ShowEpisodeScreen(episodes, index, ad.offset, fromSearch)
   end if
 
   canvas.Close()
 end sub
 
-Function ShowEpisodeScreen(episodes as object, index as integer, offset as integer) as void
+Function ShowEpisodeScreen(episodes as object, index as integer, offset as integer, fromSearch as Boolean) as void
   episode = episodes[index]
   'print "LEAVING AD, ENTERING PLAYER"
   episode.playStart = offset
@@ -79,7 +84,7 @@ Function ShowEpisodeScreen(episodes as object, index as integer, offset as integ
         if (index + 1) < episodes.count()
           screen.close()
           if is_playable(episodes[index + 1])
-            play(episodes, index + 1, 0)
+            play(episodes, index + 1, 0, fromSearch)
           end if
         end if
       end if

@@ -1,8 +1,8 @@
-Function play(episodes as object, index as integer, offset as integer)
+Function play(episodes as object, index as integer, offset as integer, fromSearch as Boolean)
   if show_ads(episodes[index]) = true
-    play_episode_with_ad(episodes, index, offset)
+    play_episode_with_ad(episodes, index, offset, fromSearch)
   else
-    play_episode_ad_free(episodes, index, offset)
+    play_episode_ad_free(episodes, index, offset, fromSearch)
   end if
 End Function
 
@@ -32,8 +32,12 @@ Function show_ads(episode as object) as boolean
 End Function
 
 ' ad free player (for svod)
-Function play_episode_ad_free(episodes as object, index as integer, offset as integer) as void
-  m.home_y = index
+Function play_episode_ad_free(episodes as object, index as integer, offset as integer, fromSearch as Boolean) as void
+  if fromSearch <> true
+    m.home_y = index
+  else
+    m.search_x = index
+  end if
   episode = episodes[index]
 
   if type(episode) <> "roAssociativeArray"
@@ -76,7 +80,7 @@ Function play_episode_ad_free(episodes as object, index as integer, offset as in
               if (index + 1) < episodes.count()
                 screen.close()
                 if is_playable(episodes[index + 1])
-                  play(episodes, index + 1, 0)
+                  play(episodes, index + 1, 0, fromSearch)
                 end if
               endif
             endif

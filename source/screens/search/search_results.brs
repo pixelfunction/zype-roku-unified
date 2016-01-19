@@ -25,7 +25,12 @@ Function search_results_screen(query As String) as void
         if(results.Count() <= 0)
           exit while
         else
-          displayShowDetailScreen(search_info, msg.GetIndex())
+
+          if m.search_x = invalid
+            m.search_x = msg.GetIndex()
+          end if
+
+          displayShowDetailScreen(search_info, m.search_x, true)
 
           ' prevent multiple button presses
           port=CreateObject("roMessagePort")

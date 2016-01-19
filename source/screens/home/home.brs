@@ -95,7 +95,7 @@ Function home() as void
         m.home_x = row
 
         if(row = 0)
-          displayShowDetailScreen(featured, msg.GetData())
+          displayShowDetailScreen(featured, msg.GetData(), false)
         else if(row = row_titles.count()-1)
           toolbar.tools[msg.GetData()].function_name()
         else
@@ -104,7 +104,7 @@ Function home() as void
           else
             category = m.categories[msg.GetIndex()-1]
           end if
-          displayShowDetailScreen(category, msg.GetData())
+          displayShowDetailScreen(category, msg.GetData(), false)
         end if
 
         ' prevent multiple button presses
@@ -467,7 +467,7 @@ Function category_home(series as object) as void
         m.home_x = row
 
         if(row = 0)
-          displayShowDetailScreen(featured, msg.GetData())
+          displayShowDetailScreen(featured, msg.GetData(), false)
         else if(row = row_titles.count()-1)
           toolbar.tools[msg.GetData()].function_name()
         else
@@ -476,7 +476,7 @@ Function category_home(series as object) as void
           else
             category = m.categories[msg.GetIndex()-1]
           end if
-          displayShowDetailScreen(category, msg.GetData())
+          displayShowDetailScreen(category, msg.GetData(), false)
         end if
 
         ' prevent multiple button presses
