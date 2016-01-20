@@ -7,27 +7,13 @@ Function set_dynamic_config() as void
   m.config = {}
   m.config = res
 
-  m.config.force_ads = false
-  m.config.ads = false
-  m.config.iap = false
-  m.config.device_linking = false
-  m.config.subscribe_to_watch_ad_free = false
-  m.config.autoplay = false
-
-  m.config.nested = false
-  m.config.springboard_breadcrumb_enabled = true
-  m.config.home_breadcrumb_enabled = true
-  m.config.category_home_breadcrumb_enabled = true
   m.config.per_page = Str(m.config.per_page).Trim()
   m.config.info = {
-    header: "About",
+    header: m.config.info_title,
     paragraphs: [
-            "All about the Roku Channel.",
-            ""
+      m.config.info_description
     ]
   }
-  m.config.device_link_url = "www.example.com/link"
-  m.config.subscription_button_text = "Subscription Required"
 
   ' SVOD Visitor Screen Settings
   ' m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.jpg"

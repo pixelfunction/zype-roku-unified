@@ -87,7 +87,7 @@ Function get_videos(url As String, short As Boolean) as object
   end for
 
   ' @toberefactored
-  if m.config.iap = true
+  if m.config.in_app_purchase = true
     for each ep in episodes
       for each el in m.store_items
         if el.code = ep.id

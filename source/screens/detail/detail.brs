@@ -170,7 +170,7 @@ End Function
 ' Add buttons
 '******************************************************
 Function add_buttons(screen as object, episode as object) as void
-  if m.config.iap = true
+  if m.config.in_app_purchase = true
     ' @desc IAP mode
     print  "IAP mode"
     if episode.SubscriptionRequired = false and episode.PurchaseRequired = false
@@ -251,7 +251,7 @@ End Function
 ' Can we play the video?
 '******************************************************
 Function is_playable(episode as object) as Boolean
-  if m.config.iap = true
+  if m.config.in_app_purchase = true
     ' @desc IAP mode
     print  "IAP mode"
     if episode.SubscriptionRequired = false and episode.PurchaseRequired = false
