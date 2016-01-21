@@ -3,7 +3,11 @@ Function Main() as void
   init()
 
   ' @toberefactored should be configurable from the dashboard.
-  home()
+  if m.config.device_linking = true
+    visitor_screen()
+  else
+    home()
+  end if
 End Function
 
 ' initializes and configures the app
