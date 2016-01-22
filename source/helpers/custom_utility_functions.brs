@@ -76,6 +76,45 @@ Function ToString(variable As Dynamic) As String
     End If
 End Function
 
+'******************************************************
+' Type Check
+'******************************************************
+
+Function IsFunction(value As Dynamic) As Boolean
+    Return IsValid(value) And GetInterface(value, "ifFunction") <> invalid
+End Function
+
+Function IsBoolean(value As Dynamic) As Boolean
+    Return IsValid(value) And GetInterface(value, "ifBoolean") <> invalid
+End Function
+
+Function IsInteger(value As Dynamic) As Boolean
+    Return IsValid(value) And GetInterface(value, "ifInt") <> invalid And (Type(value) = "roInt" Or Type(value) = "roInteger" Or Type(value) = "Integer")
+End Function
+
+Function IsDouble(value As Dynamic) As Boolean
+    Return IsValid(value) And (GetInterface(value, "ifDouble") <> invalid Or (Type(value) = "roDouble" Or Type(value) = "roIntrinsicDouble" Or Type(value) = "Double"))
+End Function
+
+Function IsArray(value As Dynamic) As Boolean
+    Return IsValid(value) And GetInterface(value, "ifArray") <> invalid
+End Function
+
+Function IsAssociativeArray(value As Dynamic) As Boolean
+    Return IsValid(value) And GetInterface(value, "ifAssociativeArray") <> invalid
+End Function
+
+Function IsString(value As Dynamic) As Boolean
+    Return IsValid(value) And GetInterface(value, "ifString") <> invalid
+End Function
+
+Function IsDateTime(value As Dynamic) As Boolean
+    Return IsValid(value) And (GetInterface(value, "ifDateTime") <> invalid Or Type(value) = "roDateTime")
+End Function
+
+Function IsValid(value As Dynamic) As Boolean
+    Return Type(value) <> "<uninitialized>" And value <> invalid
+End Function
 
 '******************************************************
 ' String Casting
