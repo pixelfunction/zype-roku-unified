@@ -40,12 +40,29 @@ Function get_videos(url As String, short As Boolean) as object
   'timer.Mark()
 
   for each item in res
-    if item.description = invalid
-      item.description = ""
+    short_description = ""
+    full_description = ""
+    if IsString(item.description) = true and IsString(item.short_description) = true
+      if item.description.Trim().Len() > 0 and item.short_description.Trim().Len() > 0
+        short_description = item.short_description
+        full_description = item.description
+      else if item.description.Trim().Len() > 0 and item.short_description.Trim().Len() = 0
+        short_description = item.description
+        full_description = item.description
+      else if item.description.Trim().Len() = 0 and item.short_description.Trim().Len() > 0
+        short_description = item.short_description
+      end if
+    else if IsString(item.description) = true and IsString(item.short_description) = false
+      if item.description.Trim().Len() > 0
+        short_description = item.description
+        full_description = item.description
+      end if
+    else if IsString(item.description) = false and IsString(item.short_description) = true
+      if item.short_description.Trim().Len() > 0
+        short_description = item.short_description
+      end if
     end if
-    if item.short_description = invalid
-      item.description = ""
-    end if
+
     thumbnail = parse_thumbnail(item)
     rating = parse_rating(item)
     episode = {
@@ -56,8 +73,9 @@ Function get_videos(url As String, short As Boolean) as object
       HDPosterUrl: thumbnail,
       Length: item.duration,
       Rating: rating,
-      Description: item.short_description,
-      FullDescription: item.description,
+      ' The Description field is used for all pages
+      Description: short_description,
+      FullDescription: full_description,
       SubscriptionRequired: item.subscription_required,
       PassRequired: item.pass_required,
       PurchaseRequired: item.purchase_required,
