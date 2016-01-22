@@ -15,6 +15,11 @@ Function set_dynamic_config() as void
     ]
   }
 
+  ' Dealing with an empty response (for now)
+  if m.config.subscription_button_text = invalid
+    m.config.subscription_button_text = ""
+  end if
+
   ' SVOD Visitor Screen Settings
   m.config.visitor_background_img_hd = "pkg:/images/splash_screen_hd.png"
   m.config.activate_button_x_hd = 275
