@@ -15,6 +15,9 @@ Function set_dynamic_config() as void
     ]
   }
 
+  ' Switch for View Full Description. Assuming that a video has the desc field avaiable
+  m.config.view_full_description = true
+
   ' Dealing with an empty response (for now)
   if m.config.subscription_button_text = invalid
     m.config.subscription_button_text = ""
