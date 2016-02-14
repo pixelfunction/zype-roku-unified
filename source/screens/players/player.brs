@@ -128,6 +128,8 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     canvas.Show()
 
     adIface = Roku_Ads()
+    adIface.enableNielsenDAR(m.config.enableNielsenDAR)
+    adIface.setNielsenAppId(m.config.NielsenAppId)
     adIface.setAdUrl(ad.url)
 
     adPods = adIface.getAds()
