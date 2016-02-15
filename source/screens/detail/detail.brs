@@ -260,7 +260,7 @@ Function is_playable(episode as object) as Boolean
     if episode.SubscriptionRequired = false and episode.PurchaseRequired = false
       return true
     else if episode.SubscriptionRequired = true and episode.PurchaseRequired = false
-      if subscribe_to_watch_ad_free = true
+      if m.config.subscribe_to_watch_ad_free = true
         return true
       else
         if is_subscribed() = true
