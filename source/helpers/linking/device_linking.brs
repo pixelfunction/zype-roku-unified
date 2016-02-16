@@ -43,7 +43,8 @@ Function acquire_pin() as object
   request.AddHeader("X-Roku-Reserved-Dev-Id", "")
   request.InitClientCertificates()
 
-  url = "https://api.zype.com/pin/acquire/?app_key=" + m.api.app
+  url = m.api.endpoint + "/pin/acquire/?app_key=" + m.api.app
+
   request.SetUrl(url)
   pin_request = "linked_device_id=" + m.device_id + "&type=roku"
 
