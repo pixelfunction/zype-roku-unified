@@ -4,14 +4,31 @@
 ' @refactored
 Function parse_thumbnail(input As Object) as string
   thumbnail_url = ""
-  for each  thumbnail in input.thumbnails
-    if(thumbnail.DoesExist("width"))
-      if(thumbnail.width >= 250)
-        thumbnail_url = cached_thumbnail_path(thumbnail.url, input._id)
-        return thumbnail_url
+
+  ' if a client uploads his/her own poster kind thumbnails
+  ' the app should use that
+  if input.DoesExist("images")
+    for each  thumbnail in input.images
+      if(thumbnail.DoesExist("title"))
+        if(thumbnail.title = "film-poster")
+          thumbnail_url = cached_thumbnail_path(thumbnail.url, input._id)
+          return thumbnail_url
+        endif
       endif
-    endif
-  end for
+    end for
+  else
+    ' otherwise, we use default
+    for each  thumbnail in input.thumbnails
+      if(thumbnail.DoesExist("width"))
+        if(thumbnail.width >= 250)
+          thumbnail_url = cached_thumbnail_path(thumbnail.url, input._id)
+          return thumbnail_url
+        endif
+      endif
+    end for
+  end if
+
+  ' URL is not available
   return thumbnail_url
 End Function
 
