@@ -177,7 +177,7 @@ function FireTrackingEvent(trackingEvent)
   request = CreateObject("roURLTransfer")
   request.SetPort(port)
 
-  if url.InStr(0, "https") = 0
+  if trackingEvent.url.InStr(0, "https") = 0
     request.SetCertificatesFile("common:/certs/ca-bundle.crt")
     request.AddHeader("X-Roku-Reserved-Dev-Id", "")
     request.InitClientCertificates()
