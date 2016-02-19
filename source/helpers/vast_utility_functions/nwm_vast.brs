@@ -60,7 +60,7 @@ function NWM_VAST_Parse(raw, returnUnsupportedVideo = false, normalizeURLs = fal
   if xml.Parse(raw)
     result = true
 
-    xfer = CreateObject("roURLTransfer")
+    request = CreateObject("roURLTransfer")
     colonRX = CreateObject("roRegEx", ":", "")
     timestampRX = CreateObject("roRegEx", "\[(timestamp|cache_breaker)\]", "i")
     dt = CreateObject("roDateTime")
@@ -145,17 +145,17 @@ function NWM_VAST_Parse(raw, returnUnsupportedVideo = false, normalizeURLs = fal
           url = timestampRX.Replace(url, timestamp)
 
           if url.InStr(0, "https") = 0
-            ut = CreateObject("roURLTransfer")
-            ut.SetCertificatesFile("common:/certs/ca-bundle.crt")
-            ut.InitClientCertificates()
+            request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+            request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+            request.InitClientCertificates()
           end if
-          xfer.SetURL(url)
-          setURL = xfer.GetURL()
+          request.SetURL(url)
+          setURL = request.GetURL()
           if m.debug then print "NWM_VAST: processing wrapper: " + setURL
           if setURL = ""
             if m.debug then print "NWM_VAST: ***ERROR*** SetURL failed for " + url
           end if
-          raw = xfer.GetToString()
+          raw = request.GetToString()
 
           xml.Parse(raw)
           if xml.ad.Count() > 0
@@ -443,9 +443,16 @@ end function
 function NWM_VAST_GetPrerollFromURL(url)
   'only do if url is not invalid
   if url <> invalid
-    xfer = CreateObject("roURLTransfer")
-    xfer.SetURL(url)
-    raw = xfer.GetToString()
+    request = CreateObject("roURLTransfer")
+
+    if url.InStr(0, "https") = 0
+      request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+      request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+      request.InitClientCertificates()
+    end if
+
+    request.SetURL(url)
+    raw = request.GetToString()
     m.Parse(raw)
 
     return m.video

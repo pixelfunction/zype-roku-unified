@@ -174,19 +174,25 @@ function FireTrackingEvent(trackingEvent)
   timer = CreateObject("roTimespan")
   timer.Mark()
   port = CreateObject("roMessagePort")
-  xfer = CreateObject("roURLTransfer")
-  xfer.SetPort(port)
+  request = CreateObject("roURLTransfer")
+  request.SetPort(port)
 
-  xfer.SetURL(trackingEvent.url)
-  'print "~~~TRACKING: " + xfer.GetURL()
+  if url.InStr(0, "https") = 0
+    request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+    request.InitClientCertificates()
+  end if
+
+  request.SetURL(trackingEvent.url)
+  'print "~~~TRACKING: " + request.GetURL()
   ' have to do this synchronously so that we don't colide with
   ' other tracking events firing at or near the same time
-  if xfer.AsyncGetToString()
+  if request.AsyncGetToString()
     event = wait(timeout, port)
 
     if event = invalid
       ' we waited long enough, moving on
-      xfer.AsyncCancel()
+      request.AsyncCancel()
       result = false
     else
       'print "Req finished: " + timer.TotalMilliseconds().ToStr()

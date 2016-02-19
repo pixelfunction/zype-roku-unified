@@ -13,24 +13,31 @@ function NWM_UT_GetStringFromURL(url, auth = invalid)
 	result = ""
 	timeout = 10000
 
-  ut = CreateObject("roURLTransfer")
-  ut.SetPort(CreateObject("roMessagePort"))
-  'ut.AddHeader("user-agent", "Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543 Safari/419.3")
-  if auth <> invalid
-    ut.AddHeader("Authorization", auth)
+  request = CreateObject("roURLTransfer")
+
+	if url.InStr(0, "https") = 0
+    request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+    request.InitClientCertificates()
   end if
-  ut.SetURL(url)
-  'print "~~~FETCH: " + ut.GetURL()
-	if ut.AsyncGetToString()
-		event = wait(timeout, ut.GetPort())
+
+  request.SetPort(CreateObject("roMessagePort"))
+  'request.AddHeader("user-agent", "Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543 Safari/419.3")
+  if auth <> invalid
+    request.AddHeader("Authorization", auth)
+  end if
+  request.SetURL(url)
+  'print "~~~FETCH: " + request.GetURL()
+	if request.AsyncGetToString()
+		event = wait(timeout, request.GetPort())
 		if type(event) = "roUrlEvent"
 				'print ValidStr(event.GetResponseCode())
 				result = event.GetString()
 				'exit while
 		elseif event = invalid
-				ut.AsyncCancel()
+				request.AsyncCancel()
 				REM reset the connection on timeouts
-				'ut = CreateURLTransferObject(url)
+				'request = CreateURLTransferObject(url)
 				'timeout = 2 * timeout
 		else
 				print "roUrlTransfer::AsyncGetToString(): unknown event"

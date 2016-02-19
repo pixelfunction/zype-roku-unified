@@ -6,11 +6,12 @@ Function is_linked() As Boolean
   port = CreateObject("roMessagePort")
   request.SetPort(port)
 
-  request.SetCertificatesFile("common:/certs/ca-bundle.crt")
-  request.AddHeader("X-Roku-Reserved-Dev-Id", "")
-  request.InitClientCertificates()
-
   url = m.api.endpoint + "/pin/status/?app_key=" + m.api.app + "&linked_device_id=" + m.device_id
+  if url.InStr(0, "https") = 0
+    request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+    request.InitClientCertificates()
+  end if
   request.SetUrl(url)
 
   if(request.AsyncGetToString())

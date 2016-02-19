@@ -141,9 +141,26 @@ Function cache_images(images As Object) as void
           cached_images[key] = file
         end if
 
-        ut = CreateObject("roUrlTransfer")
-        ut.SetUrl(image[key])
-        responseCode = ut.GetToFile(file)
+        url = image[key]
+        request = CreateObject("roUrlTransfer")
+        request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+        request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+        request.InitClientCertificates()
+        if url.InStr(0, "https") = 0
+          request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+          request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+          request.InitClientCertificates()
+        else
+          ' For testimg
+          ' request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+          ' request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+          ' request.InitClientCertificates()
+          ' r = CreateObject("roRegex", "http", "i")
+          ' url = r.Replace(url, "https")
+        end if
+        request.SetUrl(url)
+
+        responseCode = request.GetToFile(file)
         if responseCode = 200
           cached_images[key] = file
         end if
