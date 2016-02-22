@@ -113,14 +113,6 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     episode.StreamFormat = player_info.format
     episode.ads = player_info.ads
     episode.playStart = offset
-    ad = get_ad(episode)
-
-    if ad.url.len() > 0
-      print ad.url
-    else
-      play_episode_ad_free(episodes, index, offset, fromSearch)
-      return
-    end if
 
     canvas = CreateObject("roImageCanvas")
     canvas.SetLayer(1, {color: "#000000"})
@@ -130,16 +122,10 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     adIface = Roku_Ads()
     adIface.enableNielsenDAR(m.config.enableNielsenDAR)
     adIface.setNielsenAppId(m.config.NielsenAppId)
-    adIface.setAdUrl(ad.url)
-
-    adPods = adIface.getAds()
-    playContent = adIface.showAds(adPods) ' show preroll ad pod (if any)
 
     curPos = 0
-    if playContent
-        videoScreen = PlayVideoContent(episode)
-    end if
-
+    videoScreen = PlayVideoContent(episode)
+    playContent = true
     closingContentScreen = false
     contentDone = false
     while playContent
@@ -153,6 +139,20 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
               ' cache current playback position for resume after midroll ads
               curPos = videoMsg.GetIndex()
               RegWrite(episode.id, curPos.toStr())
+
+              ad = get_ad(episode, curPos)
+              if ad.url.len() > 0
+                videoScreen.close()
+
+                adIface.setAdUrl(ad.url)
+                adPods = adIface.getAds()
+                playContent = adIface.showAds(adPods)
+                if playContent and not contentDone
+                  ' resume video playback after ads
+                  episode.PlayStart = curPos
+                  videoScreen = PlayVideoContent(episode)
+                end if
+              end if
             end if
 
             if videoMsg.isFullResult()
@@ -218,9 +218,16 @@ Function PlayVideoContent(content as Object) as Object
     return videoScreen
 End Function
 
-Function get_ad(episode)
+Function get_ad(episode, offset)
   if episode.ads.count() > 0
-    return episode.ads[0]
+    for each ad in episode.ads
+      if ad.played = false
+        if offset > ad.offset
+          ad.played = true
+          return ad
+        end if
+      end if
+    end for
   end if
-  return {offset: 0, url: ""}
+  return {url: "", offset: 0, played: true}
 End Function
