@@ -4,7 +4,14 @@ Function Main() as void
 
   ' @toberefactored should be configurable from the dashboard.
   if m.config.device_linking = true
-    visitor_screen()
+    'check if consumer is linked
+    if is_linked()
+      'if already linked go to home
+      home()
+    else
+      ' otherwise go to visitor screen
+      visitor_screen()
+    end if
   else
     home()
   end if

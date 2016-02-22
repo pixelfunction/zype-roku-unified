@@ -20,7 +20,7 @@ Function set_dynamic_config() as void
     ]
   }
 
-  ' Switch for View Full Description. Assuming that a video has the desc field avaiable
+  ' Switch for View Full Description. Assuming that a video has the desc field available
   m.config.view_full_description = true
 
   ' Dealing with an empty response (for now)
