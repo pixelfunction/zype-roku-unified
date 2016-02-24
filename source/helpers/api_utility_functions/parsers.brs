@@ -7,7 +7,7 @@ Function parse_thumbnail(input As Object) as string
 
   ' if a client uploads his/her own poster kind thumbnails
   ' the app should use that
-  if input.DoesExist("images")
+  if input.DoesExist("images") and input.images.count() > 0
     for each  thumbnail in input.images
       if(thumbnail.DoesExist("title"))
         if(thumbnail.title = "film-poster")
