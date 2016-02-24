@@ -47,12 +47,15 @@ Function cached_thumbnail_path(url as string, name as string) as string
       'print "nope"
     end if
 
-    xfer = createObject("roUrlTransfer")
-    xfer.setCertificatesFile("common:/certs/ca-bundle.crt")
-    xfer.addHeader("X-Roku-Reserved-Dev-Id", "")
-    xfer.initClientCertificates()
-    xfer.setUrl(url)
-    respCode = xfer.getToFile(file_name)
+    request = CreateObject("roURLTransfer")
+    if url.InStr(0, "https") = 0
+      request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+      request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+      request.InitClientCertificates()
+    end if
+    print url
+    request.setUrl(url)
+    respCode = request.getToFile(file_name)
 
     if respCode = 200
       return file_name

@@ -7,10 +7,13 @@ Function call_api(url As String) as Object
   port = CreateObject("roMessagePort")
   request.SetPort(port)
 
-  request.SetCertificatesFile("common:/certs/ca-bundle.crt")
-  request.AddHeader("X-Roku-Reserved-Dev-Id", "")
-  request.InitClientCertificates()
+  if url.InStr(0, "https") = 0
+    request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+    request.InitClientCertificates()
+  end if
   request.SetUrl(url)
+
   if(request.AsyncGetToString())
     while(true)
       msg = wait(0, port)
@@ -263,12 +266,14 @@ Function get_category_info(category_id As String) as Object
   port = CreateObject("roMessagePort")
   request.SetPort(port)
 
-  request.SetCertificatesFile("common:/certs/ca-bundle.crt")
-  request.AddHeader("X-Roku-Reserved-Dev-Id", "")
-  request.InitClientCertificates()
-
   url = m.api.endpoint + "/categories/" + category_id + "/?app_key=" + m.api.app
+  if url.InStr(0, "https") = 0
+    request.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    request.AddHeader("X-Roku-Reserved-Dev-Id", "")
+    request.InitClientCertificates()
+  end if
   request.SetUrl(url)
+
   category_info = {name: "", values: CreateObject("roArray", 1, true)}
 
   if(request.AsyncGetToString())
