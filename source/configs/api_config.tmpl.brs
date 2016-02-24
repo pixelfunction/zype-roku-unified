@@ -1,3 +1,6 @@
+' version info
+' GIT DESCRIPTION: <GIT_DESCRIPTION>
+
 ' these are the hard coded keys/initialization variables
 Function set_api() as void
   m.api = {
