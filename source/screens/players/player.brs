@@ -124,8 +124,23 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     adIface.setNielsenAppId(m.config.NielsenAppId)
 
     curPos = 0
-    videoScreen = PlayVideoContent(episode)
     playContent = true
+
+    ' make sure to play preroll ad if it exists
+    ad = get_ad(episode, curPos)
+    if ad.url.len() > 0
+      adIface.setAdUrl(ad.url)
+      adPods = adIface.getAds()
+      playContent = adIface.showAds(adPods)
+      if playContent
+        ' resume video playback after ads
+        episode.PlayStart = curPos
+        videoScreen = PlayVideoContent(episode)
+      end if
+    else
+      videoScreen = PlayVideoContent(episode)
+    end if
+
     closingContentScreen = false
     contentDone = false
     while playContent
@@ -222,7 +237,7 @@ Function get_ad(episode, offset)
   if episode.ads.count() > 0
     for each ad in episode.ads
       if ad.played = false
-        if offset > ad.offset
+        if offset >= ad.offset
           ad.played = true
           return ad
         end if
