@@ -7,26 +7,28 @@ Function parse_thumbnail(input As Object) as string
 
   ' if a client uploads his/her own poster kind thumbnails
   ' the app should use that
-  if input.DoesExist("images")
+  if input.DoesExist("images") and input.images.count() > 0
     for each  thumbnail in input.images
       if(thumbnail.DoesExist("title"))
         if(thumbnail.title = "film-poster")
           thumbnail_url = cached_thumbnail_path(thumbnail.url, input._id)
-          return thumbnail_url
-        endif
-      endif
-    end for
-  else
-    ' otherwise, we use default
-    for each  thumbnail in input.thumbnails
-      if(thumbnail.DoesExist("width"))
-        if(thumbnail.width >= 250)
-          thumbnail_url = cached_thumbnail_path(thumbnail.url, input._id)
-          return thumbnail_url
+          if thumbnail_url <> ""
+            return thumbnail_url
+          end if
         endif
       endif
     end for
   end if
+
+  ' otherwise, we use default
+  for each  thumbnail in input.thumbnails
+    if(thumbnail.DoesExist("width"))
+      if(thumbnail.width >= 250)
+        thumbnail_url = cached_thumbnail_path(thumbnail.url, input._id)
+        return thumbnail_url
+      endif
+    endif
+  end for
 
   ' URL is not available
   return thumbnail_url
