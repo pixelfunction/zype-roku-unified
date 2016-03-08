@@ -244,20 +244,20 @@ Function replace(url as string) as string
     ut = CreateObject("roUrlTransfer")
 
     r = CreateObject("roRegex", "app\[bundle\]=\[REPLACE_ME\]", "")
-    term = ut.escape("app[bundle]=roku.testapp")
+    term = ut.escape("app[bundle]") + "=roku.testapp"
     newUrl = r.Replace(newUrl, term)
 
     r = CreateObject("roRegex", "app\[name\]=\[REPLACE_ME\]", "")
-    term = ut.escape("app[name]=testapp")
+    term = ut.escape("app[name]") + "=testapp"
     newUrl = r.Replace(newUrl, term)
 
     r = CreateObject("roRegex", "ip_addr=\[REPLACE_ME\]", "")
     di = CreateObject("roDeviceInfo")
-    term = ut.escape("ip_addr=" + di.GetIPAddrs()["eth1"].toStr())
+    term = "ip_addr=" + di.GetIPAddrs()["eth1"].toStr()
     newUrl = r.Replace(newUrl, term)
 
     r = CreateObject("roRegex", "device\[ua\]=\[REPLACE_ME\]", "")
-    term = ut.escape("device[ua]=Roku")
+    term = ut.escape("device[ua]") + "=Roku"
     newUrl = r.Replace(newUrl, term)
 
     print newurl
