@@ -70,6 +70,14 @@ Function get_videos(url As String, short As Boolean) as object
     short_description = r.ReplaceAll(short_description, chr(10))
     full_description = r.ReplaceAll(full_description, chr(10))
 
+    published_at = ""
+    if isString(item.published_at) = true
+      dt = CreateObject("roDateTime")
+      date = left(item.published_at, 23)
+      dt.FromISO8601String(date)
+      published_at = dt.AsDateString("short-date")
+    end if
+
     thumbnail = parse_thumbnail(item)
     rating = parse_rating(item)
     episode = {
@@ -80,6 +88,7 @@ Function get_videos(url As String, short As Boolean) as object
       HDPosterUrl: thumbnail,
       Length: item.duration,
       Rating: rating,
+      ReleaseDate: published_at
       ' The Description field is used for all pages
       Description: short_description,
       FullDescription: full_description,
