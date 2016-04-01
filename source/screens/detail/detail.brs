@@ -356,7 +356,10 @@ Function ShowFullDescription(episode as Object) As Void
   screen = CreateObject("roParagraphScreen")
   screen.SetMessagePort(port)
   screen.SetTitle("Full Description")
-  screen.AddHeaderText(episode.title)
+
+  title = Truncate(episode.title, 40, true)
+  screen.AddHeaderText(title)
+
   screen.AddParagraph(episode.fulldescription)
   screen.Show()
   while true

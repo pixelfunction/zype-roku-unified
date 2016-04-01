@@ -66,6 +66,10 @@ Function get_videos(url As String, short As Boolean) as object
       end if
     end if
 
+    r = CreateObject("roRegex", "\s\r|\s\n|\s\r\n|\r|\n", "")
+    short_description = r.ReplaceAll(short_description, chr(10))
+    full_description = r.ReplaceAll(full_description, chr(10))
+
     thumbnail = parse_thumbnail(item)
     rating = parse_rating(item)
     episode = {
