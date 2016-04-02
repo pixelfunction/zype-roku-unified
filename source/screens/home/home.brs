@@ -38,11 +38,12 @@ Function flat_home() as Void
   screen.SetupLists(total_rows)
   screen.SetListNames(m.row_titles)
 
-  screen.SetContentList(playlist_position, m.playlist.episodes)
+  subsetLength = 5
+  screen.SetContentListSubset(playlist_position, m.playlist.episodes, 0, subsetLength)
   screen.SetContentList(toolbar_position, m.toolbar.tools)
 
   m.categories = CreateObject("roArray", 1, true)
-  screen.SetContentList(category_start_position, load_data(category_start_position))
+  screen.SetContentListSubset(category_start_position, load_data(category_start_position), 0, subsetLength)
 
   screen.SetFocusedListItem(0,0)
   screen.show()
@@ -51,17 +52,23 @@ Function flat_home() as Void
     msg = wait(0, port)
 
     current_row = msg.GetIndex()
+    current_col = msg.GetData()
+
+    if current_row = playlist_position
+      screen.SetContentListSubset(current_row, m.playlist.episodes, current_col, subsetLength)
+    end if
+
     if current_row <= category_end_position and current_row >= category_start_position
-      screen.SetContentList(current_row, load_data(current_row))
+      screen.SetContentListSubset(current_row, load_data(current_row), current_col, subsetLength)
 
       prev_row = current_row - 1
       if prev_row >= category_start_position
-        screen.SetContentList(prev_row, load_data(prev_row))
+        screen.SetContentListSubset(prev_row, load_data(prev_row), current_col, subsetLength)
       end if
 
       next_row = current_row + 1
       if next_row <= category_end_position
-        screen.SetContentList(next_row, load_data(next_row))
+        screen.SetContentListSubset(next_row, load_data(next_row), current_col, subsetLength)
       end if
     end if
 
@@ -139,11 +146,12 @@ Function category_home(series as object) as Void
   screen.SetupLists(total_rows)
   screen.SetListNames(m.row_titles)
 
-  screen.SetContentList(playlist_position, m.playlist.episodes)
+  subsetLength = 5
+  screen.SetContentListSubset(playlist_position, m.playlist.episodes, 0, subsetLength)
   screen.SetContentList(toolbar_position, m.toolbar.tools)
 
   m.categories = CreateObject("roArray", 1, true)
-  screen.SetContentList(category_start_position, load_data(category_start_position))
+  screen.SetContentListSubset(category_start_position, load_data(category_start_position), 0, subsetLength)
 
   screen.SetFocusedListItem(0,0)
   screen.show()
@@ -152,17 +160,23 @@ Function category_home(series as object) as Void
     msg = wait(0, port)
 
     current_row = msg.GetIndex()
+    current_col = msg.GetData()
+
+    if current_row = playlist_position
+      screen.SetContentListSubset(current_row, m.playlist.episodes, current_col, subsetLength)
+    end if
+
     if current_row <= category_end_position and current_row >= category_start_position
-      screen.SetContentList(current_row, load_data(current_row))
+      screen.SetContentListSubset(current_row, load_data(current_row), current_col, subsetLength)
 
       prev_row = current_row - 1
       if prev_row >= category_start_position
-        screen.SetContentList(prev_row, load_data(prev_row))
+        screen.SetContentListSubset(prev_row, load_data(prev_row), current_col, subsetLength)
       end if
 
       next_row = current_row + 1
       if next_row <= category_end_position
-        screen.SetContentList(next_row, load_data(next_row))
+        screen.SetContentListSubset(next_row, load_data(next_row), current_col, subsetLength)
       end if
     end if
 
