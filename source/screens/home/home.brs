@@ -23,7 +23,7 @@ Function flat_home() as Void
   m.category = get_category()
   m.toolbar = grid_toolbar()
 
-  ' postions for content
+  ' positions for content
   playlist_position = 0
   toolbar_position = m.category.values.count() + 1
   category_start_position = 1
