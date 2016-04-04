@@ -3,72 +3,29 @@
 ' returns URL for a thumbnail
 ' @refactored
 Function parse_thumbnail(input As Object) as string
-  thumbnail_url = ""
-
   ' if a client uploads his/her own poster kind thumbnails
   ' the app should use that
   if input.DoesExist("images") and input.images.count() > 0
     for each  thumbnail in input.images
       if(thumbnail.DoesExist("title"))
         if(thumbnail.title = "film-poster")
-          thumbnail_url = cached_thumbnail_path(thumbnail.url, input._id)
-          if thumbnail_url <> ""
-            return thumbnail_url
-          end if
+          return thumbnail.url
         endif
       endif
     end for
   end if
 
   ' otherwise, we use default
-  for each  thumbnail in input.thumbnails
+  for each thumbnail in input.thumbnails
     if(thumbnail.DoesExist("width"))
       if(thumbnail.width >= 250)
-        thumbnail_url = cached_thumbnail_path(thumbnail.url, input._id)
-        return thumbnail_url
+        return thumbnail.url
       endif
     endif
   end for
 
   ' URL is not available
-  return thumbnail_url
-End Function
-
-Function cached_thumbnail_path(url as string, name as string) as string
-  r = CreateObject("roRegex", "(\.png|\.jpg|\.gif|\.jpeg)", "i")
-  if r.isMatch(url)
-    r_ext = CreateObject("roRegex", "[\w:]+\.(jpe?g|png|gif)", "i")
-    ext = r_ext.Match(url)[1]
-    file_name = "tmp:/thumbnail-" + name + "." + ext
-
-    fs = CreateObject( "roFileSystem" )
-    if fs.exists(file_name)
-      'print "Returning cached files"
-      return file_name
-    else
-      'print "nope"
-    end if
-
-    request = CreateObject("roURLTransfer")
-    if url.InStr(0, "https") = 0
-      request.SetCertificatesFile("common:/certs/ca-bundle.crt")
-      request.AddHeader("X-Roku-Reserved-Dev-Id", "")
-      request.InitClientCertificates()
-    end if
-    print url
-    request.setUrl(url)
-    respCode = request.getToFile(file_name)
-
-    if respCode = 200
-      return file_name
-    else
-      'print 'Not cached'
-      return url
-    end if
-  else
-    'print 'Not cached'
-    return url
-  end if
+  return ""
 End Function
 
 ' returns a video content restrictions.
