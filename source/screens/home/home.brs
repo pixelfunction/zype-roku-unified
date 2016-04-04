@@ -76,14 +76,14 @@ Function grid(channel=invalid as object) as Void
     if current_row <= category_end_position and current_row >= category_start_position
       screen.SetContentListSubset(current_row, load_data(current_row), current_col, subsetLength)
 
-      prev_row = current_row - 1
-      if prev_row >= category_start_position
-        screen.SetContentListSubset(prev_row, load_data(prev_row), current_col, subsetLength)
+      next_row_1 = current_row + 1
+      if next_row_1 <= category_end_position
+        screen.SetContentListSubset(next_row_1, load_data(next_row_1), current_col, subsetLength)
       end if
 
-      next_row = current_row + 1
-      if next_row <= category_end_position
-        screen.SetContentListSubset(next_row, load_data(next_row), current_col, subsetLength)
+      next_row_2 = current_row + 2
+      if next_row_2 <= category_end_position
+        screen.SetContentListSubset(next_row_2, load_data(next_row_2), current_col, subsetLength)
       end if
     end if
 
