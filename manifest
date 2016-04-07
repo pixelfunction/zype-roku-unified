@@ -11,3 +11,4 @@ screensaver_title=Zype
 splash_screen_hd=pkg:/images/splash_screen_hd.png
 splash_screen_sd=pkg:/images/splash_screen_sd.png
 splash_color=#2b2b2b
+bs_libs_required=roku_ads_lib
