@@ -1,83 +1,90 @@
-Function home() as void
-
+Function home()
   if m.config.nested = true
-    'print "Nested"
-    nested_home()
-    return
+    print "Nested"
+    channels()
+  else
+    print "Flat"
+    grid()
   end if
+End Function
 
+' this is called if the nested category is false
+Function grid(channel=invalid as object) as Void
   screen = CreateObject("roGridScreen")
   port = CreateObject("roMessagePort")
   screen.SetMessagePort(port)
 
-  screen.SetBreadcrumbText(m.config.home_name, "")
-  screen.setGridStyle(m.config.grid_layout)
-  screen.SetDisplayMode(m.config.scale_mode)
-  screen.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
+  if channel = invalid
+    screen.SetBreadcrumbText(m.config.home_name, "")
+    screen.setGridStyle(m.config.grid_layout)
+    screen.SetDisplayMode(m.config.scale_mode)
+    screen.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
 
-  row_titles = CreateObject("roArray", 1, true)
-  m.categories = CreateObject("roArray", 1, true)
-
-  'get all featured info
-  featured = get_featured_playlist()
-
-  'add featured playlist title
-  row_titles.push(featured.name)
-
-  'get category titles
-  category_titles = CreateObject("roArray", 1, true)
-  if m.config.category_id <> invalid
-    category_info = get_category_info(m.config.category_id)
+    m.playlist = get_featured_playlist()
+    m.category = get_category()
   else
-    'there is no category_id so create a fake category
-    category_info = {name: "", values: ["All Videos"]}
-  end if
-  category_name = category_info.name
-  category_titles = category_info.values
-  category_value_size = category_titles.count()
+    screen.SetBreadcrumbText("", channel.title)
+    screen.SetBreadcrumbEnabled(m.config.category_home_breadcrumb_enabled)
+    screen.setGridStyle(m.config.grid_layout)
+    screen.SetDisplayMode(m.config.scale_mode)
 
-  for each title in category_titles
-    if m.config.prepend_category_name = true
-      row_titles.push(category_name + " " + title)
+    m.playlist = get_playlist(channel.playlist_id)
+    if channel.category_id <> invalid
+      m.category = get_category_info(channel.category_id)
     else
-      row_titles.push(title)
+      'there is no category_id so create a fake category
+      m.category = {name: "", values: ["All Videos"]}
     end if
-  end for
+  end if
+  m.toolbar = grid_toolbar()
 
-  'get toolbar info
-  toolbar = grid_toolbar()
-  row_titles.push(toolbar.name)
+  ' positions for content
+  playlist_position = 0
+  toolbar_position = m.category.values.count() + 1
+  category_start_position = 1
+  category_end_position = m.category.values.count()
 
-  'set up the rows and titles of the rows on the screen
-  total_rows = row_titles.count()
+  m.row_titles = CreateObject("roArray", 1, true)
+  m.row_titles[playlist_position] = m.playlist.name
+  m.row_titles[toolbar_position] = m.toolbar.name
+  AddCategoryTitles(category_start_position, category_end_position, m.row_titles)
+
+  total_rows = m.row_titles.count()
   screen.SetupLists(total_rows)
-  screen.SetListNames(row_titles)
+  screen.SetListNames(m.row_titles)
 
-  'set up the first row for featured playlists
-  screen.SetContentList(0, featured.episodes)
+  subsetLength = 5
+  screen.SetContentListSubset(playlist_position, m.playlist.episodes, 0, subsetLength)
+  screen.SetContentList(toolbar_position, m.toolbar.tools)
 
-  for preset=1 to m.loading_offset step 1
-    load_category_row(row_titles, category_titles, preset, category_name, screen)
-  end for
+  m.categories = CreateObject("roArray", 1, true)
+  screen.SetContentListSubset(category_start_position, load_data(category_start_position), 0, subsetLength)
 
-  screen.SetContentList(total_rows-1, toolbar.tools)
   screen.SetFocusedListItem(0,0)
-
   screen.show()
 
   while(true)
     msg = wait(0, port)
 
     current_row = msg.GetIndex()
-    row_to_load = current_row + m.loading_group
+    current_col = msg.GetData()
 
-    if (row_to_load > m.loading_offset)
-      'need to iterate through all rows to make sure fast scrolling does not miss one
-      for i=m.loading_offset to row_to_load step 1
-        if m.categories[i] = invalid AND i < (total_rows - 1)
-          load_category_row(row_titles, category_titles, i, category_name, screen)
-        end if
-      end for
+    if current_row = playlist_position
+      screen.SetContentListSubset(current_row, m.playlist.episodes, current_col, subsetLength)
+    end if
+
+    if current_row <= category_end_position and current_row >= category_start_position
+      screen.SetContentListSubset(current_row, load_data(current_row), current_col, subsetLength)
+
+      next_row_1 = current_row + 1
+      if next_row_1 <= category_end_position
+        screen.SetContentListSubset(next_row_1, load_data(next_row_1), current_col, subsetLength)
+      end if
+
+      next_row_2 = current_row + 2
+      if next_row_2 <= category_end_position
+        screen.SetContentListSubset(next_row_2, load_data(next_row_2), current_col, subsetLength)
+      end if
     end if
 
     if type(msg) = "roGridScreenEvent"
@@ -86,16 +93,12 @@ Function home() as void
         m.home_y = msg.GetData()
         m.home_x = row
 
-        if(row = 0)
-          displayShowDetailScreen(featured, msg.GetData(), false)
-        else if(row = row_titles.count()-1)
-          toolbar.tools[msg.GetData()].function_name()
+        if row = playlist_position
+          displayShowDetailScreen(m.playlist, msg.GetData(), false)
+        else if row = toolbar_position
+          m.toolbar.tools[msg.GetData()].function_name()
         else
-          if row > m.loading_offset
-            category = m.categories[msg.GetIndex()]
-          else
-            category = m.categories[msg.GetIndex()-1]
-          end if
+          category = m.categories[current_row]
           displayShowDetailScreen(category, msg.GetData(), false)
         end if
 
@@ -104,7 +107,6 @@ Function home() as void
         screen.SetMessagePort(port)
         RunGarbageCollector()
 
-        'change the focused list item if m.home_x, or m.home_y position has changed via user interactions
         if m.previous_home_x <> m.home_x OR m.previous_home_y <> m.home_y
           screen.SetFocusedListItem(m.home_x, m.home_y)
           'set the m.previous_home_x and m.previous_home_y to current status
@@ -112,7 +114,7 @@ Function home() as void
           m.previous_home_y = m.home_y
         end if
       end if
-      if (msg.isScreenClosed())
+      if msg.isScreenClosed()
         exit while
       end if
     end if
@@ -122,10 +124,55 @@ Function home() as void
   screen.close()
 End Function
 
+Function load_data(index as Integer) as Object
+  if m.categories[index] = invalid
+    title = m.row_titles[index]
+    print title
+    if m.config.category_id <> invalid
+      category = get_category_playlist(m.category.name, title, m.config.category_id)
+    else
+      category = get_category_playlist(m.category.name, title, "*")
+    end if
+    m.categories[index] = {name: category.name, episodes: category.episodes}
+    return category.episodes
+  else
+    return m.categories[index].episodes
+  end if
+End Function
+
+Function AddCategoryTitles(start_idx as integer, end_idx as integer, arr as object)
+  idx = start_idx
+  for each title in m.category.values
+    if m.config.prepend_category_name = true
+      arr[idx] = m.category.name + " " + title
+    else
+      arr[idx] = title
+    end if
+    idx = idx + 1
+  end for
+End Function
+
+Function get_category() as object
+  category = {}
+  if m.config.category_id <> invalid
+    category_info = get_category_info(m.config.category_id)
+  else
+    'there is no category_id so create a fake category
+    category_info = {name: "", values: ["All Videos"]}
+  end if
+
+  category.AddReplace("name", category_info.name)
+  category.AddReplace("values", category_info.values)
+
+  return category
+End Function
+
+
 ' launches the nested home screen
-Function nested_home() as void
+Function channels() as void
     port = CreateObject("roMessagePort")
     grid = CreateObject("roGridScreen")
+
     grid.SetGridStyle(m.config.grid_layout)
     grid.SetBreadcrumbText(m.config.home_name, "")
     grid.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
@@ -199,7 +246,7 @@ Function nested_home() as void
             else
               index_position = col + (4 * row)
               'print series[index_position].title
-              category_home(series[index_position])
+              grid(series[index_position])
             end if
 
             ' prevent multiple button presses
@@ -224,138 +271,3 @@ Function nested_home() as void
 
      grid.close()
 End Function
-
-Function category_home(series as object) as void
-  screen = CreateObject("roGridScreen")
-  port = CreateObject("roMessagePort")
-  screen.SetMessagePort(port)
-
-  screen.SetBreadcrumbText("", series.title)
-  screen.SetBreadcrumbEnabled(m.config.category_home_breadcrumb_enabled)
-  screen.setGridStyle(m.config.grid_layout)
-  screen.SetDisplayMode(m.config.scale_mode)
-
-  row_titles = CreateObject("roArray", 1, true)
-  m.categories = CreateObject("roArray", 1, true)
-
-  'get all featured info
-  featured = get_playlist(series.playlist_id)
-
-  'add featured playlist title
-  row_titles.push(featured.name)
-
-  'get category titles
-  category_titles = CreateObject("roArray", 1, true)
-  raw_category_titles = CreateObject("roArray", 1, true)
-
-  if series.category_id <> invalid
-    category_info = get_category_info(series.category_id)
-  else
-    'there is no category_id so create a fake category
-    category_info = {name: "", values: ["All Videos"]}
-  end if
-
-  category_name = category_info.name
-  category_titles = category_info.values
-
-  category_value_size = category_titles.count()
-
-  for each title in category_titles
-    if m.config.prepend_category_name = true
-      row_titles.push(category_name + " " + title)
-    else
-      row_titles.push(title)
-    end if
-  end for
-
-  'get toolbar info
-  toolbar = grid_toolbar()
-  row_titles.push(toolbar.name)
-
-  'set up the rows and titles of the rows on the screen
-  total_rows = row_titles.count()
-
-  screen.SetupLists(total_rows)
-  screen.SetListNames(row_titles)
-
-  'set up the first row for featured playlists
-  screen.SetContentList(0, featured.episodes)
-
-  for preset=1 to m.loading_offset step 1
-    load_category_row(row_titles, category_titles, preset, category_name, screen)
-  endfor
-
-  screen.SetContentList(total_rows-1, toolbar.tools)
-
-  'show screen once featured playlist and tools are ready
-  screen.show()
-
-  while(true)
-    msg = wait(0, port)
-
-      current_row = msg.GetIndex()
-      row_to_load = current_row + m.loading_group
-
-      if (row_to_load > m.loading_offset)
-        'need to iterate through all rows to make sure fast scrolling does not miss one
-        for i=m.loading_offset to row_to_load step 1
-          'print m.categories[i]
-          'only load category if row data does not yet exist
-          if m.categories[i] = invalid AND i < (total_rows - 1)
-            load_category_row(row_titles, category_titles, i, category_name, screen)
-          end if
-        end for
-      end if
-    if type(msg) = "roGridScreenEvent"
-      if (msg.isListItemSelected())
-        row = msg.GetIndex()
-        m.home_x = row
-
-        if(row = 0)
-          displayShowDetailScreen(featured, msg.GetData(), false)
-        else if(row = row_titles.count()-1)
-          toolbar.tools[msg.GetData()].function_name()
-        else
-          if row > m.loading_offset
-            category = m.categories[msg.GetIndex()]
-          else
-            category = m.categories[msg.GetIndex()-1]
-          end if
-          displayShowDetailScreen(category, msg.GetData(), false)
-        end if
-
-        ' prevent multiple button presses
-        port=CreateObject("roMessagePort")
-        screen.SetMessagePort(port)
-        RunGarbageCollector()
-
-        'change the focused list item if m.home_x, or m.home_y position has changed via user interactions
-        if m.previous_home_x <> m.home_x OR m.previous_home_y <> m.home_y
-          screen.SetFocusedListItem(m.home_x, m.home_y)
-          'set the m.previous_home_x and m.previous_home_y to current status
-          m.previous_home_x = m.home_x
-          m.previous_home_y = m.home_y
-        end if
-      end if
-      if (msg.isScreenClosed())
-        exit while
-      end if
-    end if
-  end while
-  screen.close()
-End Function
-
-Function load_category_row(row as Object, titles as Object, position as Integer, category_name as String, screen as Object) as Object
-  if row[position] <> invalid
-    if row.count() <> position
-      title = titles[position - 1]
-      if m.config.category_id <> invalid
-        category = get_category_playlist(category_name, title, m.config.category_id)
-      else
-        category = get_category_playlist(category_name, title, "*")
-      end if
-      m.categories.push({name: category.name, episodes: category.episodes})
-      screen.SetContentList(position, category.episodes)
-    end if
-  end if
-end Function
