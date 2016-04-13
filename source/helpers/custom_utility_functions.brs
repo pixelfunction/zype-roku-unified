@@ -45,15 +45,25 @@ Function grid_toolbar() as object
       SDPosterUrl: m.images.search_poster_sd,
       HDPosterUrl: m.images.search_poster_hd,
       Description: m.config.search_description,
-      function_name: search_screen
+      function_name: search_screen,
+      appId: invalid
     },
     {
       Title: m.config.info_title,
       SDPosterUrl: m.images.info_poster_sd,
       HDPosterUrl: m.images.info_poster_hd,
       Description: m.config.info_description,
-      function_name: info_screen
+      function_name: info_screen,
+      appId: invalid
     },
+    {
+      Title: "Another App",
+      SDPosterUrl: "",
+      HDPosterUrl: "",
+      appId: "This is appId",
+      Description: "Launch another app",
+      function_name: launchApp
+    }
   ]
   return toolbar
 End Function

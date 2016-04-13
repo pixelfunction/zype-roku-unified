@@ -58,3 +58,14 @@ function terms_screen() as void
 
   screen.close()
 end function
+
+function launchApp(appId as string) as void
+    ' @TODO use install/ to install an app if it is not installed locally
+    di = CreateObject("roDeviceInfo")
+    ip = di.GetIPAddrs()
+    xfer = CreateObject("roURLTransfer")
+    ECPUrl= "http://" + ip["eth1"] + ":8060/launch/<appId>"
+    xfer.SetURL(ECPUrl)
+    result = xfer.PostFromString("")
+    print result
+end function
