@@ -120,8 +120,22 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     canvas.Show()
 
     adIface = Roku_Ads()
+
+    ' adIface.setDebugOutput(false)
     adIface.enableNielsenDAR(m.config.enableNielsenDAR)
+    ' Nielesen App Id
     adIface.setNielsenAppId(m.config.NielsenAppId)
+    ' Nielsen Genre
+    adIface.setNielsenGenre("FF")
+    ' Content Length
+    adIface.setContentLength(episode.length)
+    ' Program ID (for now, it is a just content title)
+    adIface.setNielsenProgramId(episode.title)
+    ' adIface.setAdUrl(ad.url)
+    
+    adUrl = ""
+    adIface.setAdUrl(adUrl)
+    ' print adIface.getAdUrl()
 
     curPos = 0
     playContent = true
@@ -129,7 +143,6 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     ' make sure to play preroll ad if it exists
     ad = get_ad(episode, curPos)
     if ad.url.len() > 0
-      adIface.setAdUrl(ad.url)
       adPods = adIface.getAds()
       playContent = adIface.showAds(adPods)
       if playContent
@@ -158,8 +171,7 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
               ad = get_ad(episode, curPos)
               if ad.url.len() > 0
                 videoScreen.close()
-
-                adIface.setAdUrl(ad.url)
+                adIface.setAdUrl(adUrl)
                 adPods = adIface.getAds()
                 playContent = adIface.showAds(adPods)
                 if playContent and not contentDone
