@@ -9,7 +9,7 @@ Function set_dynamic_config() as void
 
   ' Nielsen DAR settings
   ' Should be integrated in the API
-  m.config.NielsenAppId = "<Nielsen App ID>"
+  m.config.NielsenAppId = "P2871BBFF-1A28-44AA-AF68-C7DE4B148C32"
   m.config.enableNielsenDAR = true
 
   m.config.per_page = Str(m.config.per_page).Trim()
