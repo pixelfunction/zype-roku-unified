@@ -118,23 +118,6 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     canvas.SetLayer(1, {color: "#000000"})
     canvas.SetLayer(2, {text: "Loading..."})
     canvas.Show()
-
-    adIface = Roku_Ads()
-
-    adIface.setDebugOutput(true)
-    ' print m.config.enableNielsenDAR
-    adIface.enableNielsenDAR(m.config.enableNielsenDAR)
-    ' Nielesen App Id
-    ' print m.config.NielsenAppId
-    adIface.setNielsenAppId(m.config.NielsenAppId)
-    ' Nielsen Genre
-    adIface.setNielsenGenre("GV")
-    ' Content Length
-    ' print episode.length
-    adIface.setContentLength(episode.length)
-    ' Program ID (for now, it is a just content title)
-    ' print episode.title
-    adIface.setNielsenProgramId(episode.title)
     
     
 
@@ -144,9 +127,9 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     ' make sure to play preroll ad if it exists
     ad = get_ad(episode, curPos)
     if ad.url.len() > 0
-      adIface.setAdUrl(ad.url)
-      adPods = adIface.getAds()
-      playContent = adIface.showAds(adPods)
+      m.adIface.setAdUrl(ad.url)
+      adPods = m.adIface.getAds()
+      playContent = m.adIface.showAds(adPods)
       if playContent
         ' resume video playback after ads
         episode.PlayStart = curPos
@@ -173,9 +156,9 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
               ad = get_ad(episode, curPos)
               if ad.url.len() > 0
                 videoScreen.close()
-                adIface.setAdUrl(ad.Url)
-                adPods = adIface.getAds()
-                playContent = adIface.showAds(adPods)
+                m.adIface.setAdUrl(ad.url)
+                adPods = m.adIface.getAds()
+                playContent = m.adIface.showAds(adPods)
                 if playContent and not contentDone
                   ' resume video playback after ads
                   episode.PlayStart = curPos
@@ -205,7 +188,7 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
                end if
 
                ' check for midroll/postroll ad pods
-               adPods = adIface.getAds(videoMsg)
+               adPods = m.adIface.getAds(videoMsg)
                if adPods <> invalid and adPods.Count() > 0
                    ' must completely close content screen before showing ads
                    ' for some Roku platforms (e.g., RokuTV), calling Close() will not synchronously
@@ -220,7 +203,7 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
 
             if not closingContentScreen and adPods <> invalid and adPods.Count() > 0
                 ' now safe to render midroll/postroll ads
-                playContent = adIface.showAds(adPods)
+                playContent = m.adIface.showAds(adPods)
                 playContent = playContent and not contentDone
                 if playContent
                     ' resume video playback after midroll ads

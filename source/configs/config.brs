@@ -11,6 +11,19 @@ Function set_dynamic_config() as void
   ' Should be integrated in the API
   m.config.NielsenAppId = "P2871BBFF-1A28-44AA-AF68-C7DE4B148C32"
   m.config.enableNielsenDAR = true
+  
+  m.adIface = Roku_Ads()
+
+  m.adIface.setDebugOutput(true)
+  ' print m.config.enableNielsenDAR
+  m.adIface.enableNielsenDAR(m.config.enableNielsenDAR)
+  ' Nielesen App Id
+  ' print m.config.NielsenAppId
+  m.adIface.setNielsenAppId(m.config.NielsenAppId)
+  ' Nielsen Genre
+  m.adIface.setNielsenGenre("CP")
+  ' Content Genre
+  m.adIface.setContentGenre("Children")
 
   m.config.per_page = Str(m.config.per_page).Trim()
   m.config.info = {
