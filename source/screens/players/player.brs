@@ -1,5 +1,3 @@
-Library "Roku_Ads.brs"
-
 Function play(episodes as object, index as integer, offset as integer, fromSearch as Boolean) as void
   if type(episodes[index]) <> "roAssociativeArray"
       print "invalid data passed to showVideoScreen"
@@ -119,7 +117,10 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     canvas.SetLayer(2, {text: "Loading..."})
     canvas.Show()
     
-    
+    ' Nielsen Dynamic Settings
+    m.adIface.setNielsenGenre("CP") ' const for now
+    m.adIface.setNielsenProgramId(episode.title)
+    m.adIface.setContentLength(episode.length)
 
     curPos = 0
     playContent = true

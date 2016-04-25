@@ -20,8 +20,6 @@ Function set_dynamic_config() as void
   ' Nielesen App Id
   ' print m.config.NielsenAppId
   m.adIface.setNielsenAppId(m.config.NielsenAppId)
-  ' Nielsen Genre
-  m.adIface.setNielsenGenre("CP")
   ' Content Genre
   m.adIface.setContentGenre("Children")
 
