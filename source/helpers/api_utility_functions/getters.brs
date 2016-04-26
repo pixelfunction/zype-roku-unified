@@ -99,7 +99,9 @@ Function get_videos(url As String, short As Boolean) as object
       SwitchingStrategy: m.config.switching_strategy,
       Cost: 0,
       ProductType: "none",
-      NielsenGenre: ""
+      NielsenGenre: "",
+      Episode: item.episode,
+      Season: item.season
     }
     
     if m.config.enableNielsenDAR
@@ -128,7 +130,13 @@ Function get_videos(url As String, short As Boolean) as object
     end if
 
     episodes.push(episode)
+    ' print episode
   end for
+  
+  episodes.SortBy("season", "r")
+  ' for each ele in episodes
+  '   print ele.Season, ele.Episode
+  ' end for
 
   ' @toberefactored
   if m.config.in_app_purchase = true
