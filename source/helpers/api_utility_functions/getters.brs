@@ -98,8 +98,18 @@ Function get_videos(url As String, short As Boolean) as object
       RentalRequired: item.rental_required,
       SwitchingStrategy: m.config.switching_strategy,
       Cost: 0,
-      ProductType: "none"
+      ProductType: "none",
+      NielsenGenre: ""
     }
+    
+    if m.config.enableNielsenDAR
+      for each c in item.categories
+        if c.title = "Nielsen Genre"
+          episode.NielsenGenre = c.value[0]
+          exit for
+        end if
+      end for
+    end if
 
     top_validation = valid_top_zobject()
     bottom_validation = valid_bottom_zobject()

@@ -118,9 +118,11 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     canvas.Show()
     
     ' Nielsen Dynamic Settings
-    m.adIface.setNielsenGenre("CP") ' const for now
-    m.adIface.setNielsenProgramId(episode.title)
-    m.adIface.setContentLength(episode.length)
+    if m.config.enableNielsenDAR = true
+      m.adIface.setNielsenGenre(episode.nielsengenre) ' const for now
+      m.adIface.setNielsenProgramId(episode.title)
+      m.adIface.setContentLength(episode.length)
+    end if
 
     curPos = 0
     playContent = true
