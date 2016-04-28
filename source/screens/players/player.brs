@@ -244,11 +244,11 @@ Function replace(url as string) as string
     ut = CreateObject("roUrlTransfer")
 
     r = CreateObject("roRegex", "app\[bundle\]=\[REPLACE_ME\]", "")
-    term = ut.escape("app[bundle]") + "=roku.testapp"
+    term = ut.escape("app[bundle]") + "=<AppBundle>"
     newUrl = r.Replace(newUrl, term)
 
     r = CreateObject("roRegex", "app\[name\]=\[REPLACE_ME\]", "")
-    term = ut.escape("app[name]") + "=testapp"
+    term = ut.escape("app[name]") + "=<AppName>"
     newUrl = r.Replace(newUrl, term)
 
     r = CreateObject("roRegex", "ip_addr=\[REPLACE_ME\]", "")
@@ -257,10 +257,10 @@ Function replace(url as string) as string
     newUrl = r.Replace(newUrl, term)
 
     r = CreateObject("roRegex", "device\[ua\]=\[REPLACE_ME\]", "")
-    term = ut.escape("device[ua]") + "=Roku"
+    term = ut.escape("device[ua]") + "=Roku" ' Roku by default
     newUrl = r.Replace(newUrl, term)
 
-    print newurl
+    ' print newurl
   end if
 
   return newUrl
