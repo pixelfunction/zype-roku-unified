@@ -60,22 +60,18 @@ function terms_screen() as void
 end function
 
 function launchApp(appId as string) as void
-    if IsInstalled(appId) = true
-      di = CreateObject("roDeviceInfo")
-      ip = di.GetIPAddrs()
-      xfer = CreateObject("roURLTransfer")
-      ECPUrl= "http://" + ip["eth1"] + ":8060/launch/" + appId
-      xfer.SetURL(ECPUrl)
-      result = xfer.PostFromString("")
-      ' print result
-    else
-      di = CreateObject("roDeviceInfo")
-      ip = di.GetIPAddrs()
-      xfer = CreateObject("roURLTransfer")
-      ECPUrl= "http://" + ip["eth1"] + ":8060/install/" + appId
-      xfer.SetURL(ECPUrl)
-      result = xfer.PostFromString("")
-    end if
+  di = CreateObject("roDeviceInfo")
+  ip = di.GetIPAddrs()
+  xfer = CreateObject("roURLTransfer")
+    
+  if IsInstalled(appId) = true
+    ECPUrl= "http://" + ip["eth1"] + ":8060/launch/" + appId
+  else
+    ECPUrl= "http://" + ip["eth1"] + ":8060/install/" + appId
+  end if
+
+  xfer.SetURL(ECPUrl)
+  result = xfer.PostFromString("")
 end function
 
 function IsInstalled(appId as string) as boolean
@@ -87,15 +83,19 @@ function IsInstalled(appId as string) as boolean
     result = xfer.GetToString() 
     ' print result
     
-    xml=CreateObject("roXMLElement")
-    If xml.Parse(result) then
-      for each ele in xml.GetBody()
-        if ele.HasAttribute("id")
-          if ele.GetAttributes()["id"] = appId
-            return true
-          end if
+    return DoesIdExist(appId, result)
+end function
+
+function DoesIdExist(appId as string, data as string)
+  xml=CreateObject("roXMLElement")
+  If xml.Parse(data) then
+    for each ele in xml.GetBody()
+      if ele.HasAttribute("id")
+        if ele.GetAttributes()["id"] = appId
+          return true
         end if
-      end for
-    End If
-    return false
+      end if
+    end for
+  End If
+  return false
 end function
