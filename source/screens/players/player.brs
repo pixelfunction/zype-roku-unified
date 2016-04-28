@@ -129,7 +129,8 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     ' make sure to play preroll ad if it exists
     ad = get_ad(episode, curPos)
     if ad.url.len() > 0
-      adIface.setAdUrl(ad.url)
+      url = replace(ad.url)
+      adIface.setAdUrl(url)
       adPods = adIface.getAds()
       playContent = adIface.showAds(adPods)
       if playContent
@@ -159,7 +160,8 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
               if ad.url.len() > 0
                 videoScreen.close()
 
-                adIface.setAdUrl(ad.url)
+                url = replace(ad.url)
+                adIface.setAdUrl(url)
                 adPods = adIface.getAds()
                 playContent = adIface.showAds(adPods)
                 if playContent and not contentDone
@@ -231,6 +233,37 @@ Function PlayVideoContent(content as Object) as Object
     videoScreen.Show()
 
     return videoScreen
+End Function
+
+Function replace(url as string) as string
+  r = CreateObject("roRegex", "spotxchange", "i")
+
+  newUrl = url
+  if r.IsMatch(newUrl)
+
+    ut = CreateObject("roUrlTransfer")
+
+    r = CreateObject("roRegex", "app\[bundle\]=\[REPLACE_ME\]", "")
+    term = ut.escape("app[bundle]") + "=<AppBundle>"
+    newUrl = r.Replace(newUrl, term)
+
+    r = CreateObject("roRegex", "app\[name\]=\[REPLACE_ME\]", "")
+    term = ut.escape("app[name]") + "=<AppName>"
+    newUrl = r.Replace(newUrl, term)
+
+    r = CreateObject("roRegex", "ip_addr=\[REPLACE_ME\]", "")
+    di = CreateObject("roDeviceInfo")
+    term = "ip_addr=" + di.GetIPAddrs()["eth1"].toStr()
+    newUrl = r.Replace(newUrl, term)
+
+    r = CreateObject("roRegex", "device\[ua\]=\[REPLACE_ME\]", "")
+    term = ut.escape("device[ua]") + "=Roku" ' Roku by default
+    newUrl = r.Replace(newUrl, term)
+
+    ' print newurl
+  end if
+
+  return newUrl
 End Function
 
 Function get_ad(episode, offset)
