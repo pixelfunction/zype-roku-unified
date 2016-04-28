@@ -96,7 +96,11 @@ Function grid(channel=invalid as object) as Void
         if row = playlist_position
           displayShowDetailScreen(m.playlist, msg.GetData(), false)
         else if row = toolbar_position
-          m.toolbar.tools[msg.GetData()].function_name()
+          if m.toolbar.tools[msg.GetData()].appId <> invalid
+            m.toolbar.tools[msg.GetData()].function_name(m.toolbar.tools[msg.GetData()].appId)
+          else
+            m.toolbar.tools[msg.GetData()].function_name()
+          end if    
         else
           category = m.categories[current_row]
           displayShowDetailScreen(category, msg.GetData(), false)
