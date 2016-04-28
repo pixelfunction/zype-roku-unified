@@ -56,14 +56,14 @@ Function grid_toolbar() as object
       function_name: info_screen,
       appId: invalid
     },
-    {
-      Title: "Another App",
-      SDPosterUrl: "",
-      HDPosterUrl: "",
-      appId: "<AppID>",
-      Description: "Launch another app",
-      function_name: launchApp
-    }
+    ' {
+    '   Title: "Another App",
+    '   SDPosterUrl: "",
+    '   HDPosterUrl: "",
+    '   appId: "<AppID>",
+    '   Description: "Launch another app",
+    '   function_name: launchApp
+    ' }
   ]
   return toolbar
 End Function
