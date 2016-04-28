@@ -60,7 +60,7 @@ Function grid_toolbar() as object
       Title: "Another App",
       SDPosterUrl: "",
       HDPosterUrl: "",
-      appId: "This is appId",
+      appId: "<AppID>",
       Description: "Launch another app",
       function_name: launchApp
     }
