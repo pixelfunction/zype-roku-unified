@@ -124,3 +124,23 @@ Function ceiling(x) as Integer
   if i < x then i = i + 1
   return i
 End Function
+
+'******************************************************
+' Truncate a String To the desired length
+'******************************************************
+
+Function Truncate(words As String, length As Integer, ellipsis As Boolean) as String
+    truncated = ""
+
+    If words.Len() > length
+        truncated = left(words, length)
+
+        If ellipsis
+            truncated = truncated + "..."
+        End If
+    Else
+        truncated = words
+    End If
+
+    Return truncated
+End Function

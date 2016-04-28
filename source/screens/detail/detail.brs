@@ -225,11 +225,16 @@ Function add_buttons(screen as object, episode as object) as void
     ' @desc Device linking mode
     print "Device linking mode"
     if episode.SubscriptionRequired = true
-      if is_linked() = true
-        add_play_btn(screen, episode)
-      else
-        screen.AddButton(3, m.config.subscription_button_text)
-      end if
+        if is_linked() = true
+            add_play_btn(screen, episode)
+        else
+            if m.config.subscribe_to_watch_ad_free = true
+                add_play_btn(screen, episode)
+                screen.AddButton(3, m.config.subscription_button_text)
+            else
+                screen.AddButton(3, m.config.subscription_button_text)
+            end if
+        end if
     else
       add_play_btn(screen, episode)
     end if
@@ -356,7 +361,10 @@ Function ShowFullDescription(episode as Object) As Void
   screen = CreateObject("roParagraphScreen")
   screen.SetMessagePort(port)
   screen.SetTitle("Full Description")
-  screen.AddHeaderText(episode.title)
+
+  title = Truncate(episode.title, 40, true)
+  screen.AddHeaderText(title)
+
   screen.AddParagraph(episode.fulldescription)
   screen.Show()
   while true
