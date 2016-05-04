@@ -10,7 +10,7 @@ Function set_dynamic_config() as void
   ' Nielsen DAR settings
   ' Should be integrated in the API
   m.config.NielsenAppId = "<Nielsen App ID>"
-  m.config.enableNielsenDAR = true
+  m.config.enableNielsenDAR = false
 
   m.adIface = Roku_Ads()
   m.adIface.setAdPrefs(false,2) ' 1: use Roku Ad Framework as fallback 2: # re-tries
