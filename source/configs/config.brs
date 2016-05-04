@@ -12,6 +12,17 @@ Function set_dynamic_config() as void
   m.config.NielsenAppId = "<Nielsen App ID>"
   m.config.enableNielsenDAR = false
 
+  m.adIface = Roku_Ads()
+  m.adIface.setAdPrefs(false,2) ' 1: use Roku Ad Framework as fallback 2: # re-tries
+  m.adIface.setDebugOutput(false)
+  ' print m.config.enableNielsenDAR
+  m.adIface.enableNielsenDAR(m.config.enableNielsenDAR)
+  ' Nielesen App Id
+  ' print m.config.NielsenAppId
+  m.adIface.setNielsenAppId(m.config.NielsenAppId)
+  ' Content Genre
+  m.adIface.setContentGenre("<ROKU CONTENT GENRE>")
+
   m.config.per_page = Str(m.config.per_page).Trim()
   m.config.info = {
     header: m.config.info_title,

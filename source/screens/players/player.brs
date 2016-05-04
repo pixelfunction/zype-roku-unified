@@ -1,5 +1,3 @@
-Library "Roku_Ads.brs"
-
 Function play(episodes as object, index as integer, offset as integer, fromSearch as Boolean) as void
   if type(episodes[index]) <> "roAssociativeArray"
       print "invalid data passed to showVideoScreen"
@@ -118,10 +116,13 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     canvas.SetLayer(1, {color: "#000000"})
     canvas.SetLayer(2, {text: "Loading..."})
     canvas.Show()
-
-    adIface = Roku_Ads()
-    adIface.enableNielsenDAR(m.config.enableNielsenDAR)
-    adIface.setNielsenAppId(m.config.NielsenAppId)
+    
+    ' Nielsen Dynamic Settings
+    if m.config.enableNielsenDAR = true
+      m.adIface.setNielsenGenre(episode.nielsengenre) ' const for now
+      m.adIface.setNielsenProgramId(episode.title)
+      m.adIface.setContentLength(episode.length)
+    end if
 
     curPos = 0
     playContent = true
@@ -164,6 +165,7 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
                 adIface.setAdUrl(url)
                 adPods = adIface.getAds()
                 playContent = adIface.showAds(adPods)
+
                 if playContent and not contentDone
                   ' resume video playback after ads
                   episode.PlayStart = curPos
@@ -193,7 +195,7 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
                end if
 
                ' check for midroll/postroll ad pods
-               adPods = adIface.getAds(videoMsg)
+               adPods = m.adIface.getAds(videoMsg)
                if adPods <> invalid and adPods.Count() > 0
                    ' must completely close content screen before showing ads
                    ' for some Roku platforms (e.g., RokuTV), calling Close() will not synchronously
@@ -208,7 +210,7 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
 
             if not closingContentScreen and adPods <> invalid and adPods.Count() > 0
                 ' now safe to render midroll/postroll ads
-                playContent = adIface.showAds(adPods)
+                playContent = m.adIface.showAds(adPods)
                 playContent = playContent and not contentDone
                 if playContent
                     ' resume video playback after midroll ads

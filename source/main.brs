@@ -1,3 +1,5 @@
+Library "Roku_Ads.brs"
+
 ' app starts here
 Function Main() as void
   init()

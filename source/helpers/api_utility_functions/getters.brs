@@ -98,8 +98,20 @@ Function get_videos(url As String, short As Boolean) as object
       RentalRequired: item.rental_required,
       SwitchingStrategy: m.config.switching_strategy,
       Cost: 0,
-      ProductType: "none"
+      ProductType: "none",
+      NielsenGenre: "",
+      Episode: item.episode,
+      Season: item.season
     }
+    
+    if m.config.enableNielsenDAR
+      for each c in item.categories
+        if c.title = "Nielsen Genre"
+          episode.NielsenGenre = c.value[0]
+          exit for
+        end if
+      end for
+    end if
 
     top_validation = valid_top_zobject()
     bottom_validation = valid_bottom_zobject()
@@ -118,7 +130,13 @@ Function get_videos(url As String, short As Boolean) as object
     end if
 
     episodes.push(episode)
+    ' print episode
   end for
+  
+  episodes.SortBy("season", "r")
+  ' for each ele in episodes
+  '   print ele.Season, ele.Episode
+  ' end for
 
   ' @toberefactored
   if m.config.in_app_purchase = true
