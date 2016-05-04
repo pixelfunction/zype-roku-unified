@@ -158,11 +158,11 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
 
   screen.ClearButtons()
 
-  if m.config.view_full_description = true and show.FullDescription.Len() > 0
-    screen.AddButton(0, "View Full Description")
-  end if
-
   add_buttons(screen, show)
+  
+  if m.config.view_full_description = true and show.FullDescription.Len() > 0
+    screen.AddButton(0, "Full Description")
+  end if
 
   screen.SetContent(show)
   screen.Show()
