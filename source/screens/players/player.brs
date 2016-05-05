@@ -116,7 +116,7 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     canvas.SetLayer(1, {color: "#000000"})
     canvas.SetLayer(2, {text: "Loading..."})
     canvas.Show()
-    
+
     ' Nielsen Dynamic Settings
     if m.config.enableNielsenDAR = true
       m.adIface.setNielsenGenre(episode.nielsengenre) ' const for now
@@ -131,9 +131,9 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
     ad = get_ad(episode, curPos)
     if ad.url.len() > 0
       url = replace(ad.url)
-      adIface.setAdUrl(url)
-      adPods = adIface.getAds()
-      playContent = adIface.showAds(adPods)
+      m.adIface.setAdUrl(url)
+      adPods = m.adIface.getAds()
+      playContent = m.adIface.showAds(adPods)
       if playContent
         ' resume video playback after ads
         episode.PlayStart = curPos
@@ -162,9 +162,9 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
                 videoScreen.close()
 
                 url = replace(ad.url)
-                adIface.setAdUrl(url)
-                adPods = adIface.getAds()
-                playContent = adIface.showAds(adPods)
+                m.adIface.setAdUrl(url)
+                adPods = m.adIface.getAds()
+                playContent = m.adIface.showAds(adPods)
 
                 if playContent and not contentDone
                   ' resume video playback after ads
