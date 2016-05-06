@@ -51,7 +51,6 @@ Sub play_episode_ad_free(episodes as object, index as integer, offset as integer
     episode = episodes[index]
 
     'get the stream information right before I play it
-    player_info = get_player_info(episode.id)
     episode.stream = player_info.stream
     episode.StreamFormat = player_info.format
     episode.ads = player_info.ads
