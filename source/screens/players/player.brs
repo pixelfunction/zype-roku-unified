@@ -268,14 +268,13 @@ Function replace(url as string) as string
   return newUrl
 End Function
 
-function resetAds(episode as object, offset as integer):
+function resetAds(episode as object, offset as integer)
   if offset > 0:
     if episode.ads.count() > 0
       for each ad in episode.ads
         if offset >= ad.offset
           print "This cannot be played. Too late. "; ad.offset
           ad.played = true
-          return ad
         end if
       end for
     end if
