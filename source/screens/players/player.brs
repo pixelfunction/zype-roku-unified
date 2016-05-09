@@ -124,7 +124,7 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
       m.adIface.setContentLength(episode.length)
     end if
 
-    ' resetAds(episode, offset) ' too late to play
+    resetAds(episode, offset) ' too late to play
     curPos = offset
     playContent = true
 
