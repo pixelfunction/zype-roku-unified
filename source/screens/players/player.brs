@@ -124,7 +124,8 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
       m.adIface.setContentLength(episode.length)
     end if
 
-    curPos = 0
+    ' resetAds(episode, offset) ' too late to play
+    curPos = offset
     playContent = true
 
     ' make sure to play preroll ad if it exists
@@ -267,6 +268,21 @@ Function replace(url as string) as string
 
   return newUrl
 End Function
+
+function resetAds(episode as object, offset as integer):
+  if offset > 0:
+    if episode.ads.count() > 0
+      for each ad in episode.ads
+        if offset >= ad.offset
+          print "This cannot be played. Too late. "; ad.offset
+          ad.played = true
+          return ad
+        end if
+      end for
+    end if
+  end if
+end function
+
 
 Function get_ad(episode, offset)
   if episode.ads.count() > 0
