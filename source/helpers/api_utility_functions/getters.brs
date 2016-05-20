@@ -1,5 +1,49 @@
 ' Getters calls specific APIs
 
+function IsEntitled(id as string, params=invalid as dynamic) as boolean
+  url = m.api.endpoint + "/videos/" + id + "/entitled" + "?" + format_params(params)
+  resp = call_api(url)
+
+  if resp.code = 422
+    print "Does NOT have acccess"
+    return false
+  else if resp.code = 200
+    print "Does have access"
+    return true
+  end if
+
+end function
+
+function get_playlists() as object
+  url = m.api.endpoint + "/playlists?" + "app_key=" + m.api.app
+  playlists = []
+
+  resp = call_api(url).response
+
+  if type(resp) = "roArray" and resp.count() > 0
+    for each pl in resp
+      playlists.push(pl)
+    end for
+  end if
+
+  return playlists
+end function
+
+' return videos in a playlist
+Function get_playlist_videos(id as string) as Object
+  res = []
+  url = m.api.endpoint + "/playlists/" + id + "/videos/?app_key=" + m.api.app + "&per_page=" + m.config.per_page
+  videos = get_videos(url, false)
+  if videos.count() > 0
+    for each v in videos
+      res.push(v)
+    end for
+  end if
+
+  return res
+End Function
+
+
 ' calls the api with a specific URL
 Function call_api(url As String) as Object
   'print "API call "; url
@@ -21,8 +65,9 @@ Function call_api(url As String) as Object
         code = msg.GetResponseCode()
         if(code = 200)
           res = ParseJSON(msg.GetString())
-          return res.response
+          return {"code": code, "response": res.response}
         end if
+        return {"code": code, "response": invalid}
       else if(event = invalid)
         request.AsyncCancel()
         exit while
@@ -36,7 +81,7 @@ End Function
 ' returns a list of videos.
 Function get_videos(url As String, short As Boolean) as object
   episodes = CreateObject("roArray", 1, true)
-  res = call_api(url)
+  res = call_api(url).response
 
   'print "Loading videos..."
   'timer = CreateObject("roTimespan")
@@ -103,7 +148,7 @@ Function get_videos(url As String, short As Boolean) as object
       Episode: item.episode,
       Season: item.season
     }
-    
+
     if m.config.enableNielsenDAR
       for each c in item.categories
         if c.title = "Nielsen Genre"
@@ -132,7 +177,7 @@ Function get_videos(url As String, short As Boolean) as object
     episodes.push(episode)
     ' print episode
   end for
-  
+
   episodes.SortBy("season", "r")
   ' for each ele in episodes
   '   print ele.Season, ele.Episode
@@ -158,7 +203,7 @@ End Function
 Function get_series() as object
   url = m.api.endpoint + "/zobjects/?app_key=" + m.api.app + "&zobject_type=channels&per_page=100&sort=priority&order=asc"
   series = CreateObject("roArray", 1, true)
-  res = call_api(url)
+  res = call_api(url).response
   for each zobject in res
     series.push({ title: zobject.title, playlist_id: zobject.playlist_id, category_id: zobject.category_id, image: get_zobject_thumbnail(zobject), description: zobject.description })
   end for
@@ -221,19 +266,36 @@ End Function
 Function get_playlist_name(playlist_id As String) as string
   name = ""
   url = m.api.endpoint + "/playlists/" + playlist_id + "?app_key=" + m.api.app + "&per_page=" + m.config.per_page
-  res = call_api(url)
+  res = call_api(url).response
   if res.DoesExist("title")
     name = res.title
   end if
   return name
 End Function
 
+function format_params(data as dynamic) as string
+  query_string = ""
+  if data <> invalid
+    if type(data) = "roAssociativeArray"
+      for each key in data
+        ' print key
+        if query_string.len() > 0
+          query_string = query_string + "&"
+        end if
+        query_string = query_string + key + "=" + data[key]
+      end for
+    end if
+  end if
+  return query_string
+end function
+
+
 ' returns the player's info
-Function get_player_info(id As String) as Object
+Function get_player_info(id As String, query=invalid as object) as Object
   player_info = {}
   scheduled_ads = []
-  url = m.api.player_endpoint + "/embed/" + id + "/?app_key=" + m.api.app
-  res = call_api(url)
+  url = m.api.player_endpoint + "/embed/" + id + "?" + format_params(query)
+  res = call_api(url).response
   if(res.DoesExist("body"))
     if(res.body.DoesExist("outputs"))
       for each output in res.body.outputs
@@ -282,7 +344,7 @@ End Function
 
 ' return a "All Videos" playlist.
 Function get_all_videos_playlist() as Object
-  playlis= {}
+  playlist= {}
   url = m.api.endpoint + "/videos?app_key=" + m.api.app + "&dpt=true&per_page=" + m.config.per_page
   episodes = get_videos(url, false)
   if(episodes.count() > 0)

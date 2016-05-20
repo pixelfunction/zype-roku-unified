@@ -18,6 +18,8 @@ Function pin_screen() as void
   else
     pin = m.pin
   end if
+
+  print pin
   screen.SetRegistrationCode(pin)
 
   screen.AddFocalText(" ", "spacing-dense")

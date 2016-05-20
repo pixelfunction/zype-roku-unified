@@ -50,7 +50,7 @@ Function visitor_screen() as object
       if (event <> invalid)
         if (event.isRemoteKeyPressed())
           index = event.GetIndex()
-          print index
+          ' print index
           if (index = 0) then
             return -1
           else if (index = 2) OR (index = 3) OR (index = 4) OR (index = 5)'any arrow then

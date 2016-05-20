@@ -1,11 +1,93 @@
 Function home()
-  if m.config.nested = true
-    print "Nested"
-    channels()
-  else
-    print "Flat"
-    grid()
+  ' if m.config.nested = true
+  '   print "Nested"
+  '   channels()
+  ' else
+  '   print "Flat"
+  '   grid()
+  ' end if
+  playlists_grid()
+End Function
+
+function load_playlist_videos(index as integer)
+  playlist = m.playlists[index]
+  if m.playlists_content[index] = Invalid
+    videos = get_playlist_videos(playlist._id)
+    m.playlists_content[index] = {
+      name: "",
+      episodes: videos
+    }
   end if
+  return m.playlists_content[index].episodes
+end function
+
+Function playlists_grid()
+    port = CreateObject("roMessagePort")
+    grid = CreateObject("roGridScreen")
+    grid.SetMessagePort(port)
+
+    grid.setGridStyle(m.config.grid_layout)
+    grid.SetDisplayMode(m.config.scale_mode)
+    grid.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
+
+    m.playlists = get_playlists()
+    m.playlists_content = CreateObject("roArray", m.playlists.count(), true)
+
+    rowTitles = CreateObject("roArray", 1, true)
+    for each pl in m.playlists
+      rowTitles.push(pl.title)
+    end for
+
+    grid.SetupLists(rowTitles.Count())
+    grid.SetListNames(rowTitles)
+
+    grid.SetContentListSubset(0, load_playlist_videos(0), 0, 5)
+    if m.playlists.count() > 1
+      grid.SetContentListSubset(1, load_playlist_videos(1), 0, 5)
+    end if
+
+    grid.Show()
+    while true
+       msg = wait(0, port)
+
+       current_row = msg.GetIndex()
+       current_col = msg.GetData()
+
+       grid.SetContentListSubset(current_row, load_playlist_videos(current_row), current_col, 5)
+
+       next_row_1 = current_row + 1
+       if next_row_1 < rowTitles.count()
+        grid.SetContentListSubset(next_row_1, load_playlist_videos(next_row_1), current_col, 5)
+       end if
+
+       if type(msg) = "roGridScreenEvent" then
+           if msg.isScreenClosed() then
+               exit while
+           elseif msg.isListItemFocused()
+               print "Focused msg: ";msg.GetMessage();"row: ";msg.GetIndex();
+               print " col: ";msg.GetData()
+           elseif msg.isListItemSelected()
+               print "Selected msg: ";msg.GetMessage();"row: ";msg.GetIndex();
+               print " col: ";msg.GetData()
+
+               m.home_y = current_col
+               m.home_x = current_row
+              '  refresh global item tracking vars
+               if m.previous_home_x <> m.home_x OR m.previous_home_y <> m.home_y
+                 m.previous_home_x = m.home_x
+                 m.previous_home_y = m.home_y
+               end if
+
+              '  print m.playlists_content[current_row]
+               displayShowDetailScreen(m.playlists_content[current_row], current_col, false)
+
+               ' prevent multiple button presses
+               port=CreateObject("roMessagePort")
+               grid.SetMessagePort(port)
+               RunGarbageCollector()
+           endif
+       endif
+    end while
 End Function
 
 ' this is called if the nested category is false
@@ -100,7 +182,7 @@ Function grid(channel=invalid as object) as Void
             m.toolbar.tools[msg.GetData()].function_name(m.toolbar.tools[msg.GetData()].appId)
           else
             m.toolbar.tools[msg.GetData()].function_name()
-          end if    
+          end if
         else
           category = m.categories[current_row]
           displayShowDetailScreen(category, msg.GetData(), false)
