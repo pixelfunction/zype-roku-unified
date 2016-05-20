@@ -82,23 +82,23 @@ function AddOAuth(data as object)
   ' print data.scope
   ' print data.token_type
 
-  RegWrite("access_token", data.access_token, "Authentication")
-  m.access_token = RegRead("access_token", "Authentication")
+  RegWrite("access_token", data.access_token, "OAuth")
+  m.access_token = RegRead("access_token", "OAuth")
 
-  RegWrite("token_type", data.token_type, "Authentication")
-  m.token_type = RegRead("token_type", "Authentication")
+  RegWrite("token_type", data.token_type, "OAuth")
+  m.token_type = RegRead("token_type", "OAuth")
 
-  RegWrite("expires_in", data.expires_in.toStr().Trim(), "Authentication")
-  m.expires_in = RegRead("expires_in", "Authentication")
+  RegWrite("expires_in", data.expires_in.toStr().Trim(), "OAuth")
+  m.expires_in = RegRead("expires_in", "OAuth")
 
-  RegWrite("refresh_token", data.refresh_token, "Authentication")
-  m.refresh_token = RegRead("refresh_token", "Authentication")
+  RegWrite("refresh_token", data.refresh_token, "OAuth")
+  m.refresh_token = RegRead("refresh_token", "OAuth")
 
-  RegWrite("scope", "consumer", "Authentication")
-  m.scope = RegRead("scope", "Authentication")
+  RegWrite("scope", "consumer", "OAuth")
+  m.scope = RegRead("scope", "OAuth")
 
-  RegWrite("created_at", data.created_at.toStr().Trim(), "Authentication")
-  m.created_at = RegRead("created_at", "Authentication")
+  RegWrite("created_at", data.created_at.toStr().Trim(), "OAuth")
+  m.created_at = RegRead("created_at", "OAuth")
 end function
 
 ' generates the pin for device linking.
