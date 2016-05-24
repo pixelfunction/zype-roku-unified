@@ -15,7 +15,7 @@ function IsEntitled(id as string, params=invalid as dynamic) as boolean
 end function
 
 function get_playlists() as object
-  url = m.api.endpoint + "/playlists?" + "app_key=" + m.api.app
+  url = m.api.endpoint + "/playlists?" + "app_key=" + m.api.app + "&sort=priority" + "&order=desc"
   playlists = []
 
   resp = call_api(url).response
