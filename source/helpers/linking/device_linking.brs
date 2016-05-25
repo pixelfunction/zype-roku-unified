@@ -23,13 +23,12 @@ Function is_linked() As Boolean
           res = ParseJSON(msg.GetString())
           response = res.response
           
-          if response.linked = true and m.pin <> invalid
-            RequestToken()
+          if response.linked = true
+            ' RequestToken()
           end if
-
+          
           return response.linked
         else if (code = 404)
-          ClearOAuth()
           return false
         end if
       else if(event = invalid)
@@ -39,67 +38,6 @@ Function is_linked() As Boolean
     end while
   end if
 End Function
-
-function ClearOAuth()
-  RegDelete("access_token", "Authentication")
-  RegDelete("token_type", "Authentication")
-  RegDelete("expires_in", "Authentication")
-  RegDelete("refresh_token", "Authentication")
-  RegDelete("scope", "Authentication")
-  RegDelete("created_at", "Authentication")
-end function
-
-function RequestToken()
-  ' print m.access_token
-  ' print m.token_type
-  ' print m.expires_in
-  ' print m.refresh_token
-  ' print m.scope
-  ' print m.created_at
-  if m.access_token = invalid or m.token_type = invalid or m.expires_in = invalid or m.refresh_token = invalid or m.scope = invalid or m.created_at = invalid
-    data = CreateObject("roAssociativeArray")
-    data.AddReplace("client_id", m.api.client_id)
-    data.AddReplace("client_secret", m.api.client_secret)
-    data.AddReplace("linked_device_id", m.device_id)
-    data.AddReplace("pin", m.pin)
-    data.AddReplace("grant_type", "password")
-    ' print data
-    print "creating OAuth"
-    res = RetrieveToken(data)
-    if res <> invalid
-      AddOAuth(res)
-    end if
-  else
-  end if
-end function
-
-function AddOAuth(data as object)
-  print "writing OAuth"
-  ' print data.access_token
-  ' print data.created_at
-  ' print data.expires_in
-  ' print data.refresh_token
-  ' print data.scope
-  ' print data.token_type
-
-  RegWrite("access_token", data.access_token, "OAuth")
-  m.access_token = RegRead("access_token", "OAuth")
-
-  RegWrite("token_type", data.token_type, "OAuth")
-  m.token_type = RegRead("token_type", "OAuth")
-
-  RegWrite("expires_in", data.expires_in.toStr().Trim(), "OAuth")
-  m.expires_in = RegRead("expires_in", "OAuth")
-
-  RegWrite("refresh_token", data.refresh_token, "OAuth")
-  m.refresh_token = RegRead("refresh_token", "OAuth")
-
-  RegWrite("scope", "consumer", "OAuth")
-  m.scope = RegRead("scope", "OAuth")
-
-  RegWrite("created_at", data.created_at.toStr().Trim(), "OAuth")
-  m.created_at = RegRead("created_at", "OAuth")
-end function
 
 ' generates the pin for device linking.
 Function acquire_pin() as object
@@ -124,7 +62,11 @@ Function acquire_pin() as object
         if(code = 201)
           res = ParseJSON(msg.GetString())
           response = res.response
-          m.pin = response.pin
+          
+          RegWrite("pin", response.pin, "DeviceLinking")          
+          m.pin = RegRead("pin", "DeviceLinking")
+          ' print m.pin
+          
           if m.timer <> invalid
             m.timer.Mark()
           else

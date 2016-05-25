@@ -6,11 +6,15 @@ Function Main() as void
 
   ' @toberefactored should be configurable from the dashboard.
   if m.config.device_linking = true
+  
     'check if consumer is linked
-    if is_linked()
-      'if already linked go to home
+    print "PIN EXIST: "; PinExist()
+    if is_linked() and PinExist()
+      RequestToken()
       home()
     else
+      ResetDeviceID()
+      RemovePin()
       ' otherwise go to visitor screen
       visitor_screen()
     end if
@@ -27,3 +31,21 @@ Function init() as void
   set_device_id()
   set_up_store()
 End Function
+
+function ResetDeviceID()
+  RegDelete("DeviceID", "DeviceLinking")
+  set_device_id()
+  print m.device_id
+end function
+
+function RemovePin()
+  RegDelete("pin", "DeviceLinking")
+end function
+
+function PinExist()
+  m.pin = RegRead("pin", "DeviceLinking")
+  if m.pin <> invalid
+    return true
+  end if
+  return false
+end function

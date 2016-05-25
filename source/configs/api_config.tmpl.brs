@@ -7,6 +7,8 @@ Function set_api_() as void
     app: "<APPKEY>",
     endpoint: "https://api.zype.com/",
     player_endpoint: "https://player.zype.com/",
+    client_id: "",
+    client_secret: "",
     version: "0.0.1"
   }
 End Function

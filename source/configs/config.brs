@@ -3,13 +3,16 @@ Function set_dynamic_config() as void
   url = m.api.endpoint + "/app/?app_key=" + m.api.app
   res = call_api(url).response
 
-  ' oauth data
-  m.access_token = RegRead("access_token", "OAuth")
-  m.token_type = RegRead("token_type", "OAuth")
-  m.expires_in = RegRead("expires_in", "OAuth")
-  m.refresh_token = RegRead("refresh_token", "OAuth")
-  m.scope = RegRead("scope", "OAuth")
-  m.created_at = RegRead("created_at", "OAuth")
+
+  ' oauth
+  m.oauth = {
+    access_token: invalid,
+    token_type: invalid,
+    expires_in: invalid,
+    refresh_token: invalid,
+    scope: invalid,
+    created_at: invalid
+  }
 
   '@toberefactored the following config fields should be added to the zype-core.
   m.config = {}

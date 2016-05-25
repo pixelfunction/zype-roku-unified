@@ -1,4 +1,5 @@
 Function pin_screen() as void
+  print m.device_id
   ggaa = GetGlobalAA()
   m.config = ggaa.config
 
@@ -13,13 +14,16 @@ Function pin_screen() as void
   screen.AddParagraph("2. Enter Pin:")
   screen.AddFocalText(" ", "spacing-dense")
 
-  if is_pin_update_required()
-    pin = acquire_pin()
-  else
-    pin = m.pin
-  end if
-
-  print pin
+  ' if is_pin_update_required()
+  '   pin = acquire_pin()
+  ' else
+  '   pin = m.pin
+  ' end if
+  
+  pin = acquire_pin()
+  m.pin = pin
+  
+  print m.pin
   screen.SetRegistrationCode(pin)
 
   screen.AddFocalText(" ", "spacing-dense")
@@ -32,14 +36,14 @@ Function pin_screen() as void
 
     if msg = invalid
       if is_linked()
+        ' clean everything 
+        ClearOAuth()
+        RequestToken() ' request token
         home()
         exit while
       else
-        if is_pin_update_required()
-          pin = acquire_pin()
-        else
-          pin = m.pin
-        end if
+        pin = acquire_pin()
+        m.pin = pin
         screen.SetRegistrationCode(pin)
       end if
     else if type(msg) = "roCodeRegistrationScreenEvent"
