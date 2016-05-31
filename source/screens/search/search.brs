@@ -22,10 +22,16 @@ Function search_screen() as void
         exit while
       else if msg.isButtonPressed()
         if msg.GetIndex() = 1
-          trimmed_search_text = strTrim(screen.GetText())
-          if Len(trimmed_search_text) > 0
-            search_results_screen(trimmed_search_text)
-          endif
+          trimmed_search_text_dirty = strTrim(screen.GetText())
+          
+          regex = CreateObject("roRegex", "[^a-zA-Z0-9\s]", "")
+          trim_search_text_clean = regex.ReplaceAll(trimmed_search_text_dirty, "")
+          
+          if Len(trim_search_text_clean) > 0
+            search_results_screen(trim_search_text_clean)
+          else
+            screen.SetDisplayText("Text should contain letters or numbers only.")
+          end if
 
           ' prevent multiple button presses
           port=CreateObject("roMessagePort")
