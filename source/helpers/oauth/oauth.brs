@@ -1,3 +1,64 @@
+function GetAccessToken()
+  oauth = RegReadAccessToken()
+
+
+  if oauth = invalid
+    ResetAccessToken()
+    RequestToken()
+  else if IsExpired(oauth.created_at.ToInt(), oauth.expires_in.ToInt())
+    ResetAccessToken()
+    data = {
+      "client_id": m.client_id,
+      "client_secret": m.client_secret,
+      "refresh_token": oauth.refresh_token,
+      "grant_type": "refresh_token"
+    }
+    res = RefreshToken(data)
+    if res <> invalid
+      RegWriteAccessToken(res)
+    end if
+  end if
+  
+  return RegReadAccessToken()
+end function
+
+function RegReadAccessToken()
+  oauth = CreateObject("roAssociativeArray")
+
+  access_token = RegRead("AccessToken", "OAuth")
+  if access_token <> invalid
+    oauth.AddReplace("access_token", access_token)
+    oauth.AddReplace("token_type", RegRead("TokenType", "OAuth"))
+    oauth.AddReplace("expires_in", RegRead("ExpiresIn", "OAuth"))
+    oauth.AddReplace("refresh_token", RegRead("RefreshToken", "OAuth"))
+    oauth.AddReplace("scope", RegRead("Scope", "OAuth"))
+    oauth.AddReplace("created_at", RegRead("CreatedAt","OAuth"))
+
+    return oauth
+  end if
+
+  return invalid
+end function
+
+function RegWriteAccessToken(data as object)
+  ' print data
+  access_token = ToString(data.access_token)
+  token_type = ToString(data.token_type)
+  expires_in = AnyToString(data.expires_in)
+  refresh_token = ToString(data.refresh_token)
+  scope = ToString(data.scope)
+  created_at = AnyToString(data.created_at)
+
+  print expires_in
+  print created_at
+
+  RegWrite("AccessToken", access_token, "OAuth")
+  RegWrite("TokenType", token_type, "OAuth")
+  RegWrite("ExpiresIn", expires_in, "OAuth")
+  RegWrite("RefreshToken", refresh_token, "OAuth")
+  RegWrite("Scope", scope, "OAuth")
+  RegWrite("CreatedAt", created_at, "OAuth")
+end function
 
 function RequestToken()
 
@@ -17,8 +78,26 @@ function RequestToken()
   print m.pin
   res = RetrieveToken(data)
   if res <> invalid
-    AddOAuth(res)
+    RegWriteAccessToken(res)
   end if
+end function
+
+function IsExpired(created_at as integer, expires_in as integer)
+  dt = createObject("roDateTime")
+  dt.mark()
+  delta = dt.asSeconds() - created_at
+  ' print str(delta)
+  ' print str(expires_in)
+  return delta > expires_in
+end function
+
+function ResetAccessToken()
+  RegDelete("AccessToken", "OAuth")
+  RegDelete("TokenType", "OAuth")
+  RegDelete("ExpiresIn", "OAuth")
+  RegDelete("RefreshToken", "OAuth")
+  RegDelete("Scope", "OAuth")
+  RegDelete("CreatedAt", "OAuth")
 end function
 
 function AddOAuth(data as object)

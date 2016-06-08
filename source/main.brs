@@ -8,11 +8,10 @@ Function Main() as void
   if m.config.device_linking = true
   
     'check if consumer is linked
-    print "PIN EXIST: "; PinExist()
-    if is_linked() and PinExist()
-      RequestToken()
+    if is_linked()
       home()
     else
+      ResetAccessToken()
       ResetDeviceID()
       RemovePin()
       ' otherwise go to visitor screen

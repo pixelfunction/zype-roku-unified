@@ -32,28 +32,10 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
 
   if m.config.device_linking = true
     if is_linked()
-      if m.oauth.access_token <> invalid and m.oauth.refresh_token <> invalid
-        if IsExpired(m.oauth.created_at, m.oauth.expires_in)
-        
-          data = {
-            "client_id": m.client_id,
-            "client_secret": m.client_secret,
-            "refresh_token": m.oauth.refresh_token,
-            "grant_type": "refresh_token"
-          }
-        
-          res = RefreshToken(data)
-          
-          if res <> invalid
-            AddOAuth(res)
-          else
-            ShowMessageDialog("Authentication", "Something went wrong.")
-            return
-          end if
-        end if
-        
-        if IsEntitled(episodes[index].id, {"access_token": m.oauth.access_token})
-          player_info = get_player_info(episodes[index].id, {"access_token": m.oauth.access_token})
+      oauth = GetAccessToken()
+      if oauth <> invalid
+        if IsEntitled(episodes[index].id, {"access_token": oauth.access_token})
+          player_info = get_player_info(episodes[index].id, {"access_token": oauth.access_token})
         else
           ' print m.refresh_token
           ShowMessageDialog("Authentication", "You do not have access to this content.")
@@ -64,6 +46,7 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
         return
       end if
     else
+      ResetAccessToken()
       RemovePin()
       ResetDeviceID()
       ShowMessageDialog("Authentication", "You do not have access to this content. Device is not linked.")
@@ -85,15 +68,6 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
     play_episode_ad_free(episodes, index, offset, fromSearch, player_info)
   end if
 End Function
-
-function IsExpired(created_at as integer, expires_in as integer)
-  dt = createObject("roDateTime")
-  dt.mark()
-  delta = dt.asSeconds() - created_at
-  ' print str(delta)
-  ' print str(expires_in)
-  return delta > expires_in
-end function
 
 Function show_ads(episode as object) as boolean
   if m.config.force_ads = true
