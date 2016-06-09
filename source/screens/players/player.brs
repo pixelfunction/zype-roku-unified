@@ -60,12 +60,20 @@ Sub play_episode_ad_free(episodes as object, index as integer, offset as integer
     canvas.SetLayer(1, {color: "#000000"})
     canvas.SetLayer(2, {text: "Loading..."})
     canvas.Show()
+    
+    AKaMAAnalyticsPlugin = AkaMA_plugin()
+    cd = {show:episode.title}
+    AKaMAAnalyticsPlugin.pluginMain({configXML:"http://79423.analytics.edgesuite.net/analyticsplugin/configuration/Roku_config.xml", customDimensions:cd})
 
     videoScreen = PlayVideoContent(episode)
-
+    videoScreen.SetPositionNotificationPeriod(1)
+    
     playContent = true
     while playContent
-        videoMsg = wait(0, videoScreen.GetMessagePort())
+        videoMsg = wait(1, videoScreen.GetMessagePort())
+
+        AKaMAAnalyticsPlugin.pluginEventHandler(videoMsg)
+
         if type(videoMsg) = "roVideoScreenEvent"
             if videoMsg.isStreamStarted()
                 canvas.ClearLayer(2)
@@ -78,6 +86,10 @@ Sub play_episode_ad_free(episodes as object, index as integer, offset as integer
             end if
 
             if videoMsg.isFullResult()
+
+              ' AKaMAAnalyticsPlugin.PlaybackCompleteEventReceived()
+              ' AKaMAAnalyticsPlugin.visitEventReceived()
+
               RegDelete(episode.id)
 
               if m.config.autoplay
