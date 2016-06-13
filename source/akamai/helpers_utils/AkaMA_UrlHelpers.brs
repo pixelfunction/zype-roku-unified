@@ -15,6 +15,12 @@ Function AkaMA_CreateURLTransferObject(url As String) as Object
     'obj.SetUrl(obj.Escape(url))
     obj.SetUrl(url)
     'obj.SetUrl(AkaMA_HttpEncode(url))
+
+    'obj.SetCertificatesFile("pkg:/testCA.CRT")
+    obj.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    obj.AddHeader("X-Roku-Reserved-Dev-Id", "")
+    obj.InitClientCertificates()
+
     obj.AddHeader("Content-Type", "application/x-www-form-urlencoded")
     obj.EnableEncodings(true)
     return obj
@@ -149,7 +155,7 @@ Function AkaMA_http_get_to_string_with_retry() as String
             if type(event) = "roUrlEvent"
                 str = event.GetString()
                 exit while        
-            elseif event = invalid
+            else if event = invalid
                 m.Http.AsyncCancel()
                 ' reset the connection on timeouts
                 m.Http = AkaMA_CreateURLTransferObject(m.Http.GetUrl())
@@ -178,6 +184,9 @@ Function AkaMA_http_get_to_string_with_timeout(seconds as Integer) as String
     if (m.Http.AsyncGetToString())
         event = wait(timeout%, m.Http.GetPort())
         if type(event) = "roUrlEvent"
+            print "received response code = "; event.GetResponseCode()
+            print "received failure reason code = ";event.GetFailureReason()
+            print "received response header = ";event.GetResponseHeaders()
             str = event.GetString()
         elseif event = invalid
             AkaMA_Dbg("AsyncGetToString timeout")

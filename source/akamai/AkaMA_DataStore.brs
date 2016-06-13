@@ -79,6 +79,57 @@ dataStore = {
         endif
     end function
 
+    'Function       :   uniqueDimensionLookUp
+    'Params         :   uniqueMetricName The Unique Dimension to be looked up.
+    'Return         :   Will return the metric name associated with the unique dimension.
+    'Description    :   Given a unique dimension provides it's associated metric name.
+    'Warn           :   This method currently support "viewerinterval" and "viewertitleinterval". For any
+    '                   other input it will send empty string.
+    uniqueDimensionLookUp: function(uniqueMetricName as String) as String
+        dimension = ""
+        if uniqueMetricName =  "viewerInterval"
+            dimension = "viewerId"
+        else if uniqueMetricName =  "viewerTitleInterval"
+            dimension = "title"
+        endif
+        return dimension
+    end function
+
+
+    'Function       :   calculateUniqueDimension
+    'Params         :   uniqueMetricName The Unique Dimension to be used for calculations.
+    'Params         :   expiryDuration  Time from current time to expire the data.
+    'Return         :   None
+    'Description    :   Calculates the time at which the Unique Dimension was previously used.
+    'Warn           :   Will insert the last time the unique metric was used into mediaMetrics. It will insert "0.0"
+    '                   into the mediaMetrics if records were not found.
+    calculateUniqueDimension: function(uniqueMetricName as String, expiryDuration as String)  as void
+        timeDifference = "0.0"
+        metricName = m.uniqueDimensionLookUp(uniqueMetricName)
+
+        if m.mediaMetrics.DoesExist(metricName)
+            manager = AkaMA_createStorageManager()
+            metricValue = m.mediaMetrics[metricName]
+            time = CreateObject("roDateTime")
+            currentTime% = time.asSeconds()
+            if metricValue.Len() > 0
+                lastAccessTime = manager.lastAccessTime(metricValue)
+                if lastAccessTime > 0
+                    timeDiff = currentTime% - lastAccessTime
+                    if timeDiff > 0
+                        timeDiff = (timeDiff/60)
+                        timeDifference = str(timeDiff).Trim()
+                    endif
+                endif
+            endif
+            expiry% = expiryDuration.ToInt()
+            ' Converting minutes to seconds
+            expiry% = expiry% * 60
+            manager.addOrUpdate(metricValue, currentTime%, (currentTime% + expiry%))
+        endif
+        m.mediaMetrics[uniqueMetricName] = timeDifference
+    end function
+
     'Function       :   getILinedataAsString
     'Params         :   None
     'Return         :   Returns I line data as a string. String should have encoded key-value pairs
@@ -87,6 +138,11 @@ dataStore = {
     '                   as part of I line beacon
     getILinedataAsString : function() as string
         m.populateCustomeDimensions()
+        ' Calculating unqiue viewers.
+        viewerInternalObject = m.mmconfig.mmBeaconMetric.initMetrics["viewerInterval"]
+        if viewerInternalObject <> invalid
+            m.calculateUniqueDimension("viewerInterval", viewerInternalObject.expiry)
+        endif
         iLineData = box("a=I~")'CreateObject("roString")
         iLineData = iLineData + "b=" + m.mmconfig.beaconId + "~" + "az=" + m.mmconfig.beaconVersion + "~"
         iLineData = iLineData + m.fillupCommonMetrics()
@@ -358,7 +414,12 @@ dataStore = {
     if position = 1 
         return true
     else
-        return false
+        position = instr(1, baseString, "https://")
+        if position = 1
+            return true
+        else
+            return false
+        endif
     endif       
    end function
     
@@ -419,7 +480,7 @@ mmConfig = {
             if xml = invalid
                 return AkaMAErrors().ERROR_CODES.AKAM_Invalid_configuration_xml
             end if
-            
+            AkaMA_createStorageManager().deleteExpiredData()
             m.beaconId = xml.beaconId.getText()
             m.beaconVersion =   xml.beaconVersion.getText()
             
@@ -494,7 +555,7 @@ mmConfig = {
             'Populate key-value pairs for init metrics
             m.mmBeaconMetric.initMetrics.AddReplace("eventCode", xml.statistics.init@eventCode)
             for each element in xml.statistics.init.dataMetrics.data
-                m.mmBeaconMetric.initMetrics.AddReplace(element@name, {key:element@key, value:AkaMA_validstr(element@value)})
+                m.mmBeaconMetric.initMetrics.AddReplace(element@name, {key:element@key, value:AkaMA_validstr(element@value), expiry:AkaMA_validstr(element@expiry)})
             next
             AkaMA_logger().AkaMA_print("========= Printing init key / value ===== ")
             'AkaMA_PrintAnyAA(3, m.mmBeaconMetric.initMetrics)
@@ -502,7 +563,7 @@ mmConfig = {
             
             'Populate key-value pairs for playStart metrics
             for each element in xml.statistics.playStart.dataMetrics.data  
-                m.mmBeaconMetric.playStartMetrics.AddReplace(element@name, {key:element@key, value:AkaMA_validstr(element@value)})
+                m.mmBeaconMetric.playStartMetrics.AddReplace(element@name, {key:element@key, value:AkaMA_validstr(element@value), expiry:AkaMA_validstr(element@expiry)})
             next
             AkaMA_logger().AkaMA_print("========= Printing Play start key / value ===== ")
             'print "========= Printing Play start key / value ===== "

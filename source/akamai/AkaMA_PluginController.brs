@@ -39,6 +39,8 @@ return{
     viewerDiagnosticsId     :   invalid
     measuredBandwidth       :   invalid
     uniqueTitles            :   CreateObject("roArray")
+    serverUrl               :   CreateObject("roString")
+    performServerIpLookUp   :   true
     
     'todo: validation of params and retrun appropriate error code if required
     'Function       :   initializeMAPluginInstance
@@ -215,7 +217,56 @@ return{
         endif 
         'print "pline sent..."        
     end function
-    
+
+    'send performSeverIpLookUp
+    'Function       :   handlePlaybackCompleteEvent
+    'Return         :   None
+    'Description    :   This function performs server IP look up
+    performSeverIpLookUp : function()
+        if m.performServerIpLookUp = false
+            return -1
+        endif
+
+        if m.serverUrl.Len() = 0
+           if m.pluginDataStore.mediaMetrics.DoesExist("streamUrl")
+               token = AkaMA_strTokenize( m.pluginDataStore.mediaMetrics["streamUrl"], "/")
+               m.serverUrl = token[0] + "//" + token[1] + "/serverip"
+
+               regularExpression = CreateObject ("roRegex", "akamai", "i")
+               matchingObjects = regularExpression.Match (m.serverUrl)
+               if matchingObjects.Count() = 0
+                    m.performServerIpLookUp = false
+               endif
+           endif
+        endif
+
+        'Double checking mate!
+        if m.performServerIpLookUp = true
+            port = CreateObject("roMessagePort")
+            serverIpRequest = AkaMA_NewHttp(m.serverUrl)
+            serverIpRequest.Http.SetMessagePort(port)
+            if (serverIpRequest.Http.AsyncGetToString())
+                while (true)
+                    msg = wait(0, port)
+                    if (type(msg) = "roUrlEvent")
+                        if msg.getResponseCode() = 200
+                            xmlData = msg.GetString()
+                            xmlElement = CreateObject("roXMLElement")
+                            if xmlElement.Parse(xmlData)
+                                serverip = CreateObject("roString")
+                                serverIpValue = xmlElement.serverip.getText()
+                                m.pluginDataStore.addUdpateMediaMetrics({serverIp:serverIpValue})
+                            endif
+                        endif
+                    else if (event = invalid)
+                        serverIpRequest.Http.AsyncCancel()
+                    endif
+                    exit while
+                end while
+            endif
+        endif
+    end function
+
     'send cline
     'Function       :   handlePlaybackCompleteEvent
     'Params         :   sessionTimer - a timer for the session
@@ -354,6 +405,7 @@ return{
         print"resetting unique titles..."
         'pluginGlobals = AkaMA_getPluginGlobals()
         pluginGlobals.uniqueTitles = invalid
+        pluginGlobals.uniqueTitles = []
         pluginGlobals.isVisitSent = false
         pluginGlobals.isFirstTitleSent = false
         print"resetting unique titles... - done"
@@ -393,7 +445,7 @@ return{
     
     handleAdStarted:function(params)
         print"handle ad startup"
-        params.addReplace("AkaMA_updateEvent", "adStarUp")
+        params.addReplace("AkaMA_updateEvent", "adStartUp")
         m.pluginStatus.updateCurrentState(params)
     end function
     
@@ -483,14 +535,22 @@ return{
                        }
 
         if currentStreamInfo <> invalid
-            updateParams.addReplace("streamUrl", currentStreamInfo.Url)
-            token = AkaMA_strTokenize(currentStreamInfo.Url, "/")
-            updateParams.addReplace("streamName", token[token.count()-1])
-            if m.pluginDataStore.custDimension.DoesExist("title")
+            'Check if URL exist and it is a string object
+            if currentStreamInfo.DoesExist("Url") = true and AkaMA_isstr(currentStreamInfo.Url) = true
+                updateParams.addReplace("streamUrl", currentStreamInfo.Url)
+                token = AkaMA_strTokenize(currentStreamInfo.Url, "/")            
+                updateParams.addReplace("streamName", token[token.count()-1])
+            else
+                print "current URL is not valid url- not a string object"
+                token = ["unknown"]
+            endif
+            
+            'Check if title exist in custom dimensions and it is a string object
+            if m.pluginDataStore.custDimension.DoesExist("title") and AkaMA_isstr(currentStreamInfo.Url) = true
                 print"setting title=";m.pluginDataStore.custDimension["title"]
                 m.updateVisitUniqueTitles(m.pluginDataStore.custDimension["title"])
             else
-            print"setting title from token"
+            	print"setting title from token"
                 m.updateVisitUniqueTitles(token[token.count()-1])
             endif    
             if token[token.count()-1].Instr("m3u8") <> -1
@@ -573,7 +633,12 @@ return{
     updateVisitUniqueTitles:function(streamTitle)
         pluginGlobals = AkaMA_getPluginGlobals()
         bFoundTitle = false
+        pluginGlobals.uniqueTitles = invalid
         print "Plugin globals = "; pluginGlobals; " and temp = ";pluginGlobals.temp
+        if pluginGlobals.uniqueTitles = invalid
+        	pluginGlobals.uniqueTitles = []
+        endif
+        
         if pluginGlobals.uniqueTitles.Count() = 0
             pluginGlobals.uniqueTitles.Push(streamTitle)
             print"adding first title to list=";streamTitle

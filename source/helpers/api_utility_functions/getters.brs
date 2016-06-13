@@ -82,6 +82,7 @@ Function get_videos(url As String, short As Boolean) as object
     rating = parse_rating(item)
     episode = {
       ID: item._id,
+      SiteId: item.site_id,
       ContentType: "episode",
       Title: item.title,
       SDPosterUrl: thumbnail,

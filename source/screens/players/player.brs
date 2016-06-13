@@ -62,13 +62,17 @@ Sub play_episode_ad_free(episodes as object, index as integer, offset as integer
     canvas.Show()
     
     AKaMAAnalyticsPlugin = AkaMA_plugin()
-    cd = {show:episode.title}
-    AKaMAAnalyticsPlugin.pluginMain({configXML:"https://ma1169-r.analytics.edgekey.net/config/beacon-10061.xml", customDimensions:cd})
-
+    cd = {title:episode.title, playerId:"Roku", siteId: episode.siteid, videoId: episode.id, device:"Roku"}
+    
+    print episode.title
+    print episode.id
+    print episode.siteid
+    
+    AKaMAAnalyticsPlugin.pluginMain({configXML:"https://ma1169-r.analytics.edgekey.net/config/beacon-10061.xml?enableGenericAPI=1", customDimensions:cd})
     videoScreen = PlayVideoContent(episode)
     videoScreen.SetPositionNotificationPeriod(1)
 
-    playContent = true
+    playcontent = true
     while playContent
         videoMsg = wait(1, videoScreen.GetMessagePort())
 

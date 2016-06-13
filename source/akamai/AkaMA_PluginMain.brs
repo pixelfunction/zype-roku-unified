@@ -77,6 +77,7 @@ FUNCTION AkaMA_plugin() as object
     connectionTimer         :   invalid 'CreateObject("roTimespan")
     viewerId                :   invalid
     viewerDiagnosticsId     :   invalid
+    serverIpLookUpPerformed :   false
     
     setViewerId:function(vId)
         ue = CreateObject("roURLTransfer")
@@ -130,7 +131,11 @@ FUNCTION AkaMA_plugin() as object
                         m.pluginInstance.handlePeriodicEvent(m.sessionTimer, m.lastHeadPosition)
                         m.streamStartTimer = invalid
                         m.streamStartTimer = CreateObject("roTimespan")
-                    endif   
+                        m.serverIpLookUpPerformed = false
+                    else if m.streamStartTimer.TotalSeconds() >= (m.pluginInstance.logInterval.toint() - 10) and m.serverIpLookUpPerformed = false
+                        m.serverIpLookUpPerformed = true
+                        m.pluginInstance.performSeverIpLookUp()
+                    endif
                 endif    
                 if m.secondaryLogTimer <> invalid
                     if m.secondaryLogTimer.TotalSeconds() >= m.pluginInstance.secondaryLogInterval.toint()

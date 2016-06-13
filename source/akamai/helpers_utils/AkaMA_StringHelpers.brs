@@ -55,9 +55,11 @@ End Function
 'Tokenize a string. Return roList of strings
 '******************************************************
 Function AkaMA_strTokenize(str As String, delim As String) As Object
-    st=CreateObject("roString")
-    st.SetString(str)
-    return st.Tokenize(delim)
+    if str <> invalid and delim <> invalid
+        st=CreateObject("roString")
+        st.SetString(str)
+        return st.Tokenize(delim)
+    endif
 End Function
 
 '******************************************************
