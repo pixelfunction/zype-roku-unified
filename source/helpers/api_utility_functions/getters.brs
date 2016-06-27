@@ -1,5 +1,116 @@
 ' Getters calls specific APIs
 
+function get_entitled_videos(params=invalid as dynamic) as object
+  url = m.api.endpoint + "/consumer/videos" + "?" + format_params(params)
+  resp = call_api(url)
+  
+  if resp.code = 200
+    episodes = CreateObject("roArray", 1, true)
+    for each vid in resp.response
+      single_video_url = m.api.endpoint + "/videos/" + vid.video_id + "?" + format_params(params)
+      item = call_api(single_video_url).response
+
+      short_description = ""
+      full_description = ""
+      if IsString(item.description) = true and IsString(item.short_description) = true
+        if item.description.Trim().Len() > 0 and item.short_description.Trim().Len() > 0
+          short_description = item.short_description
+          full_description = item.description
+        else if item.description.Trim().Len() > 0 and item.short_description.Trim().Len() = 0
+          short_description = item.description
+          full_description = item.description
+        else if item.description.Trim().Len() = 0 and item.short_description.Trim().Len() > 0
+          short_description = item.short_description
+        end if
+      else if IsString(item.description) = true and IsString(item.short_description) = false
+        if item.description.Trim().Len() > 0
+          short_description = item.description
+          full_description = item.description
+        end if
+      else if IsString(item.description) = false and IsString(item.short_description) = true
+        if item.short_description.Trim().Len() > 0
+          short_description = item.short_description
+        end if
+      end if
+
+      r = CreateObject("roRegex", "\s\r|\s\n|\s\r\n|\r|\n", "")
+      short_description = r.ReplaceAll(short_description, chr(10))
+      full_description = r.ReplaceAll(full_description, chr(10))
+
+      published_at = ""
+      if isString(item.published_at) = true
+        dt = CreateObject("roDateTime")
+        date = left(item.published_at, 23)
+        dt.FromISO8601String(date)
+        published_at = dt.AsDateString("short-date")
+      end if
+
+      thumbnail = parse_thumbnail(item)
+      rating = parse_rating(item)
+      episode = {
+        ID: item._id,
+        ContentType: "episode",
+        Title: item.title,
+        SDPosterUrl: thumbnail,
+        HDPosterUrl: thumbnail,
+        Length: item.duration,
+        Rating: rating,
+        ReleaseDate: published_at
+        ' The Description field is used for all pages
+        Description: short_description,
+        FullDescription: full_description,
+        SubscriptionRequired: item.subscription_required,
+        PassRequired: item.pass_required,
+        PurchaseRequired: item.purchase_required,
+        RentalRequired: item.rental_required,
+        SwitchingStrategy: m.config.switching_strategy,
+        Cost: 0,
+        ProductType: "none",
+        NielsenGenre: "",
+        Episode: item.episode,
+        Season: item.season
+      }
+
+      if m.config.enableNielsenDAR
+        for each c in item.categories
+          if c.title = "Nielsen Genre"
+            episode.NielsenGenre = c.value[0]
+            exit for
+          end if
+        end for
+      end if
+
+      top_validation = valid_top_zobject()
+      bottom_validation = valid_bottom_zobject()
+
+      if top_validation = true
+        episode.Actors = parse_zobjects(item, m.config.top_description_zobject)
+      end if
+
+      if bottom_validation = true
+        episode.Categories = parse_zobjects(item, m.config.bottom_description_zobject)
+      end if
+
+      episodes.push(episode)
+
+    end for
+
+    return episodes
+  end if
+
+  return invalid
+end function
+
+function get_my_library(params=invalid as dynamic) as object
+  videos = get_entitled_videos(params)
+  if videos <> invalid
+    library = {name: "My Library", episodes: videos}
+    return library
+  end if
+  return invalid
+end function
+
+
 function IsEntitled(id as string, params=invalid as dynamic) as boolean
   url = m.api.endpoint + "/videos/" + id + "/entitled" + "?" + format_params(params)
   resp = call_api(url)

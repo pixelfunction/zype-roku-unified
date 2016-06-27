@@ -88,6 +88,7 @@ function IsExpired(created_at as integer, expires_in as integer)
   delta = dt.asSeconds() - created_at
   ' print str(delta)
   ' print str(expires_in)
+  print "Checking is_expired"
   return delta > expires_in
 end function
 

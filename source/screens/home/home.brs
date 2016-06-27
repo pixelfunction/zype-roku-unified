@@ -22,6 +22,9 @@ function load_playlist_videos(index as integer)
 end function
 
 Function playlists_grid()
+    oauth = GetAccessToken()
+    print oauth
+
     port = CreateObject("roMessagePort")
     grid = CreateObject("roGridScreen")
     grid.SetMessagePort(port)
@@ -30,17 +33,27 @@ Function playlists_grid()
     grid.SetDisplayMode(m.config.scale_mode)
     grid.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
 
+    m.library = get_my_library({"access_token": oauth.access_token})
+
     m.playlists = get_playlists()
     m.playlists_content = CreateObject("roArray", m.playlists.count(), true)
 
     rowTitles = CreateObject("roArray", 1, true)
+
+    print m.library
+
     for each pl in m.playlists
       rowTitles.push(pl.title)
     end for
 
+    if m.library <> invalid
+      rowTitles.push(m.library.name)
+    end if
+
     grid.SetupLists(rowTitles.Count())
     grid.SetListNames(rowTitles)
 
+    grid.SetContentList(rowTitles.Count() - 1, m.library.episodes)
     grid.SetContentListSubset(0, load_playlist_videos(0), 0, 5)
     if m.playlists.count() > 1
       grid.SetContentListSubset(1, load_playlist_videos(1), 0, 5)
@@ -53,12 +66,21 @@ Function playlists_grid()
        current_row = msg.GetIndex()
        current_col = msg.GetData()
 
-       grid.SetContentListSubset(current_row, load_playlist_videos(current_row), current_col, 5)
+       print current_row, current_row
+       if current_row <> rowTitles.count() - 1
+        grid.SetContentListSubset(current_row, load_playlist_videos(current_row), current_col, 5)
 
-       next_row_1 = current_row + 1
-       if next_row_1 < rowTitles.count()
-        grid.SetContentListSubset(next_row_1, load_playlist_videos(next_row_1), current_col, 5)
-       end if
+        next_row_1 = current_row + 1
+        if m.library <> invalid
+          if next_row_1 < rowTitles.count() - 1
+            grid.SetContentListSubset(next_row_1, load_playlist_videos(next_row_1), current_col, 5)
+          end if
+        else
+          if next_row_1 < rowTitles.count()
+            grid.SetContentListSubset(next_row_1, load_playlist_videos(next_row_1), current_col, 5)
+          end if
+        end if
+      end if
 
        if type(msg) = "roGridScreenEvent" then
            if msg.isScreenClosed() then
@@ -79,7 +101,11 @@ Function playlists_grid()
                end if
 
               '  print m.playlists_content[current_row]
+              if current_row = rowTitles.count() - 1
+                displayShowDetailScreen(m.library.episodes, current_col, false)
+              else
                displayShowDetailScreen(m.playlists_content[current_row], current_col, false)
+              end if
 
                ' prevent multiple button presses
                port=CreateObject("roMessagePort")
