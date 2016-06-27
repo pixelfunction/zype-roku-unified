@@ -38,7 +38,7 @@ return{
     viewerId                :   invalid
     viewerDiagnosticsId     :   invalid
     measuredBandwidth       :   invalid
-    uniqueTitles            :   CreateObject("roArray")
+    uniqueTitles            :   CreateObject("roArray", 100, true)
     serverUrl               :   CreateObject("roString")
     performServerIpLookUp   :   true
     

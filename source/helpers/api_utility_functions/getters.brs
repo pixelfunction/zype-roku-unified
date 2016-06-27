@@ -250,6 +250,7 @@ Function get_player_info(id As String) as Object
           player_info.format = "mp4"
         end if
       end for
+
       if(res.body.DoesExist("advertising"))
         for each advertising in res.body.advertising
           if (advertising = "schedule")
@@ -261,8 +262,18 @@ Function get_player_info(id As String) as Object
           end if
         end for
       end  if
+
+      analytics = {}
+      if res.body.DoesExist("analytics")
+        analytics.AddReplace("beacon", res.body.analytics.beacon)
+        analytics.AddReplace("device", res.body.analytics.dimensions.device)
+        analytics.AddReplace("player_id", res.body.analytics.dimensions.player_id)
+        analytics.AddReplace("site_id", res.body.analytics.dimensions.site_id)
+        analytics.AddReplace("video_id", res.body.analytics.dimensions.video_id)
+      end if
     end if
   end if
+  player_info.analytics = analytics
   player_info.ads = scheduled_ads
   return player_info
 End Function

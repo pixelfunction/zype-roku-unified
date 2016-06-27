@@ -61,14 +61,15 @@ Sub play_episode_ad_free(episodes as object, index as integer, offset as integer
     canvas.SetLayer(2, {text: "Loading..."})
     canvas.Show()
     
+
+    ' print player_info.analytics.site_id
+    ' print player_info.analytics.video_id
+    ' print player_info.analytics.device
+    ' print player_info.analytics.beacon
+
     AKaMAAnalyticsPlugin = AkaMA_plugin()
-    cd = {title:episode.title, playerId:"Roku", siteId: episode.siteid, videoId: episode.id, device:"Roku"}
-    
-    print episode.title
-    print episode.id
-    print episode.siteid
-    
-    AKaMAAnalyticsPlugin.pluginMain({configXML:"https://ma1169-r.analytics.edgekey.net/config/beacon-10061.xml?enableGenericAPI=1", customDimensions:cd})
+    cd = {title:episode.title,playerId: player_info.analytics.device, siteId: player_info.analytics.site_id, videoId: player_info.analytics.video_id, device: player_info.analytics.device}
+    AKaMAAnalyticsPlugin.pluginMain({configXML:player_info.analytics.beacon, customDimensions:cd})
     videoScreen = PlayVideoContent(episode)
     videoScreen.SetPositionNotificationPeriod(1)
 
@@ -159,10 +160,19 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
       videoScreen = PlayVideoContent(episode)
     end if
 
+    AKaMAAnalyticsPlugin = AkaMA_plugin()
+    cd = {title:episode.title,playerId: player_info.analytics.device, siteId: player_info.analytics.site_id, videoId: player_info.analytics.video_id, device: player_info.analytics.device}
+    AKaMAAnalyticsPlugin.pluginMain({configXML:player_info.analytics.beacon, customDimensions:cd})
+    videoScreen = PlayVideoContent(episode)
+    videoScreen.SetPositionNotificationPeriod(1)
+
     closingContentScreen = false
     contentDone = false
     while playContent
         videoMsg = wait(0, videoScreen.GetMessagePort())
+
+        AKaMAAnalyticsPlugin.pluginEventHandler(videoMsg)
+
         if type(videoMsg) = "roVideoScreenEvent"
             if videoMsg.isStreamStarted()
               canvas.ClearLayer(2)
