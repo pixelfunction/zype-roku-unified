@@ -67,17 +67,21 @@ Sub play_episode_ad_free(episodes as object, index as integer, offset as integer
     ' print player_info.analytics.device
     ' print player_info.analytics.beacon
 
-    AKaMAAnalyticsPlugin = AkaMA_plugin()
-    cd = {title:episode.title,playerId: player_info.analytics.device, siteId: player_info.analytics.site_id, videoId: player_info.analytics.video_id, device: player_info.analytics.device}
-    AKaMAAnalyticsPlugin.pluginMain({configXML:player_info.analytics.beacon, customDimensions:cd})
-    videoScreen = PlayVideoContent(episode)
-    videoScreen.SetPositionNotificationPeriod(1)
+    if player_info.analytics.beacon <> invalid
+      AKaMAAnalyticsPlugin = AkaMA_plugin()
+      cd = {title:episode.title,playerId: player_info.analytics.device, siteId: player_info.analytics.site_id, videoId: player_info.analytics.video_id, device: player_info.analytics.device}
+      AKaMAAnalyticsPlugin.pluginMain({configXML:player_info.analytics.beacon, customDimensions:cd})
+      videoScreen = PlayVideoContent(episode)
+      videoScreen.SetPositionNotificationPeriod(1)
+    end if
 
     playcontent = true
     while playContent
         videoMsg = wait(1, videoScreen.GetMessagePort())
 
-        AKaMAAnalyticsPlugin.pluginEventHandler(videoMsg)
+        if player_info.analytics.beacon <> invalid
+          AKaMAAnalyticsPlugin.pluginEventHandler(videoMsg)
+        end if
 
         if type(videoMsg) = "roVideoScreenEvent"
             if videoMsg.isStreamStarted()
@@ -160,18 +164,22 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
       videoScreen = PlayVideoContent(episode)
     end if
 
-    AKaMAAnalyticsPlugin = AkaMA_plugin()
-    cd = {title:episode.title,playerId: player_info.analytics.device, siteId: player_info.analytics.site_id, videoId: player_info.analytics.video_id, device: player_info.analytics.device}
-    AKaMAAnalyticsPlugin.pluginMain({configXML:player_info.analytics.beacon, customDimensions:cd})
-    videoScreen = PlayVideoContent(episode)
-    videoScreen.SetPositionNotificationPeriod(1)
+    if player_info.analytics.beacon <> invalid
+      AKaMAAnalyticsPlugin = AkaMA_plugin()
+      cd = {title:episode.title,playerId: player_info.analytics.device, siteId: player_info.analytics.site_id, videoId: player_info.analytics.video_id, device: player_info.analytics.device}
+      AKaMAAnalyticsPlugin.pluginMain({configXML:player_info.analytics.beacon, customDimensions:cd})
+      videoScreen = PlayVideoContent(episode)
+      videoScreen.SetPositionNotificationPeriod(1)
+    end if
 
     closingContentScreen = false
     contentDone = false
     while playContent
         videoMsg = wait(0, videoScreen.GetMessagePort())
 
-        AKaMAAnalyticsPlugin.pluginEventHandler(videoMsg)
+        if player_info.analytics.beacon <> invalid
+          AKaMAAnalyticsPlugin.pluginEventHandler(videoMsg)
+        end if
 
         if type(videoMsg) = "roVideoScreenEvent"
             if videoMsg.isStreamStarted()
