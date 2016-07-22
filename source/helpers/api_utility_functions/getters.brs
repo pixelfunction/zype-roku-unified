@@ -133,7 +133,7 @@ Function get_videos(url As String, short As Boolean) as object
     ' print episode
   end for
   
-  episodes.SortBy("season", "r")
+  ' episodes.SortBy("season", "r")
   ' for each ele in episodes
   '   print ele.Season, ele.Episode
   ' end for
