@@ -27,7 +27,12 @@ Function grid(channel=invalid as object) as Void
     screen.SetBreadcrumbEnabled(m.config.category_home_breadcrumb_enabled)
     screen.setGridStyle(m.config.grid_layout)
     screen.SetDisplayMode(m.config.scale_mode)
-
+	
+	if channel.playlist_id <> invalid
+		m.playlist = get_playlist(channel.playlist_id)
+	else
+		m.playlist = get_featured_playlist()
+	endif
     m.playlist = get_playlist(channel.playlist_id)
     if channel.category_id <> invalid
       m.category = get_category_info(channel.category_id)
@@ -132,8 +137,10 @@ Function load_data(index as Integer) as Object
   if m.categories[index] = invalid
     title = m.row_titles[index]
     print title
-    if m.config.category_id <> invalid
-      category = get_category_playlist(m.category.name, title, m.config.category_id)
+	print m.category
+    if m.category.id <> invalid
+	print "pulling category data"
+      category = get_category_playlist(m.category.name, title, m.category.id)
     else
       category = get_category_playlist(m.category.name, title, "*")
     end if
@@ -187,9 +194,10 @@ Function channels() as void
     series = get_series()
 
     'only want to include 4 tiles per row
+	' print series.count()
     total_rows = (series.count() / 4) + 1
     total_rows = ceiling(total_rows)
-    print total_rows
+    ' print total_rows
 
     'need to unhardcode number for rowTitles
     rowTitles = CreateObject("roArray", total_rows, true)
@@ -202,7 +210,7 @@ Function channels() as void
 
     grid.SetListNames(rowTitles)
 
-    for j = 0 to 3
+    for j = 0 to total_rows - 1
       list = CreateObject("roArray", total_rows, true)
       'get the pagination
       starting = (j * 4)

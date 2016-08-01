@@ -270,6 +270,7 @@ End Function
 Function get_category_playlist(category_name as string, category_value as string, category_id as string) as Object
   playlist = {}
   url = m.api.endpoint + "/videos?app_key=" + m.api.app + "&category%5B" + HttpEncode(category_name) + "%5D=" + HttpEncode(category_value) + "&dpt=true&per_page=" + m.config.per_page + "&sort=episode&order=asc"
+  print url
   episodes = get_videos(url, false)
   if(episodes.count() > 0)
     playlist = {name: category_value, episodes: episodes}
@@ -315,6 +316,7 @@ Function get_category_info(category_id As String) as Object
         if(code = 200)
           parsed_res = ParseJSON(msg.GetString())
           res = parsed_res.response
+		  category_info.id = res._id
           category_info.name = res.title
           category_info.values = res.values
           return category_info
