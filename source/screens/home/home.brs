@@ -27,27 +27,29 @@ Function grid(channel=invalid as object) as Void
     screen.SetBreadcrumbEnabled(m.config.category_home_breadcrumb_enabled)
     screen.setGridStyle(m.config.grid_layout)
     screen.SetDisplayMode(m.config.scale_mode)
-	
-	if channel.playlist_id <> invalid
-		m.playlist = get_playlist(channel.playlist_id)
-	else
-		m.playlist = get_featured_playlist()
-	endif
-    m.playlist = get_playlist(channel.playlist_id)
+    
+    if channel.playlist_id <> invalid
+      m.playlist = get_playlist(channel.playlist_id)
+    else
+      m.playlist = get_featured_playlist()
+    endif
+
     if channel.category_id <> invalid
+      print m.category
       m.category = get_category_info(channel.category_id)
     else
       'there is no category_id so create a fake category
       m.category = {name: "", values: ["All Videos"]}
     end if
+
   end if
   m.toolbar = grid_toolbar()
 
   ' positions for content
   playlist_position = 0
-  toolbar_position = m.category.values.count() + 1
   category_start_position = 1
   category_end_position = m.category.values.count()
+  toolbar_position = category_end_position + 1
 
   m.row_titles = CreateObject("roArray", 1, true)
   m.row_titles[playlist_position] = m.playlist.name
@@ -137,9 +139,8 @@ Function load_data(index as Integer) as Object
   if m.categories[index] = invalid
     title = m.row_titles[index]
     print title
-	print m.category
+    print m.category
     if m.category.id <> invalid
-	print "pulling category data"
       category = get_category_playlist(m.category.name, title, m.category.id)
     else
       category = get_category_playlist(m.category.name, title, "*")
@@ -194,7 +195,7 @@ Function channels() as void
     series = get_series()
 
     'only want to include 4 tiles per row
-	' print series.count()
+    ' print series.count()
     total_rows = (series.count() / 4) + 1
     total_rows = ceiling(total_rows)
     ' print total_rows
