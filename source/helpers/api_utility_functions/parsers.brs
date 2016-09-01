@@ -16,14 +16,16 @@ Function parse_thumbnail(input As Object) as string
   end if
 
   ' otherwise, we use default
-  for each thumbnail in input.thumbnails
-    if(thumbnail.DoesExist("width"))
-      if(thumbnail.width >= 250)
-        return thumbnail.url
-      endif
-    endif
-  end for
-
+	if input.DoesExist("thumbnails") and input.thumbnails.count() > 0
+	  for each thumbnail in input.thumbnails
+	    if(thumbnail.DoesExist("width")) and thumbnail.width <> invalid
+	      if(thumbnail.width >= 250)
+	        return thumbnail.url
+	      endif
+	    endif
+	  end for
+	end if
+	
   ' URL is not available
   return ""
 End Function
