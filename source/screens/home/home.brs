@@ -58,7 +58,17 @@ Function grid(channel=invalid as object) as Void
 
   total_rows = m.row_titles.count()
   screen.SetupLists(total_rows)
-  screen.SetListNames(m.row_titles)
+
+  ' prepend category name to every row title
+  if m.config.prepend_category_name = true
+    m.row_category_titles = []
+    for each t in m.row_titles
+      m.row_category_titles.push(m.category.name + " / " + t)
+    end for
+    screen.SetListNames(m.row_category_titles)
+  else
+    screen.SetListNames(m.row_titles)
+  end if
 
   subsetLength = 5
   screen.SetContentListSubset(playlist_position, m.playlist.episodes, 0, subsetLength)
@@ -155,11 +165,7 @@ End Function
 Function AddCategoryTitles(start_idx as integer, end_idx as integer, arr as object)
   idx = start_idx
   for each title in m.category.values
-    if m.config.prepend_category_name = true
-      arr[idx] = m.category.name + " " + title
-    else
-      arr[idx] = title
-    end if
+    arr[idx] = title
     idx = idx + 1
   end for
 End Function
