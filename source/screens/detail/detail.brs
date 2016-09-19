@@ -81,7 +81,7 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
               end if
 
               if msg.GetIndex() = 3 then
-                show_link_modal(episode.title)
+                pin_screen()  
               end if
 
               if msg.GetIndex() = 4
@@ -236,7 +236,12 @@ Function add_buttons(screen as object, episode as object) as void
             end if
         end if
     else
-      add_play_btn(screen, episode)
+      ' add_play_btn(screen, episode)
+      ' if is_linked() = true
+        add_play_btn(screen, episode)
+      ' else
+        ' screen.AddButton(3, m.config.subscription_button_text)
+      ' end if
     end if
   else
     ' @desc Basic mode

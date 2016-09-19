@@ -12,16 +12,25 @@ End Function
 Function set_device_id() As Void
   ' print "checking registry token"
   m.device_id = ""
-  if RegRead("RegToken", "Authentication") <> invalid
-    m.device_id = RegRead("RegToken", "Authentication")
+  if RegRead("DeviceID", "DeviceLinking") <> invalid
+    m.device_id = RegRead("DeviceID", "DeviceLinking")
   else
     date = CreateObject("roDateTime")
     timestamp = date.AsSeconds().ToStr()
     device = CreateObject("roDeviceInfo")
-    uniqueId = device.GetDeviceUniqueId() + date.AsSeconds().ToStr()
-    RegWrite("RegToken", uniqueId, "Authentication")
-    m.device_id = RegRead("RegToken", "Authentication")
+
+    ba = CreateObject("roByteArray")
+    ba.FromAsciiString(device.GetDeviceUniqueId() + date.AsSeconds().ToStr())
+    digest = CreateObject("roEVPDigest")
+    digest.setup("md5")
+    digest.Update(ba)
+
+    uniqueId = digest.Final()
+    RegWrite("DeviceID", uniqueId, "DeviceLinking")
+    m.device_id = RegRead("DeviceID", "DeviceLinking")
   end if
+  
+'   print m.device_id
 End Function
 
 '******************************************************

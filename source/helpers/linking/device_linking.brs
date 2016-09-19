@@ -57,7 +57,10 @@ Function acquire_pin() as object
         if(code = 201)
           res = ParseJSON(msg.GetString())
           response = res.response
-          m.pin = response.pin
+          
+          RegWrite("pin", response.pin, "DeviceLinking")          
+          m.pin = RegRead("pin", "DeviceLinking")
+
           if m.timer <> invalid
             m.timer.Mark()
           else

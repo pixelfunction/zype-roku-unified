@@ -1,10 +1,63 @@
+Function ShowMessageDialog(title as string, msg as string) As Void
+    port = CreateObject("roMessagePort")
+    dialog = CreateObject("roMessageDialog")
+    dialog.SetMessagePort(port)
+    dialog.SetTitle(title)
+    dialog.SetText(msg)
+ 
+    dialog.AddButton(1, "OK")
+    dialog.EnableBackButton(true)
+    dialog.Show()
+    While True
+        dlgMsg = wait(0, dialog.GetMessagePort())
+        If type(dlgMsg) = "roMessageDialogEvent"
+            if dlgMsg.isButtonPressed()
+                if dlgMsg.GetIndex() = 1
+                    exit while
+                end if
+            else if dlgMsg.isScreenClosed()
+                exit while
+            end if
+        end if
+    end while
+    
+    dialog.Close()
+End Function
+
 Function play(episodes as object, index as integer, offset as integer, fromSearch as Boolean) as void
-  if type(episodes[index]) <> "roAssociativeArray"
+  ep = episodes[index]
+
+  if type(ep) <> "roAssociativeArray"
       print "invalid data passed to showVideoScreen"
       return
   end if
 
-  player_info = get_player_info(episodes[index].id)
+  if m.config.device_linking = true and (ep.SubscriptionRequired = true or ep.PurchaseRequired = true or ep.PassRequired = true or ep.RentalRequired = true)
+    if is_linked() and PinExist()
+      oauth = GetAccessToken()
+      if oauth <> invalid
+        print "Requesting OAuth"
+        if IsEntitled(ep.id, {"access_token": oauth.access_token})
+          player_info = get_player_info(ep.id, {"access_token": oauth.access_token})
+        else
+          ' print m.refresh_token
+          ShowMessageDialog("Authentication", "You do not have access to this content.")
+          return
+        end if
+      else
+        ShowMessageDialog("Authentication", "You do not have access to this content.")
+        return
+      end if
+    else
+      ResetAccessToken()
+      RemovePin()
+      ResetDeviceID()
+      ShowMessageDialog("Authentication", "You do not have access to this content. Device is not linked.")
+      return
+    end if
+  else
+    player_info = get_player_info(ep.id, {"app_key": m.api.app})
+  end if
 
   if fromSearch <> true
     m.home_y = index
@@ -12,7 +65,7 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
     m.search_x = index
   end if
 
-  if show_ads(episodes[index]) = true
+  if show_ads(ep) = true
     play_episode_with_ad(episodes, index, offset, fromSearch, player_info)
   else
     play_episode_ad_free(episodes, index, offset, fromSearch, player_info)
