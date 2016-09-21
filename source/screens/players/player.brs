@@ -182,22 +182,27 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
 
     ' make sure to play preroll ad if it exists
     ad = get_ad(episode, curPos)
-    if ad.url.len() > 0
-      print "Provided: "; ad.url
-      url = replace(ad.url)
-      m.adIface.setAdUrl(url)
-    else
-      print "Use default Roku Ad"
-      m.adIface.setAdUrl()
-    end if
+    if ad <> invalid
+      if ad.url.len() > 0
+        print "Provided: "; ad.url
+        url = replace(ad.url)
+        m.adIface.setAdUrl(url)
+      else
+        print "Use default Roku Ad"
+        m.adIface.setAdUrl()
+      end if
 
-    adPods = m.adIface.getAds()
-    playContent = m.adIface.showAds(adPods)
-    if playContent
-      ' resume video playback after ads
-      episode.PlayStart = curPos
+      adPods = m.adIface.getAds()
+      playContent = m.adIface.showAds(adPods)
+      if playContent
+        ' resume video playback after ads
+        episode.PlayStart = curPos
+        videoScreen = PlayVideoContent(episode)
+      end if
+    else
       videoScreen = PlayVideoContent(episode)
     end if
+
 
     closingContentScreen = false
     contentDone = false
@@ -214,14 +219,20 @@ Sub play_episode_with_ad(episodes as object, index as integer, offset as integer
               RegWrite(episode.id, curPos.toStr())
 
               ad = get_ad(episode, curPos)
-              if ad.url.len() > 0
+              if ad <> invalid
+                if ad.url.len() > 0
+                  print "Provided: "; ad.url
+                  url = replace(ad.url)
+                  m.adIface.setAdUrl(url)
+                else
+                  print "Use default Roku Ad"
+                  m.adIface.setAdUrl()
+                end if
+
                 videoScreen.close()
 
-                url = replace(ad.url)
-                m.adIface.setAdUrl(url)
                 adPods = m.adIface.getAds()
                 playContent = m.adIface.showAds(adPods)
-
                 if playContent and not contentDone
                   ' resume video playback after ads
                   episode.PlayStart = curPos
@@ -338,16 +349,18 @@ function resetAds(episode as object, offset as integer)
 end function
 
 
-Function get_ad(episode, offset)
+Function get_ad(episode as object, offset as integer)
   if episode.ads.count() > 0
     for each ad in episode.ads
       if ad.played = false
-        if offset >= ad.offset
+        ' print ad.offset, offset
+        ' print Abs(offset - ad.offset)
+        if offset >= ad.offset and Abs(offset - ad.offset) < 5
           ad.played = true
           return ad
         end if
       end if
     end for
   end if
-  return {url: "", offset: 0, played: true}
+  return invalid
 End Function

@@ -23,8 +23,8 @@ Function set_dynamic_config() as void
   m.config.enableNielsenDAR = false
 
   m.adIface = Roku_Ads()
-  m.adIface.setAdPrefs(false,2) ' 1: use Roku Ad Framework as fallback 2: # re-tries
-  m.adIface.setDebugOutput(false)
+  m.adIface.setAdPrefs(true, 2) ' 1: use Roku Ad Framework as fallback 2: # re-tries
+  m.adIface.setDebugOutput(true)
   ' print m.config.enableNielsenDAR
   m.adIface.enableNielsenDAR(m.config.enableNielsenDAR)
   ' Nielesen App Id
