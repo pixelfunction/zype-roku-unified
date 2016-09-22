@@ -33,7 +33,7 @@ Function get_channel_catalog() as void
           endif
           if item.productType = "YearlySub"
             m.yearly_sub = item
-            if m.config.subscription_button_text
+            if len(m.config.subscription_button_text) > 0
               m.yearly_sub.button = item.cost + " " + m.config.subscription_button_text
             else
               m.yearly_sub.button = item.cost + " " + item.name
