@@ -191,7 +191,7 @@ Function call_api(url As String) as Object
 End Function
 
 ' returns a list of videos.
-Function get_videos(url As String, short As Boolean) as object
+Function get_videos(url As String, short As Boolean, long=false As Boolean) as object
   episodes = CreateObject("roArray", 1, true)
   res = call_api(url).response
 
@@ -286,6 +286,17 @@ Function get_videos(url As String, short As Boolean) as object
       episode.ShortDescriptionLine2 = rating
     end if
 
+    if long = true then
+      videoTitle = ""
+      for each it in item.categories
+        if it.title = "Show"
+          videoTitle = it.value[0]
+        end if
+      end for
+      episode.ShortDescriptionLine1 = item.title
+      episode.ShortDescriptionLine2 = videoTitle
+    end if
+
     episodes.push(episode)
     ' print episode
   end for
@@ -346,7 +357,7 @@ End Function
 ' returns a list of videos filtered by a query
 Function get_search_results(query As String) as object
   url = m.api.endpoint + "/videos/?app_key=" + m.api.app + "&per_page=" + m.config.per_page + "&q=" + HttpEncode(query) + "&dpt=true"
-  episodes = get_videos(url, true)
+  episodes = get_videos(url, false, true)
   if (episodes.count() > 0)
     search_results = {name: "Search: " + query, episodes: episodes}
   else
