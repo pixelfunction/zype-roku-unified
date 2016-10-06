@@ -418,7 +418,12 @@ Function get_player_info(id As String, query=invalid as object) as Object
   player_info = {}
   scheduled_ads = []
   url = m.api.player_endpoint + "/embed/" + id + "?" + format_params(query)
+
   result = call_api(url).response
+
+  if result = invalid
+    return invalid
+  end if
 
   if result.DoesExist("body") = true then
     if result.body.DoesExist("outputs") = true then

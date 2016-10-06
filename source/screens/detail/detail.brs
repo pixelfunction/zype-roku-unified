@@ -177,21 +177,23 @@ Function add_buttons(screen as object, episode as object) as void
     ' @desc IAP mode
     print  "IAP mode"
     if episode.SubscriptionRequired = false and episode.PurchaseRequired = false
-      add_play_btn(screen, episode)
+      add_play_btn(screen, episode, true)
     else if episode.SubscriptionRequired = true and episode.PurchaseRequired = false
       if m.config.subscribe_to_watch_ad_free = true
-        add_play_btn(screen, episode)
         if is_subscribed() = false
+          add_play_btn(screen, episode)
           if m.monthly_sub <> invalid
             screen.AddButton(4, m.monthly_sub.button)
           end if
           if m.yearly_sub <> invalid
             screen.AddButton(5, m.yearly_sub.button)
           end if
+        else
+          add_play_btn(screen, episode, true)
         end if
       else
         if is_subscribed() = true
-          add_play_btn(screen, episode)
+          add_play_btn(screen, episode, true)
         else
           if m.monthly_sub <> invalid
             screen.AddButton(4, m.monthly_sub.button)
@@ -203,14 +205,14 @@ Function add_buttons(screen as object, episode as object) as void
       end if
     else if episode.SubscriptionRequired = false and episode.PurchaseRequired = true
       if is_purchased(episode) = true
-        add_play_btn(screen, episode)
+        add_play_btn(screen, episode, true)
       else
         screen.AddButton(6, "Purchase for " + ToString(episode.cost) + "!")
       end if
     else if episode.SubscriptionRequired = true and episode.PurchaseRequired = true
       ' @desc This part is not tested (as for now, we cannot set those to fields to be true)
       if is_subscribed() or is_purchased(episode)
-        add_play_btn(screen, episode)
+        add_play_btn(screen, episode, true)
       else
         if m.monthly_sub <> invalid
           screen.AddButton(4, m.monthly_sub.button)
@@ -226,7 +228,7 @@ Function add_buttons(screen as object, episode as object) as void
     print "Device linking mode"
     if episode.SubscriptionRequired = true
         if is_linked() = true
-            add_play_btn(screen, episode)
+            add_play_btn(screen, episode, true)
         else
             if m.config.subscribe_to_watch_ad_free = true
                 add_play_btn(screen, episode)
@@ -238,7 +240,7 @@ Function add_buttons(screen as object, episode as object) as void
     else
       ' add_play_btn(screen, episode)
       ' if is_linked() = true
-        add_play_btn(screen, episode)
+        add_play_btn(screen, episode, true)
       ' else
         ' screen.AddButton(3, m.config.subscription_button_text)
       ' end if
@@ -246,17 +248,21 @@ Function add_buttons(screen as object, episode as object) as void
   else
     ' @desc Basic mode
     print "Basic mode"
-    add_play_btn(screen, episode)
+    add_play_btn(screen, episode, true)
   end if
 End Function
 
 ' add play and resume buttons
-Function add_play_btn(screen as object, show as object) as void
+Function add_play_btn(screen as object, show as object, hasAccess=false as Boolean) as void
   if regread(show.id) <> invalid and regread(show.id).toint() >=30 then
     screen.AddButton(1, "Resume playing")
     screen.AddButton(2, "Play from beginning")
   else
-    screen.addbutton(2, m.config.play_button_text)
+    if hasAccess = true
+      screen.addbutton(2, "Play")
+    else
+      screen.addbutton(2, m.config.play_button_text)
+    end if
   end if
 End Function
 

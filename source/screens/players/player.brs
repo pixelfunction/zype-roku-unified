@@ -39,24 +39,43 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
         print "Requesting OAuth"
         if IsEntitled(ep.id, {"access_token": oauth.access_token})
           player_info = get_player_info(ep.id, {"access_token": oauth.access_token})
+
+          if player_info = invalid
+            ShowMessageDialog("Error", "Something went wrong!")
+            return
+          end if
         else
           ' print m.refresh_token
           ShowMessageDialog("Authentication", "You do not have access to this content.")
           return
         end if
       else
-        ShowMessageDialog("Authentication", "You do not have access to this content.")
+        ShowMessageDialog("ERROR", "No access token provided")
         return
       end if
     else
-      ResetAccessToken()
-      RemovePin()
-      ResetDeviceID()
-      ShowMessageDialog("Authentication", "You do not have access to this content. Device is not linked.")
-      return
+
+      if m.config.subscribe_to_watch_ad_free = true
+
+        player_info = get_player_info(ep.id, {"app_key": m.api.app})
+
+      else
+
+        ResetAccessToken()
+        RemovePin()
+        ResetDeviceID()
+        ShowMessageDialog("Authentication", "You do not have access to this content. Device is not linked.")
+        return
+
+      end if
     end if
   else
     player_info = get_player_info(ep.id, {"app_key": m.api.app})
+
+    if player_info = invalid
+      ShowMessageDialog("Error", "Something went wrong!")
+      return
+    end if
   end if
 
   if fromSearch <> true
