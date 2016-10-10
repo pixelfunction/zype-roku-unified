@@ -27,7 +27,7 @@ Function grid(channel=invalid as object) as Void
     screen.SetBreadcrumbEnabled(m.config.category_home_breadcrumb_enabled)
     screen.setGridStyle(m.config.grid_layout)
     screen.SetDisplayMode(m.config.scale_mode)
-    
+
     if channel.playlist_id <> invalid
       m.playlist = get_playlist(channel.playlist_id)
     else
@@ -117,7 +117,7 @@ Function grid(channel=invalid as object) as Void
             m.toolbar.tools[msg.GetData()].function_name(m.toolbar.tools[msg.GetData()].appId)
           else
             m.toolbar.tools[msg.GetData()].function_name()
-          end if    
+          end if
         else
           category = m.categories[current_row]
           displayShowDetailScreen(category, msg.GetData(), false)
@@ -191,11 +191,19 @@ Function channels() as void
     port = CreateObject("roMessagePort")
     grid = CreateObject("roGridScreen")
 
-    grid.SetGridStyle(m.config.grid_layout)
-    grid.SetBreadcrumbText(m.config.home_name, "")
-    grid.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
-    grid.SetCounterVisible(false)
-    grid.SetDescriptionVisible(false)
+    ' print m.config.grid_layout
+    if m.config.grid_layout <> invalid
+      grid.SetGridStyle(m.config.grid_layout)
+    end if
+
+    if m.config.home_name <> invalid
+      grid.SetBreadcrumbText(m.config.home_name, "")
+    end if
+
+    if m.config.home_breadcrumb_enabled <> invalid
+      grid.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
+    end if
+    
     grid.SetMessagePort(port)
 
     series = get_series()

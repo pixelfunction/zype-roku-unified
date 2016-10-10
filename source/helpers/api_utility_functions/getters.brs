@@ -419,6 +419,8 @@ Function get_player_info(id As String, query=invalid as object) as Object
   scheduled_ads = []
   url = m.api.player_endpoint + "/embed/" + id + "?" + format_params(query)
 
+  print url
+  
   result = call_api(url).response
 
   if result = invalid
