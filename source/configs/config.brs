@@ -150,7 +150,27 @@ Function set_theme() as void
     GridScreenLogoOffsetHD_X: m.config.grid_logo_offset_hd_x,
     GridScreenLogoOffsetHD_Y: m.config.grid_logo_offset_hd_y,
     GridScreenLogoOffsetSD_X: m.config.grid_logo_offset_sd_x,
-    GridScreenLogoOffsetSD_Y: m.config.grid_logo_offset_sd_y
+    GridScreenLogoOffsetSD_Y: m.config.grid_logo_offset_sd_y.
+
+    GridScreenDescriptionDateColor: m.config.color_brand,
+    GridScreenDescriptionRuntimeColor: m.config.color_brand,
+
+    SpringboardActorColor:  m.config.color_brand,
+    SpringboardAlbumColor: m.config.color_brand,
+    SpringboardAlbumLabel: m.config.color_brand,
+    SpringboardAlbumLabelColor:m.config.color_brand,
+    SpringboardAllow6Buttons:   m.config.color_brand,
+    SpringboardArtistColor: m.config.color_brand,
+    SpringboardArtistLabel: m.config.color_brand,
+    SpringboardArtistLabelColor:  m.config.color_brand,
+    SpringboardDirectorColor: m.config.color_brand,
+    SpringboardDirectorText: m.config.color_brand,
+    SpringboardDirectorLabelColor: m.config.color_brand,
+    SpringboardDirectorPrefixText:  m.config.color_brand,
+    SpringboardGenreColor:  m.config.color_brand,
+    SpringboardRuntimeColor: m.config.color_brand,
+    ' SpringboardSynopsisColor: m.config.color_brand,
+    ' SpringboardTitleText:m.config.color_brand
   }
   app.SetTheme(theme)
 End Function
