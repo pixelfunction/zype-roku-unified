@@ -45,16 +45,29 @@ Function grid(channel=invalid as object) as Void
   end if
   m.toolbar = grid_toolbar()
 
+  cross_channels = get_cross_channels()
+
   ' positions for content
   playlist_position = 0
   category_start_position = 1
   category_end_position = m.category.values.count()
-  toolbar_position = category_end_position + 1
+
+  if cross_channels <> invalid
+    cross_channels_position = category_end_position + 1
+    toolbar_position = cross_channels_position + 1
+  else
+    cross_channels_position = -1
+    toolbar_position = category_end_position + 1
+  end if
 
   m.row_titles = CreateObject("roArray", 1, true)
   m.row_titles[playlist_position] = m.playlist.name
   m.row_titles[toolbar_position] = m.toolbar.name
   AddCategoryTitles(category_start_position, category_end_position, m.row_titles)
+
+  if cross_channels <> invalid
+    m.row_titles[cross_channels_position] = cross_channels.name
+  end if
 
   total_rows = m.row_titles.count()
   screen.SetupLists(total_rows)
@@ -76,6 +89,10 @@ Function grid(channel=invalid as object) as Void
 
   m.categories = CreateObject("roArray", 1, true)
   screen.SetContentListSubset(category_start_position, load_data(category_start_position), 0, subsetLength)
+
+  if cross_channels <> invalid
+    screen.SetContentList(cross_channels_position, cross_channels.channels)
+  end if
 
   screen.SetFocusedListItem(0,0)
   screen.show()
@@ -113,11 +130,9 @@ Function grid(channel=invalid as object) as Void
         if row = playlist_position
           displayShowDetailScreen(m.playlist, msg.GetData(), false)
         else if row = toolbar_position
-          if m.toolbar.tools[msg.GetData()].appId <> invalid
-            m.toolbar.tools[msg.GetData()].function_name(m.toolbar.tools[msg.GetData()].appId)
-          else
             m.toolbar.tools[msg.GetData()].function_name()
-          end if
+        else if row = cross_channels_position
+            cross_channels.channels[msg.GetData()].function_name(cross_channels.channels[msg.GetData()].appId)
         else
           category = m.categories[current_row]
           displayShowDetailScreen(category, msg.GetData(), false)
@@ -203,7 +218,7 @@ Function channels() as void
     if m.config.home_breadcrumb_enabled <> invalid
       grid.SetBreadcrumbEnabled(m.config.home_breadcrumb_enabled)
     end if
-    
+
     grid.SetMessagePort(port)
 
     series = get_series()

@@ -4,7 +4,7 @@
 function get_entitled_videos(params=invalid as dynamic) as object
   url = m.api.endpoint + "/consumer/videos" + "?" + format_params(params)
   resp = call_api(url)
-  
+
   if resp.code = 200
     episodes = CreateObject("roArray", 1, true)
     for each vid in resp.response
@@ -260,7 +260,7 @@ Function get_videos(url As String, short As Boolean, long=false As Boolean) as o
       Episode: item.episode,
       Season: item.season
     }
-    
+
     if m.config.enableNielsenDAR
       for each c in item.categories
         if c.title = "Nielsen Genre"
@@ -300,7 +300,7 @@ Function get_videos(url As String, short As Boolean, long=false As Boolean) as o
     episodes.push(episode)
     ' print episode
   end for
-  
+
   ' episodes.SortBy("season", "r")
   ' for each ele in episodes
   '   print ele.Season, ele.Episode
@@ -420,7 +420,7 @@ Function get_player_info(id As String, query=invalid as object) as Object
   url = m.api.player_endpoint + "/embed/" + id + "?" + format_params(query)
 
   print url
-  
+
   result = call_api(url).response
 
   if result = invalid
@@ -456,7 +456,7 @@ Function get_player_info(id As String, query=invalid as object) as Object
       end  if
     end if
   end if
-  
+
   player_info.ads = scheduled_ads
   return player_info
 End Function
@@ -525,3 +525,93 @@ Function get_category_info(category_id As String) as Object
 
   return invalid
 End Function
+
+
+
+
+' (cross channels)
+function get_cross_channels() as object
+    url = m.api.endpoint + "/zobjects/?app_key=" + m.api.app + "&zobject_type=roku_cross_channels"
+    cross_channels = {name: "Featured Channels", channels: CreateObject("roArray", 1, true)}
+
+    res = call_api(url)
+
+    if res.code <> 200 or res.response.count() = 0
+        return invalid
+    end if
+
+    for each zobject in res.response
+        cross_channels.channels.push({
+            Title: zobject.title,
+            HDPosterUrl: get_zobject_thumbnail(zobject),
+            AppId: zobject.app_id,
+            Description: zobject.description,
+            function_name: launchApp
+        })
+    end for
+
+    return cross_channels
+end function
+
+
+function launchApp(appId as string) as void
+  di = CreateObject("roDeviceInfo")
+  ip = di.GetIPAddrs()
+  xfer = CreateObject("roURLTransfer")
+
+
+  ipaddress = invalid
+  if ip["eth0"] <> invalid
+    ipaddress = ip["eth0"]
+  else if ip["eth1"] <> invalid
+    ipaddress = ip["eth1"]
+  end if
+
+  if ipaddress <> invalid
+    if IsInstalled(appId) = true
+      ECPUrl= "http://" + ipaddress + ":8060/launch/" + appId
+    else
+      ECPUrl= "http://" + ipaddress + ":8060/install/" + appId
+    end if
+    xfer.SetURL(ECPUrl)
+    result = xfer.AsyncPostFromString("")
+  end if
+end function
+
+function IsInstalled(appId as string) as boolean
+    di = CreateObject("roDeviceInfo")
+    ip = di.GetIPAddrs()
+
+    ipaddress = invalid
+    if ip["eth0"] <> invalid
+      ipaddress = ip["eth0"]
+    else if ip["eth1"] <> invalid
+      ipaddress = ip["eth1"]
+    end if
+
+    if ipaddress <> invalid
+      xfer = CreateObject("roURLTransfer")
+      ECPUrl= "http://" + ipaddress + ":8060/query/apps"
+      xfer.SetURL(ECPUrl)
+      result = xfer.GetToString()
+      ' print result
+    else
+      return false
+    end if
+
+    return DoesIdExist(appId, result)
+end function
+
+function DoesIdExist(appId as string, data as string)
+  xml=CreateObject("roXMLElement")
+  If xml.Parse(data) then
+    for each ele in xml.GetBody()
+      if ele.HasAttribute("id")
+        if ele.GetAttributes()["id"] = appId
+          return true
+        end if
+      end if
+    end for
+  End If
+  return false
+end function
