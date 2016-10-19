@@ -19,8 +19,23 @@ Function set_dynamic_config() as void
 
   ' Nielsen DAR settings
   ' Should be integrated in the API
-  m.config.NielsenAppId = "<Nielsen App ID>"
-  m.config.enableNielsenDAR = false
+
+  nielsen_dar = get_nielsen_dar()
+
+  m.config.NielsenAppId = ""
+  m.config.NielsenContenGenre = ""
+
+  if nielsen_dar <> invalid
+    m.config.enableNielsenDAR = true
+    m.config.NielsenAppId = nielsen_dar.nielsen_app_id ' data from API
+    m.config.NielsenContenGenre = nielsen_dar.nielsen_content_genre ' data from API
+  else
+    m.config.enableNielsenDAR = false
+  end if
+
+  print m.config.enableNielsenDAR
+  print m.config.NielsenAppId
+  print m.config.NielsenContenGenre
 
   m.adIface = Roku_Ads()
   m.adIface.setAdPrefs(true, 2) ' 1: use Roku Ad Framework as fallback 2: # re-tries
@@ -31,7 +46,7 @@ Function set_dynamic_config() as void
   ' print m.config.NielsenAppId
   m.adIface.setNielsenAppId(m.config.NielsenAppId)
   ' Content Genre
-  m.adIface.setContentGenre("<ROKU CONTENT GENRE>")
+  m.adIface.setContentGenre(m.config.NielsenContenGenre)
 
   m.config.per_page = Str(m.config.per_page).Trim()
   m.config.info = {

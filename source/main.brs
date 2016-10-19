@@ -4,6 +4,8 @@ Library "Roku_Ads.brs"
 Function Main() as void
   init()
 
+  ' print get_nielsen_dar()
+
   ' @toberefactored should be configurable from the dashboard.
   if m.config.device_linking = true
     'check if consumer is linked

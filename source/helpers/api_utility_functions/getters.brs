@@ -615,3 +615,14 @@ function DoesIdExist(appId as string, data as string)
   End If
   return false
 end function
+
+Function get_nielsen_dar() as object
+  url = m.api.endpoint + "/zobjects/?app_key=" + m.api.app + "&zobject_type=nielsen_dar"
+  res = call_api(url)
+
+  if res.code = 200
+    return res.response[0]
+  end if
+
+  return invalid
+End Function
