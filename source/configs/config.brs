@@ -27,8 +27,14 @@ Function set_dynamic_config() as void
 
   if nielsen_dar <> invalid
     m.config.enableNielsenDAR = true
-    m.config.NielsenAppId = nielsen_dar.nielsen_app_id ' data from API
-    m.config.NielsenContenGenre = nielsen_dar.nielsen_content_genre ' data from API
+
+    if nielsen_dar.nielsen_app_id <> invalid
+      m.config.NielsenAppId = nielsen_dar.nielsen_app_id ' data from API
+    end if
+
+    if nielsen_dar.nielsen_content_genre <> invalid
+      m.config.NielsenContenGenre = nielsen_dar.nielsen_content_genre ' data from API
+    end if
   else
     m.config.enableNielsenDAR = false
   end if

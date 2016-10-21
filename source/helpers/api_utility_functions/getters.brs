@@ -73,12 +73,14 @@ function get_entitled_videos(params=invalid as dynamic) as object
       }
 
       if m.config.enableNielsenDAR
-        for each c in item.categories
-          if c.title = "Nielsen Genre"
-            episode.NielsenGenre = c.value[0]
-            exit for
-          end if
-        end for
+        if item.DoesExist("categories")
+          for each c in item.categories
+            if c.title = "Nielsen Genre"
+              episode.NielsenGenre = c.value[0]
+              exit for
+            end if
+          end for
+        end if
       end if
 
       top_validation = valid_top_zobject()
@@ -262,12 +264,14 @@ Function get_videos(url As String, short As Boolean, long=false As Boolean) as o
     }
 
     if m.config.enableNielsenDAR
-      for each c in item.categories
-        if c.title = "Nielsen Genre"
-          episode.NielsenGenre = c.value[0]
-          exit for
-        end if
-      end for
+      if item.DoesExist("categories")
+        for each c in item.categories
+          if c.title = "Nielsen Genre"
+            episode.NielsenGenre = c.value[0]
+            exit for
+          end if
+        end for
+      end if
     end if
 
     top_validation = valid_top_zobject()
