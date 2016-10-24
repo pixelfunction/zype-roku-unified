@@ -339,9 +339,11 @@ end Function
 
 ' (for nested home)
 Function get_zobject_thumbnail(zobject as object) as object
-  if zobject.pictures <> invalid
+  if zobject.pictures <> invalid and zobject.pictures.count() > 0
+    print zobject.pictures
     return zobject.pictures[0].url
   end if
+  return ""
 end Function
 
 ' (for nested home)
