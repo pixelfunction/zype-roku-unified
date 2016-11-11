@@ -2,7 +2,7 @@
 ' GIT DESCRIPTION: <GIT_DESCRIPTION>
 
 ' these are the hard coded keys/initialization variables
-Function set_api() as void
+Function _set_api() as void
   m.api = {
     app: "<APPKEY>",
     endpoint: "https://api.zype.com/",

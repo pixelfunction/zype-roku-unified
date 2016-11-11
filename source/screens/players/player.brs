@@ -86,7 +86,6 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
       return
   end if
 
-
   if m.config.autoplay =  true
     loopedData = CreateObject("roAssociativeArray")
 
@@ -127,11 +126,17 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
             videoScr = play_episode_ad_free(episodes, index, offset, fromSearch, player_info)
           end if
 
+          print "TEST"
+          print videoScr
+
           if type(videoScr) = "roInt" then
             exit while
+          else if type(videoScr) = "roVideoScreen" then
+            videoScr.close()
+          else
+            print "ERROR"
+            return
           end if
-
-          videoScr.close()
 
           if index + 1 < episodes.count()
             index = index + 1
@@ -183,9 +188,9 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
 
       if type(videoScr) = "roInt" then
         return
+      else if type(videoScr) = "roVideoScreen" then
+        videoScr.close()
       end if
-
-      videoScr.close()
     else
       ShowMessageDialog("", cPlay.message)
       return
@@ -265,7 +270,11 @@ Function play_episode_ad_free(episodes as object, index as integer, offset as in
         end if ' roVideoScreenEvent
     end while
 
-    return videoScreen
+    if type(videoScreen) = "roVideoScreen" then
+      return videoScreen
+    else
+      return -1
+    end if
 End Function
 
 Function play_episode_with_ad(episodes as object, index as integer, offset as integer, fromSearch as Boolean, player_info as Object) as Object
@@ -320,7 +329,7 @@ Function play_episode_with_ad(episodes as object, index as integer, offset as in
     end if
 
 
-    closingContentScreen = false
+    ' closingContentScreen = false
     contentDone = false
     while playContent
         videoMsg = wait(0, videoScreen.GetMessagePort())
@@ -359,47 +368,56 @@ Function play_episode_with_ad(episodes as object, index as integer, offset as in
 
             if videoMsg.isFullResult()
               RegDelete(episode.id)
-
               exit while
             end if
 
-            if not closingContentScreen ' don't check for any more ads while waiting for screen close
-                if videoMsg.isScreenClosed() ' roVideoScreen sends this message last for all exit conditions
-                    playContent = false
-               else if videoMsg.isFullResult()
-                    contentDone = true ' don't want to resume playback after postroll ads
-               end if
-
-               ' check for midroll/postroll ad pods
-               adPods = m.adIface.getAds(videoMsg)
-               if adPods <> invalid and adPods.Count() > 0
-                   ' must completely close content screen before showing ads
-                   ' for some Roku platforms (e.g., RokuTV), calling Close() will not synchronously
-                   ' close the media player and may prevent a new media player from being created
-                   ' until the screen is fully closed (app has received the isScreenClosed() event)
-                   videoScreen.Close()
-                   closingContentScreen = true
-               end if
-            else if videoMsg.isScreenClosed()
-                closingContentScreen = false ' now safe to render ads
+            if videoMsg.isScreenClosed()
+                closingContentScreen = false
                 videoScreen.close()
                 return -1
-            end if ' closingContentScreen
+            end if
 
-            if not closingContentScreen and adPods <> invalid and adPods.Count() > 0
-                ' now safe to render midroll/postroll ads
-                playContent = m.adIface.showAds(adPods)
-                playContent = playContent and not contentDone
-                if playContent
-                    ' resume video playback after midroll ads
-                    episode.PlayStart = curPos
-                    videoScreen = PlayVideoContent(episode)
-                end if
-            end if ' !closingContentScreen
+            ' if not closingContentScreen ' don't check for any more ads while waiting for screen close
+            '     if videoMsg.isScreenClosed() ' roVideoScreen sends this message last for all exit conditions
+            '         playContent = false
+            '     else if videoMsg.isFullResult()
+            '         contentDone = true ' don't want to resume playback after postroll ads
+            '     end if
+            '
+            '    ' check for midroll/postroll ad pods
+            '    adPods = m.adIface.getAds(videoMsg)
+            '    if adPods <> invalid and adPods.Count() > 0
+            '        ' must completely close content screen before showing ads
+            '        ' for some Roku platforms (e.g., RokuTV), calling Close() will not synchronously
+            '        ' close the media player and may prevent a new media player from being created
+            '        ' until the screen is fully closed (app has received the isScreenClosed() event)
+            '        videoScreen.Close()
+            '        closingContentScreen = true
+            '    end if
+            ' else if videoMsg.isScreenClosed()
+            '     closingContentScreen = false ' now safe to render ads
+            '     videoScreen.close()
+            '     return -1
+            ' end if ' closingContentScreen
+            '
+            ' if not closingContentScreen and adPods <> invalid and adPods.Count() > 0
+            '     ' now safe to render midroll/postroll ads
+            '     playContent = m.adIface.showAds(adPods)
+            '     playContent = playContent and not contentDone
+            '     if playContent
+            '         ' resume video playback after midroll ads
+            '         episode.PlayStart = curPos
+            '         videoScreen = PlayVideoContent(episode)
+            '     end if
+            ' end if ' !closingContentScreen
         end if ' roVideoScreenEvent
     end while
 
-    return videoScreen
+    if type(videoScreen) = "roVideoScreen" then
+      return videoScreen
+    else
+      return -1
+    end if
 End Function
 
 Function PlayVideoContent(content as Object) as Object

@@ -2,7 +2,7 @@
 Function set_up_store() As Void
   m.store = CreateObject("roChannelStore")
   'fake out store for right now
-  'm.store.FakeServer(true)
+  m.store.FakeServer(true)
   m.store_items = []
   m.user_purchases_dict = CreateObject("roAssociativeArray")
   get_channel_catalog()

@@ -72,7 +72,14 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
               end if
 
               if msg.GetIndex() = 1 then
-                offset = RegRead(episode.id).toInt()
+                offsetStr = RegRead(episode.id)
+
+                if offsetStr <> invalid
+                  offset = RegRead(episode.id).toInt()
+                else
+                  offset = 0
+                end if
+
                 play(episodes, index, offset, fromSearch)
               end if
 
@@ -81,7 +88,7 @@ Function showDetailScreen(screen As Object, episodes As Object, index as Integer
               end if
 
               if msg.GetIndex() = 3 then
-                pin_screen()  
+                pin_screen()
               end if
 
               if msg.GetIndex() = 4
@@ -159,7 +166,7 @@ Function refreshShowDetail(screen As Object, episodes As Object, index as Intege
   screen.ClearButtons()
 
   add_buttons(screen, show)
-  
+
   if m.config.view_full_description = true and show.FullDescription.Len() > 0
     screen.AddButton(0, "Full Description")
   end if
