@@ -110,7 +110,7 @@ Function purchase_item(episode as object) as Boolean
   result = m.store.DoOrder()
   if result = true
     'add the episode as one that has been purchased
-    m.user_purchases_dict.AddReplace(episode.code, episode.productType)
+    m.user_purchases_dict.AddReplace(episode.id, episode.productType)
     return true
   else
     return false
