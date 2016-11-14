@@ -62,15 +62,15 @@ function canPlay(ep as Object) as Object
         auth_type = "app_key"
         auth_key = m.api.app
       else
-        ResetAccessToken()
-        RemovePin()
-        ResetDeviceID()
-
-        canPlayBool = true
+        canPlayBool = false
         message = "You do not have access to this content. Device is not linked."
         auth_type = ""
         auth_key = ""
       end if
+			
+      ResetAccessToken()
+      RemovePin()
+      ResetDeviceID()
 
     end if
   end if
