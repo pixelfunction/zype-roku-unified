@@ -233,7 +233,7 @@ Function add_buttons(screen as object, episode as object) as void
   else if m.config.device_linking = true
     ' @desc Device linking mode
     print "Device linking mode"
-    if episode.SubscriptionRequired = true
+    if episode.SubscriptionRequired = true or episode.PurchaseRequired = true
         if is_linked() = true
             add_play_btn(screen, episode, true)
         else
