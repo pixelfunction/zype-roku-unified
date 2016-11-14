@@ -41,7 +41,7 @@ function canPlay(ep as Object) as Object
           canPlayBool = true
           message = ""
           auth_type = "access_token"
-          auth_key = "oauth.access_token"
+          auth_key = oauth.access_token
         else
           canPlayBool = false
           message = "You do not have access to this content."
@@ -112,7 +112,7 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
           else if cPlay.auth_type = "access_token" then
             player_info = get_player_info(ep.id, {"access_token": cPlay.auth_key})
           else
-            ShowMessageDialog("", "Something went wrong!")
+            ShowMessageDialog("", "cPlay: Something went wrong!")
             return
           end if
 
@@ -135,7 +135,7 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
             videoScr.close()
           else
             print "ERROR"
-            return
+            exit while
           end if
 
           if index + 1 < episodes.count()
@@ -148,7 +148,7 @@ Function play(episodes as object, index as integer, offset as integer, fromSearc
             exit while
           end if
         else
-          ShowMessageDialog("", "Something went wrong!")
+          ShowMessageDialog("", "Player Info: Something went wrong!")
           return
         end if
       else
