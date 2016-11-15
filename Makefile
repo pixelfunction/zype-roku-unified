@@ -1,4 +1,4 @@
-APPNAME = zype-roku-unified
+APPNAME = <APPNAME>
 VERSION = 1.0
 
 include app.mk
