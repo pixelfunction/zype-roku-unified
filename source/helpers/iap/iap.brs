@@ -2,7 +2,7 @@
 Function set_up_store() As Void
   m.store = CreateObject("roChannelStore")
   'fake out store for right now
-  'm.store.FakeServer(true)
+  ' m.store.FakeServer(true)
   m.store_items = []
   m.user_purchases_dict = CreateObject("roAssociativeArray")
   get_channel_catalog()
@@ -110,7 +110,7 @@ Function purchase_item(episode as object) as Boolean
   result = m.store.DoOrder()
   if result = true
     'add the episode as one that has been purchased
-    m.user_purchases_dict.AddReplace(episode.code, episode.productType)
+    m.user_purchases_dict.AddReplace(episode.id, episode.productType)
     return true
   else
     return false
