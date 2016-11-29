@@ -1,6 +1,27 @@
-# Zype Roku SDK v2
+# Zype Roku Template App
 
-Will be updated soon!
+## Setup
+
+1. You will need your Zype APP key and OAuth credentials. You can find these in the [Zype Platform](https://admin.zype.com/) under the 'Settings' and 'Video Apps' menu.
+
+2. Clone the repo
+
+3. Update the following commands:
+
+  * ROKU\_DEV\_TARGET: The IP address of your Roku device on your local network.
+  * DEVPASSWORD: Your Roku's developer password.
+
+4. Update your Zype configuration. Update the config located here under [source/configs/api_config.brs](source/objects/config.brs), and enter the following values:
+
+  * app: Your Roku App Key
+  * client\_id, client\_secret: Your Roku OAuth Credentials
+
+5. Run the *clean_up* shell script to remove git (and instruction files to help make Roku 1 compatibile.)
+
+
+7. Build and sideload the Roku app
+
+  * Run *make install* in your project directory
 
 ## License
 
