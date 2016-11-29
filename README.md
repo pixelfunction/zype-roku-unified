@@ -11,7 +11,7 @@
   * ROKU\_DEV\_TARGET: The IP address of your Roku device on your local network.
   * DEVPASSWORD: Your Roku's developer password.
 
-4. Update your Zype configuration. Update the config located here under [source/configs/api_config.brs](source/objects/config.brs), and enter the following values:
+4. Update your Zype configuration. Update the config located here under [source/configs/api_config.brs](source/configs/config.brs), and enter the following values:
 
   * app: Your Roku App Key
   * client\_id, client\_secret: Your Roku OAuth Credentials
