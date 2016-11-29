@@ -46,11 +46,31 @@ Function grid(channel=invalid as object) as Void
   m.toolbar = grid_toolbar()
 
   cross_channels = get_cross_channels()
-
-  ' positions for content
-  playlist_position = 0
-  category_start_position = 1
-  category_end_position = m.category.values.count()
+	
+	m.my_videos = invalid
+	
+  if m.config.device_linking = true
+		if is_linked() and PinExist()
+    	oauth = GetAccessToken()
+    	if oauth <> invalid
+				m.my_videos = get_my_library({"per_page": "100", "access_token": oauth.access_token})
+			end if
+		end if
+	end if
+	
+	if m.my_videos <> invalid and m.my_videos.episodes.count() > 0
+	  ' positions for content
+		my_videos_position = 0
+	  playlist_position = 1
+	  category_start_position = 2
+	  category_end_position = category_start_position + m.category.values.count() - 1 
+	else
+	  ' positions for content
+		my_videos_position = -1
+	  playlist_position = 0
+	  category_start_position = 1
+	  category_end_position = category_start_position + m.category.values.count() - 1
+	end if
 
   if cross_channels <> invalid
     cross_channels_position = category_end_position + 1
@@ -59,12 +79,19 @@ Function grid(channel=invalid as object) as Void
     cross_channels_position = -1
     toolbar_position = category_end_position + 1
   end if
+	
 
   m.row_titles = CreateObject("roArray", 1, true)
   m.row_titles[playlist_position] = m.playlist.name
   m.row_titles[toolbar_position] = m.toolbar.name
   AddCategoryTitles(category_start_position, category_end_position, m.row_titles)
 
+
+	if m.my_videos <> invalid and m.my_videos.episodes.count() > 0
+		m.row_titles[my_videos_position] = m.my_videos.name
+		' print m.my_videos
+	endif
+	
   if cross_channels <> invalid
     m.row_titles[cross_channels_position] = cross_channels.name
   end if
@@ -90,6 +117,10 @@ Function grid(channel=invalid as object) as Void
   m.categories = CreateObject("roArray", 1, true)
   screen.SetContentListSubset(category_start_position, load_data(category_start_position), 0, subsetLength)
 
+	if m.my_videos <> invalid and m.my_videos.episodes.count() > 0
+		screen.SetContentListSubset(my_videos_position, m.my_videos.episodes, 0, subsetLength)
+	endif
+	
   if cross_channels <> invalid
     screen.SetContentList(cross_channels_position, cross_channels.channels)
   end if
@@ -107,6 +138,10 @@ Function grid(channel=invalid as object) as Void
       screen.SetContentListSubset(current_row, m.playlist.episodes, current_col, subsetLength)
     end if
 
+    if m.my_videos <> invalid and m.my_videos.episodes.count() > 0 and current_row = my_videos_position
+      screen.SetContentListSubset(current_row, m.my_videos.episodes, current_col, subsetLength)
+    end if
+		
     if current_row <= category_end_position and current_row >= category_start_position
       screen.SetContentListSubset(current_row, load_data(current_row), current_col, subsetLength)
 
@@ -129,11 +164,22 @@ Function grid(channel=invalid as object) as Void
 
         if row = playlist_position
           displayShowDetailScreen(m.playlist, msg.GetData(), false)
-        else if row = toolbar_position
+				endif
+				
+        if row = my_videos_position
+					print "CLICK" 
+          displayShowDetailScreen(m.my_videos, msg.GetData(), false)
+				endif
+        
+				if row = toolbar_position
             m.toolbar.tools[msg.GetData()].function_name()
-        else if row = cross_channels_position
+        end if
+				
+				if row = cross_channels_position
             cross_channels.channels[msg.GetData()].function_name(cross_channels.channels[msg.GetData()].appId)
-        else
+        end if
+				
+				if row >= category_start_position and row <= category_end_position then
           category = m.categories[current_row]
           displayShowDetailScreen(category, msg.GetData(), false)
         end if
