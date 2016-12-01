@@ -36,5 +36,15 @@ If *show_ads* from `source/screens/players/player.brs` returns *True* then ads a
 
 ### Mixing Monetization Types
 
-Coming soon!
+The buttons for different monetization types are determined by app settings. The *add\_buttons* within `source/screens/detail/detail.brs` function has the logic flow to show different buttons.
 
+## Content Order
+
+App content consists of different parts: playlist, categories (values as rows), tools (info and search), cross-channels, and so on.
+
+In order to change the order, one needs to change it within home.brs The following variables are used for that purposes:
+
+Playlist - **playlist_position**
+Categories (start/end) - **category_start_position**, **category_end_position**
+Tools - **toolbar_position**
+Cross Channels - **cross_channels_position**
