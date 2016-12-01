@@ -23,6 +23,10 @@
 
   * Run *make install* in your project directory
 
+  
+## Docs
+[architecture.md](architecture.md)
+
 ## License
 
 [![Creative Commons License][image-1]][1]  
